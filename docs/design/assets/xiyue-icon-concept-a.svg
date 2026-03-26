@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(256 220) rotate(90) scale(320)">
+      <stop offset="0" stop-color="#1A2430" stop-opacity="0.85"/>
+      <stop offset="0.55" stop-color="#0B0F14" stop-opacity="1"/>
+      <stop offset="1" stop-color="#070A0E" stop-opacity="1"/>
+    </radialGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.55 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background tile (intended as adaptive icon background) -->
+  <rect x="24" y="24" width="464" height="464" rx="120" fill="url(#bgGlow)"/>
+
+  <!-- Foreground mark (intended as adaptive icon foreground) -->
+  <g filter="url(#softGlow)">
+    <!-- subtle ring -->
+    <circle cx="256" cy="256" r="168" stroke="#2A3340" stroke-opacity="0.55" stroke-width="10"/>
+
+    <!-- 12-dot ring (inactive) -->
+    <!-- Coordinates: center (256,256), radius ~150, starting at top and rotating clockwise -->
+    <g fill="#2A3340" fill-opacity="0.9">
+      <circle cx="256" cy="106" r="10"/>
+      <circle cx="331" cy="126" r="10"/>
+      <circle cx="386" cy="181" r="10"/>
+      <circle cx="406" cy="256" r="10"/>
+      <circle cx="386" cy="331" r="10"/>
+      <circle cx="331" cy="386" r="10"/>
+      <circle cx="256" cy="406" r="10"/>
+      <circle cx="181" cy="386" r="10"/>
+      <circle cx="126" cy="331" r="10"/>
+      <circle cx="106" cy="256" r="10"/>
+      <circle cx="126" cy="181" r="10"/>
+      <circle cx="181" cy="126" r="10"/>
+    </g>
+
+    <!-- Triad highlights: 0°, 120°, 240° -->
+    <g fill="#7CF6C8">
+      <!-- active note -->
+      <circle cx="406" cy="256" r="18"/>
+      <!-- other chord tones -->
+      <circle cx="181" cy="386" r="14"/>
+      <circle cx="181" cy="126" r="14"/>
+    </g>
+  </g>
+</svg>
+

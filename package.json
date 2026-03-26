@@ -1,0 +1,15 @@
+{
+  "name": "xiyue",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sandbox": "node scripts/html-sandbox-server.js",
+    "sandbox:open": "node scripts/open-html-sandbox.js",
+    "build:android": "powershell -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+    "test": "npm run test:music-core && npm run test:html-sandbox && npm run test:android",
+    "test:android": "node --test apps/android/test/*.test.js",
+    "test:music-core": "node --test packages/music-core/test/*.test.js",
+    "test:html-sandbox": "node --test apps/html-sandbox/test/*.test.js"
+  }
+}

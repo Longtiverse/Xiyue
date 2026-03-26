@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>习乐 Xiyue - HTML Sandbox</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <h1>🎹 习乐 Xiyue - HTML Sandbox</h1>
+        <p>用于内部验证共享音乐模型、列表搜索、序列生成与键盘高亮。</p>
+      </header>
+
+      <section class="panel controls-panel">
+        <div class="panel-heading">
+          <h2>控制区</h2>
+          <p>先筛选类型，再选择根音、八度与 BPM。</p>
+        </div>
+
+        <div class="controls-grid">
+          <label class="field">
+            <span>搜索</span>
+            <input id="search-input" type="search" placeholder="例如：minor / maj / 7" />
+          </label>
+
+          <label class="field">
+            <span>筛选</span>
+            <select id="kind-filter">
+              <option value="all">全部</option>
+              <option value="scale">音阶</option>
+              <option value="chord">和弦</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>根音</span>
+            <select id="root-select"></select>
+          </label>
+
+          <label class="field">
+            <span>八度</span>
+            <select id="octave-select"></select>
+          </label>
+
+          <label class="field">
+            <span>BPM</span>
+            <input id="bpm-input" type="number" min="40" max="240" step="1" value="120" />
+          </label>
+
+          <label class="field">
+            <span>音量 <strong id="volume-value">35%</strong></span>
+            <input id="volume-input" type="range" min="0" max="1" step="0.05" value="0.35" />
+          </label>
+        </div>
+
+        <div class="controls-actions">
+          <button id="reset-button" class="secondary-button" type="button">
+            重置条件
+          </button>
+        </div>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel library-panel">
+          <div class="panel-heading">
+            <h2>音阶 / 和弦库</h2>
+            <p>点击条目后立即生成结果。</p>
+          </div>
+
+          <p id="empty-state" class="empty-state" hidden>没有匹配结果，请尝试修改搜索条件。</p>
+          <ul id="library-list" class="library-list"></ul>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-heading">
+            <h2 id="selected-title">从左侧选择一个音阶或和弦</h2>
+            <p id="selected-meta">支持搜索、筛选、生成序列与键盘高亮。</p>
+          </div>
+
+          <p id="playback-status" class="playback-status">就绪：可预览当前选择</p>
+
+          <section class="result-section">
+            <h3>生成音高</h3>
+            <ul id="pitch-list" class="pitch-list"></ul>
+          </section>
+
+          <section class="result-section action-row">
+            <label class="field compact-field">
+              <span>播放模式</span>
+              <select id="playback-mode-select" disabled>
+                <option value="">请先选择条目</option>
+              </select>
+            </label>
+
+            <button id="play-button" class="play-button" type="button" disabled>
+              播放
+            </button>
+
+            <button id="stop-button" class="secondary-button" type="button" disabled>
+              停止
+            </button>
+          </section>
+
+          <section class="result-section">
+            <h3>序列表</h3>
+            <ul id="sequence-list" class="sequence-list"></ul>
+          </section>
+        </section>
+      </section>
+
+      <section class="panel keyboard-panel">
+        <div class="panel-heading">
+          <h2>键盘高亮</h2>
+          <p>范围固定为 C4 - C7，浅色为预览，亮色为当前活动音。</p>
+        </div>
+
+        <div class="keyboard-frame">
+          <div id="keyboard" class="keyboard"></div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
