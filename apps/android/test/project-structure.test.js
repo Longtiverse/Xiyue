@@ -13,6 +13,7 @@ const requiredFiles = [
   'apps/android/app/src/main/java/com/xiyue/app/MainActivity.kt',
   'apps/android/app/src/main/java/com/xiyue/app/ui/XiyueApp.kt',
   'apps/android/app/src/main/java/com/xiyue/app/ui/theme/Theme.kt',
+  'apps/android/app/src/main/java/com/xiyue/app/playback/TonePreset.kt',
   'apps/android/app/src/main/res/values/strings.xml',
   'apps/android/app/src/main/res/values/colors.xml',
   'apps/android/app/src/main/res/values/themes.xml',
@@ -20,6 +21,7 @@ const requiredFiles = [
   'apps/android/app/src/main/res/drawable/ic_launcher_foreground.xml',
   'apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
   'apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml',
+  'scripts/codex-next-iteration.ps1',
 ];
 
 test('android project skeleton files exist', () => {
@@ -52,8 +54,20 @@ test('android app screen includes core practice placeholders', () => {
   const strings = readFileSync('apps/android/app/src/main/res/values/strings.xml', 'utf8');
 
   assert.match(appScreen, /HomeScreen/);
-  assert.match(stateFactory, /Practice Library/);
+  assert.match(appScreen, /PracticePickerStrip/);
+  assert.match(stateFactory, /buildPracticePicker/);
   assert.match(stateFactory, /Keyboard Preview/);
-  assert.match(stateFactory, /Playback Controls/);
+  assert.match(stateFactory, /Pause Practice|Resume Practice|Start Practice/);
   assert.match(strings, /习乐/);
+});
+
+test('repo includes codex control launcher for next autonomous iteration', () => {
+  const packageJson = readFileSync('package.json', 'utf8');
+  const script = readFileSync('scripts/codex-next-iteration.ps1', 'utf8');
+
+  assert.match(packageJson, /codex:next/);
+  assert.match(script, /codex\s+exec/);
+  assert.match(script, /--cd/);
+  assert.match(script, /D:\\Project\\Xiyue/);
+  assert.match(script, /Iterations/);
 });

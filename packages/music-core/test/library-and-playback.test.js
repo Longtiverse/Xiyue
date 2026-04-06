@@ -24,7 +24,7 @@ test('lists music library items with stable ids and kinds', () => {
     label: 'Major',
     searchText: 'scale major',
   });
-  assert.equal(items.at(-1)?.id, 'chord:Min7b5');
+  assert.equal(items.at(-1)?.id, 'chord:Sus4');
 });
 
 test('searches library items by normalized query and kind', () => {
@@ -35,7 +35,7 @@ test('searches library items by normalized query and kind', () => {
 
   assert.deepEqual(
     searchLibraryItems('7', { kind: 'chord' }).map((item) => item.id),
-    ['chord:Maj7', 'chord:Min7', 'chord:Dom7', 'chord:Min7b5'],
+    ['chord:Maj7', 'chord:Min7', 'chord:Dom7', 'chord:Min7b5', 'chord:Dim7'],
   );
 });
 

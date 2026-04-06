@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">习乐 Xiyue</string>
     <string name="playback_channel_name">习乐后台播放</string>
-    <string name="playback_channel_description">用于持续播放音阶和和弦练习</string>
+    <string name="playback_channel_description">用于持续播放音阶与和弦练习内容</string>
+    <string name="playback_action_pause">暂停</string>
+    <string name="playback_action_resume">继续</string>
+    <string name="playback_action_stop">停止</string>
+    <string name="playback_status_playing">后台播放中</string>
+    <string name="playback_status_paused">已暂停</string>
 </resources>

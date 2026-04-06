@@ -1,4 +1,4 @@
-package com.xiyue.app.ui
+﻿package com.xiyue.app.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.xiyue.app.features.home.HomeAction
+import com.xiyue.app.features.home.HomeUiState
 import com.xiyue.app.features.home.HomePreferencesRepository
 import com.xiyue.app.features.home.HomePreferencesState
 import com.xiyue.app.features.home.HomeReducer
@@ -25,8 +26,8 @@ fun XiyueApp() {
     val appContext = context.applicationContext
     val preferencesRepository = remember(appContext) { HomePreferencesRepository(appContext) }
     val initialPreferences = remember(preferencesRepository) { preferencesRepository.load() }
-    val stateFactory = remember { HomeStateFactory() }
-    val reducer = remember { HomeReducer(stateFactory) }
+    val stateFactory = remember(appContext) { HomeStateFactory() }
+    val reducer = remember(stateFactory) { HomeReducer(stateFactory) }
     var state by remember {
         mutableStateOf(
             stateFactory.create(
@@ -35,8 +36,14 @@ fun XiyueApp() {
                 recentLibraryItemIds = initialPreferences.recentLibraryItemIds,
                 selectedRoot = initialPreferences.selectedRoot,
                 selectedPlaybackMode = initialPreferences.selectedPlaybackMode,
+                selectedTonePreset = initialPreferences.selectedTonePreset,
+                soundMode = initialPreferences.soundMode,
+                chordBlockEnabled = initialPreferences.chordBlockEnabled,
+                chordArpeggioEnabled = initialPreferences.chordArpeggioEnabled,
                 loopEnabled = initialPreferences.loopEnabled,
+                loopDurationMs = initialPreferences.loopDurationMs,
                 bpm = initialPreferences.bpm,
+                isBpmInputVisible = false,
                 displayMode = initialPreferences.displayMode,
             ),
         )
@@ -52,8 +59,13 @@ fun XiyueApp() {
         state.favoriteLibraryItems,
         state.selectedRoot,
         state.selectedPlaybackMode,
+        state.selectedTonePreset,
+        state.soundMode,
+        state.chordBlockEnabled,
+        state.chordArpeggioEnabled,
         state.bpm,
         state.loopEnabled,
+        state.loopDurationMs,
         state.displayMode,
         state.recentLibraryItems,
     ) {
@@ -64,8 +76,13 @@ fun XiyueApp() {
                 recentLibraryItemIds = state.recentLibraryItems.map { it.id },
                 selectedRoot = state.selectedRoot,
                 selectedPlaybackMode = state.selectedPlaybackMode,
+                selectedTonePreset = state.selectedTonePreset,
+                soundMode = state.soundMode,
+                chordBlockEnabled = state.chordBlockEnabled,
+                chordArpeggioEnabled = state.chordArpeggioEnabled,
                 bpm = state.bpm,
                 loopEnabled = state.loopEnabled,
+                loopDurationMs = state.loopDurationMs,
                 displayMode = state.displayMode,
             ),
         )
@@ -76,31 +93,135 @@ fun XiyueApp() {
         onAction = { action ->
             when (action) {
                 HomeAction.TogglePlayback -> {
-                    state.selectedLibraryItemId?.let { selectedItemId ->
-                        if (state.isPlaying) {
-                            PracticePlaybackService.stop(context)
-                        } else {
-                            PracticePlaybackService.play(
+                    createPlaybackRequest(state)?.let { request ->
+                        when {
+                            state.isPlaying -> PracticePlaybackService.pause(context)
+                            state.isPaused -> PracticePlaybackService.resume(context)
+                            else -> PracticePlaybackService.play(
                                 context = context,
-                                request = PlaybackRequest(
-                                    itemId = selectedItemId,
-                                    root = state.selectedRoot,
-                                    bpm = state.bpm,
-                                    loopEnabled = state.loopEnabled,
-                                    playbackMode = state.selectedPlaybackMode,
-                                ),
+                                request = request,
                             )
                         }
-                        state = reducer.reduce(state, action)
                     }
                 }
 
+                HomeAction.StopPlayback -> {
+                    PracticePlaybackService.stop(context)
+                }
+
                 else -> {
-                    state = reducer.reduce(state, action)
+                    val previousState = state
+                    val nextState = reducer.reduce(state, action)
+                    state = nextState
+
+                    if (shouldPreparePausedPlayback(previousState, nextState, action)) {
+                        preparePausedPlayback(context, nextState)
+                    } else if (shouldRefreshPlayback(previousState, nextState, action)) {
+                        refreshPlayback(context, nextState)
+                    }
                 }
             }
         },
     )
+}
+
+private fun createPlaybackRequest(state: HomeUiState): PlaybackRequest? =
+    state.selectedLibraryItemId?.let { selectedItemId ->
+        PlaybackRequest(
+            itemId = selectedItemId,
+            root = state.selectedRoot,
+            bpm = state.bpm,
+            loopEnabled = state.loopEnabled,
+            loopDurationMs = state.loopDurationMs,
+            playbackMode = state.selectedPlaybackMode,
+            tonePreset = state.selectedTonePreset,
+            chordBlockEnabled = state.chordBlockEnabled,
+            chordArpeggioEnabled = state.chordArpeggioEnabled,
+            soundMode = state.soundMode,
+        )
+    }
+
+private fun shouldRefreshPlayback(
+    previousState: HomeUiState,
+    nextState: HomeUiState,
+    action: HomeAction,
+): Boolean {
+    if (!previousState.isPlaying) return false
+
+    return when (action) {
+        is HomeAction.SelectLibraryItem,
+        is HomeAction.SelectRoot,
+        is HomeAction.UpdatePlaybackMode,
+        is HomeAction.UpdateTonePreset,
+        is HomeAction.UpdateSoundMode,
+        is HomeAction.UpdateBpm,
+        is HomeAction.UpdateLoopDuration,
+        HomeAction.ToggleLoop,
+        HomeAction.ToggleChordBlock,
+        HomeAction.ToggleChordArpeggio,
+        -> playbackConfigChanged(previousState, nextState)
+
+        else -> false
+    }
+}
+
+private fun shouldPreparePausedPlayback(
+    previousState: HomeUiState,
+    nextState: HomeUiState,
+    action: HomeAction,
+): Boolean {
+    if (!previousState.isPaused) return false
+
+    return when (action) {
+        is HomeAction.SelectLibraryItem,
+        is HomeAction.SelectRoot,
+        is HomeAction.UpdatePlaybackMode,
+        is HomeAction.UpdateTonePreset,
+        is HomeAction.UpdateSoundMode,
+        is HomeAction.UpdateBpm,
+        is HomeAction.UpdateLoopDuration,
+        HomeAction.ToggleLoop,
+        HomeAction.ToggleChordBlock,
+        HomeAction.ToggleChordArpeggio,
+        -> playbackConfigChanged(previousState, nextState)
+
+        else -> false
+    }
+}
+
+private fun playbackConfigChanged(
+    previousState: HomeUiState,
+    nextState: HomeUiState,
+): Boolean = previousState.selectedLibraryItemId != nextState.selectedLibraryItemId ||
+    previousState.selectedRoot != nextState.selectedRoot ||
+    previousState.selectedPlaybackMode != nextState.selectedPlaybackMode ||
+    previousState.selectedTonePreset != nextState.selectedTonePreset ||
+    previousState.soundMode != nextState.soundMode ||
+    previousState.bpm != nextState.bpm ||
+    previousState.loopEnabled != nextState.loopEnabled ||
+    previousState.loopDurationMs != nextState.loopDurationMs ||
+    previousState.chordBlockEnabled != nextState.chordBlockEnabled ||
+    previousState.chordArpeggioEnabled != nextState.chordArpeggioEnabled
+
+private fun refreshPlayback(
+    context: android.content.Context,
+    state: HomeUiState,
+) {
+    val request = createPlaybackRequest(state) ?: return
+
+    PracticePlaybackService.play(
+        context = context,
+        request = request,
+    )
+}
+
+private fun preparePausedPlayback(
+    context: android.content.Context,
+    state: HomeUiState,
+) {
+    val request = createPlaybackRequest(state) ?: return
+
+    PracticePlaybackService.preparePaused(context, request)
 }
 
 @Preview(showBackground = true)

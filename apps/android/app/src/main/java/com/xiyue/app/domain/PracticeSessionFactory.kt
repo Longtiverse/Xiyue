@@ -6,13 +6,30 @@ class PracticeSessionFactory(
     fun createPlan(selection: PracticeSelection): PracticePlaybackPlan? {
         val item = repository.findLibraryItem(selection.libraryItemId) ?: return null
         val title = "${selection.root.label} ${item.label}"
-        val subtitle = "${selection.bpm} BPM · ${selection.playbackMode.label}${if (selection.loopEnabled) " · Loop" else ""}"
+        val isChord = item.kind == PracticeKind.CHORD
+        
+        val modeLabel = when {
+            isChord && selection.chordBlockEnabled && selection.chordArpeggioEnabled -> "Arpeggio + Block"
+            isChord && selection.chordBlockEnabled -> "Block"
+            isChord && selection.chordArpeggioEnabled -> "Arpeggio"
+            else -> selection.playbackMode.label
+        }
+        
+        val subtitle = buildString {
+            append(selection.bpm)
+            append(" BPM")
+            append(" · ")
+            append(modeLabel)
+            if (selection.loopEnabled) {
+                append(" · Loop")
+            }
+        }
 
-        val steps = when (selection.playbackMode) {
-            PlaybackMode.SCALE_ASCENDING -> createAscendingScaleSteps(item, selection)
-            PlaybackMode.SCALE_ASCENDING_DESCENDING -> createAscendingDescendingScaleSteps(item, selection)
-            PlaybackMode.CHORD_BLOCK -> createChordBlockSteps(item, selection)
-            PlaybackMode.CHORD_ARPEGGIO_UP -> createChordArpeggioSteps(item, selection)
+        val steps = when {
+            isChord -> createChordSteps(item, selection)
+            selection.playbackMode == PlaybackMode.SCALE_ASCENDING -> createAscendingScaleSteps(item, selection)
+            selection.playbackMode == PlaybackMode.SCALE_ASCENDING_DESCENDING -> createAscendingDescendingScaleSteps(item, selection)
+            else -> createAscendingScaleSteps(item, selection)
         }
 
         return PracticePlaybackPlan(
@@ -20,6 +37,19 @@ class PracticeSessionFactory(
             subtitle = subtitle,
             steps = steps,
         )
+    }
+
+    private fun createChordSteps(
+        item: PracticeLibraryItem,
+        selection: PracticeSelection,
+    ): List<PlaybackStep> = buildList {
+        if (selection.chordArpeggioEnabled) {
+            addAll(createChordArpeggioUpSteps(item, selection))
+        }
+        if (selection.chordBlockEnabled) {
+            addAll(createChordBlockSteps(item, selection))
+            addAll(createChordBlockSteps(item, selection))
+        }
     }
 
     fun supportedModes(kind: PracticeKind): List<PlaybackMode> = when (kind) {
@@ -30,6 +60,8 @@ class PracticeSessionFactory(
         PracticeKind.CHORD -> listOf(
             PlaybackMode.CHORD_BLOCK,
             PlaybackMode.CHORD_ARPEGGIO_UP,
+            PlaybackMode.CHORD_ARPEGGIO_DOWN,
+            PlaybackMode.CHORD_ARPEGGIO_UP_DOWN,
         )
     }
 
@@ -71,11 +103,31 @@ class PracticeSessionFactory(
         )
     }
 
-    private fun createChordArpeggioSteps(
+    private fun createChordArpeggioUpSteps(
         item: PracticeLibraryItem,
         selection: PracticeSelection,
     ): List<PlaybackStep> = item.intervals.map { interval ->
         createSingleNoteStep(item, selection, interval)
+    }
+
+    private fun createChordArpeggioDownSteps(
+        item: PracticeLibraryItem,
+        selection: PracticeSelection,
+    ): List<PlaybackStep> = item.intervals.reversed().map { interval ->
+        createSingleNoteStep(item, selection, interval)
+    }
+
+    private fun createChordArpeggioUpDownSteps(
+        item: PracticeLibraryItem,
+        selection: PracticeSelection,
+    ): List<PlaybackStep> {
+        val upSteps = item.intervals.map { interval ->
+            createSingleNoteStep(item, selection, interval)
+        }
+        val downSteps = item.intervals.reversed().drop(1).dropLast(1).map { interval ->
+            createSingleNoteStep(item, selection, interval)
+        }
+        return upSteps + downSteps
     }
 
     private fun createSingleNoteStep(

@@ -1,0 +1,156 @@
+﻿{
+  "scales": [
+    {
+      "id": "Major",
+      "label": "Major",
+      "intervals": [0, 2, 4, 5, 7, 9, 11, 12],
+      "aliases": ["ionian", "major scale", "maj"]
+    },
+    {
+      "id": "NaturalMinor",
+      "label": "Natural Minor",
+      "intervals": [0, 2, 3, 5, 7, 8, 10, 12],
+      "aliases": ["aeolian", "minor scale", "nat minor"]
+    },
+    {
+      "id": "HarmonicMinor",
+      "label": "Harmonic Minor",
+      "intervals": [0, 2, 3, 5, 7, 8, 11, 12],
+      "aliases": ["harmonic minor scale", "harm minor"]
+    },
+    {
+      "id": "MelodicMinor",
+      "label": "Melodic Minor",
+      "intervals": [0, 2, 3, 5, 7, 9, 11, 12],
+      "aliases": ["melodic minor scale", "mel minor"]
+    },
+    {
+      "id": "PentatonicMajor",
+      "label": "Pentatonic Major",
+      "intervals": [0, 2, 4, 7, 9, 12],
+      "aliases": ["major pentatonic", "pentatonic", "penta major"]
+    },
+    {
+      "id": "PentatonicMinor",
+      "label": "Pentatonic Minor",
+      "intervals": [0, 3, 5, 7, 10, 12],
+      "aliases": ["minor pentatonic", "penta minor"]
+    },
+    {
+      "id": "Blues",
+      "label": "Blues",
+      "intervals": [0, 3, 5, 6, 7, 10, 12],
+      "aliases": ["blues scale", "major blues", "minor blues"]
+    },
+    {
+      "id": "Dorian",
+      "label": "Dorian",
+      "intervals": [0, 2, 3, 5, 7, 9, 10, 12],
+      "aliases": ["dorian mode"]
+    },
+    {
+      "id": "Mixolydian",
+      "label": "Mixolydian",
+      "intervals": [0, 2, 4, 5, 7, 9, 10, 12],
+      "aliases": ["mixolydian mode", "dominant scale"]
+    },
+    {
+      "id": "Lydian",
+      "label": "Lydian",
+      "intervals": [0, 2, 4, 6, 7, 9, 11, 12],
+      "aliases": ["lydian mode"]
+    },
+    {
+      "id": "Phrygian",
+      "label": "Phrygian",
+      "intervals": [0, 1, 3, 5, 7, 8, 10, 12],
+      "aliases": ["phrygian mode"]
+    },
+    {
+      "id": "Locrian",
+      "label": "Locrian",
+      "intervals": [0, 1, 3, 5, 6, 8, 10, 12],
+      "aliases": ["locrian mode"]
+    },
+    {
+      "id": "WholeTone",
+      "label": "Whole Tone",
+      "intervals": [0, 2, 4, 6, 8, 10, 12],
+      "aliases": ["whole tone scale"]
+    }
+  ],
+  "chords": [
+    {
+      "id": "MajorTriad",
+      "label": "Major Triad",
+      "intervals": [0, 4, 7],
+      "aliases": ["maj triad", "major", "M"]
+    },
+    {
+      "id": "MinorTriad",
+      "label": "Minor Triad",
+      "intervals": [0, 3, 7],
+      "aliases": ["min triad", "minor", "m"]
+    },
+    {
+      "id": "DiminishedTriad",
+      "label": "Diminished",
+      "intervals": [0, 3, 6],
+      "aliases": ["dim", "diminished triad", "diminished"]
+    },
+    {
+      "id": "AugmentedTriad",
+      "label": "Augmented",
+      "intervals": [0, 4, 8],
+      "aliases": ["aug", "augmented triad", "augmented"]
+    },
+    {
+      "id": "Maj7",
+      "label": "Maj7",
+      "intervals": [0, 4, 7, 11],
+      "aliases": ["major 7", "maj 7", "M7"]
+    },
+    {
+      "id": "Min7",
+      "label": "Minor 7",
+      "intervals": [0, 3, 7, 10],
+      "aliases": ["minor 7", "min 7", "m7"]
+    },
+    {
+      "id": "Dom7",
+      "label": "Dom7",
+      "intervals": [0, 4, 7, 10],
+      "aliases": ["7", "dominant 7", "dom 7"]
+    },
+    {
+      "id": "Min7b5",
+      "label": "Half-Diminished 7",
+      "intervals": [0, 3, 6, 10],
+      "aliases": ["half diminished", "m7b5", "half-dim", "HalfDim7"]
+    },
+    {
+      "id": "Dim7",
+      "label": "Dim7",
+      "intervals": [0, 3, 6, 9],
+      "aliases": ["diminished 7", "dim7"]
+    },
+    {
+      "id": "Add9",
+      "label": "Add9",
+      "intervals": [0, 4, 7, 14],
+      "aliases": ["add 9", "add9"]
+    },
+    {
+      "id": "Sus2",
+      "label": "Sus2",
+      "intervals": [0, 2, 7],
+      "aliases": ["suspended 2", "sus2"]
+    },
+    {
+      "id": "Sus4",
+      "label": "Sus4",
+      "intervals": [0, 5, 7],
+      "aliases": ["suspended 4", "sus4"]
+    }
+  ]
+}

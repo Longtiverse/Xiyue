@@ -1,25 +1,12 @@
 import { createPitch, createPitchFromMidiNumber } from './theory.js';
+import libraryData from '../data/library.json' with { type: 'json' };
 
-export const SCALE_INTERVALS = {
-  Major: [0, 2, 4, 5, 7, 9, 11, 12],
-  NaturalMinor: [0, 2, 3, 5, 7, 8, 10, 12],
-  HarmonicMinor: [0, 2, 3, 5, 7, 8, 11, 12],
-  MelodicMinor: [0, 2, 3, 5, 7, 9, 11, 12],
-  PentatonicMajor: [0, 2, 4, 7, 9, 12],
-  PentatonicMinor: [0, 3, 5, 7, 10, 12],
-  Blues: [0, 3, 5, 6, 7, 10, 12],
-};
+function toIntervalMap(items) {
+  return Object.fromEntries(items.map((item) => [item.id, item.intervals]));
+}
 
-export const CHORD_INTERVALS = {
-  MajorTriad: [0, 4, 7],
-  MinorTriad: [0, 3, 7],
-  DiminishedTriad: [0, 3, 6],
-  AugmentedTriad: [0, 4, 8],
-  Maj7: [0, 4, 7, 11],
-  Min7: [0, 3, 7, 10],
-  Dom7: [0, 4, 7, 10],
-  Min7b5: [0, 3, 6, 10],
-};
+export const SCALE_INTERVALS = toIntervalMap(libraryData.scales);
+export const CHORD_INTERVALS = toIntervalMap(libraryData.chords);
 
 function getRequiredIntervals(map, type, kind) {
   const intervals = map[type];

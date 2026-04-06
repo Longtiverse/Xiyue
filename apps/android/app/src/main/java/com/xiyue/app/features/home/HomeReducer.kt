@@ -1,27 +1,59 @@
-package com.xiyue.app.features.home
+﻿package com.xiyue.app.features.home
 
 class HomeReducer(
     private val stateFactory: HomeStateFactory = HomeStateFactory(),
 ) {
-    // bpmLabel remains a derived UI field inside HomeStateFactory / PlaybackControlUiState.
     fun reduce(state: HomeUiState, action: HomeAction): HomeUiState {
         val favoriteLibraryItemIds = state.favoriteLibraryItems.map { it.id }
         val recentLibraryItemIds = state.recentLibraryItems.map { it.id }
 
+        fun nextState(
+            searchQuery: String = state.searchQuery,
+            libraryFilter: LibraryFilter = state.libraryFilter,
+            selectedLibraryItemId: String? = state.selectedLibraryItemId,
+            selectedRoot: com.xiyue.app.domain.PitchClass = state.selectedRoot,
+            selectedPlaybackMode: com.xiyue.app.domain.PlaybackMode = state.selectedPlaybackMode,
+            chordBlockEnabled: Boolean = state.chordBlockEnabled,
+            chordArpeggioEnabled: Boolean = state.chordArpeggioEnabled,
+            selectedTonePreset: com.xiyue.app.playback.TonePreset = state.selectedTonePreset,
+            soundMode: com.xiyue.app.playback.PlaybackSoundMode = state.soundMode,
+            loopEnabled: Boolean = state.loopEnabled,
+            loopDurationMs: Long = state.loopDurationMs,
+            isPlaying: Boolean = state.isPlaying,
+            isPaused: Boolean = state.isPaused,
+            bpm: Int = state.bpm,
+            isBpmInputVisible: Boolean = state.isBpmInputVisible,
+            isLibraryOverlayVisible: Boolean = state.isLibraryOverlayVisible,
+            displayMode: PlaybackDisplayMode = state.displayMode,
+            playbackSnapshot: com.xiyue.app.playback.PlaybackSnapshot = com.xiyue.app.playback.PlaybackSnapshot(),
+        ) = stateFactory.create(
+            searchQuery = searchQuery,
+            libraryFilter = libraryFilter,
+            selectedLibraryItemId = selectedLibraryItemId,
+            favoriteLibraryItemIds = favoriteLibraryItemIds,
+            recentLibraryItemIds = recentLibraryItemIds,
+            selectedRoot = selectedRoot,
+            selectedPlaybackMode = selectedPlaybackMode,
+            chordBlockEnabled = chordBlockEnabled,
+            chordArpeggioEnabled = chordArpeggioEnabled,
+            selectedTonePreset = selectedTonePreset,
+            soundMode = soundMode,
+            loopEnabled = loopEnabled,
+            loopDurationMs = loopDurationMs,
+            isPlaying = isPlaying,
+            isPaused = isPaused,
+            bpm = bpm,
+            isBpmInputVisible = isBpmInputVisible,
+            isLibraryOverlayVisible = isLibraryOverlayVisible,
+            displayMode = displayMode,
+            playbackSnapshot = playbackSnapshot,
+        )
+
         return when (action) {
-            is HomeAction.SelectLibraryItem -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
+            is HomeAction.SelectLibraryItem -> nextState(
                 selectedLibraryItemId = action.itemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = false,
-                displayMode = state.displayMode,
+                isPaused = state.isPaused,
+                isLibraryOverlayVisible = false,
             )
 
             is HomeAction.ToggleFavoriteLibraryItem -> {
@@ -39,165 +71,97 @@ class HomeReducer(
                     recentLibraryItemIds = recentLibraryItemIds,
                     selectedRoot = state.selectedRoot,
                     selectedPlaybackMode = state.selectedPlaybackMode,
+                    chordBlockEnabled = state.chordBlockEnabled,
+                    chordArpeggioEnabled = state.chordArpeggioEnabled,
+                    selectedTonePreset = state.selectedTonePreset,
+                    soundMode = state.soundMode,
                     loopEnabled = state.loopEnabled,
+                    loopDurationMs = state.loopDurationMs,
                     isPlaying = state.isPlaying,
+                    isPaused = state.isPaused,
                     bpm = state.bpm,
-                    isSelectorSheetVisible = state.isSelectorSheetVisible,
+                    isLibraryOverlayVisible = state.isLibraryOverlayVisible,
                     displayMode = state.displayMode,
                 )
             }
 
-            is HomeAction.UpdateSearchQuery -> stateFactory.create(
-                searchQuery = action.query,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
-            )
-
-            is HomeAction.UpdateLibraryFilter -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = action.filter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
-            )
-
-            is HomeAction.SelectRoot -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
+            is HomeAction.UpdateSearchQuery -> nextState(searchQuery = action.query)
+            HomeAction.ClearSearchQuery -> nextState(searchQuery = "")
+            is HomeAction.UpdateLibraryFilter -> nextState(libraryFilter = action.filter)
+            is HomeAction.SelectRoot -> nextState(
                 selectedRoot = action.root,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = state.isPaused,
             )
 
-            is HomeAction.UpdatePlaybackMode -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
+            is HomeAction.UpdatePlaybackMode -> nextState(
                 selectedPlaybackMode = action.mode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = state.isPaused,
             )
 
-            is HomeAction.UpdateBpm -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
+            is HomeAction.UpdateSoundMode -> nextState(
+                soundMode = action.mode,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.UpdateTonePreset -> nextState(
+                selectedTonePreset = action.preset,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.UpdateBpm -> nextState(
                 bpm = action.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = state.isPaused,
+                isBpmInputVisible = false,
             )
 
-            HomeAction.ToggleLoop -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
+            HomeAction.OpenBpmInput -> nextState(isBpmInputVisible = true)
+            HomeAction.CloseBpmInput -> nextState(isBpmInputVisible = false)
+            is HomeAction.SubmitBpmInput -> nextState(
+                bpm = action.bpm,
+                isPaused = state.isPaused,
+                isBpmInputVisible = false,
+            )
+
+            is HomeAction.UpdateLoopDuration -> nextState(
+                loopDurationMs = action.durationMs,
+                isPaused = state.isPaused,
+            )
+
+            HomeAction.ToggleChordBlock -> nextState(
+                chordBlockEnabled = !state.chordBlockEnabled,
+                isPaused = state.isPaused,
+            )
+
+            HomeAction.ToggleChordArpeggio -> nextState(
+                chordArpeggioEnabled = !state.chordArpeggioEnabled,
+                isPaused = state.isPaused,
+            )
+
+            HomeAction.ToggleLoop -> nextState(
                 loopEnabled = !state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = state.isPaused,
             )
-
-            HomeAction.ToggleSelectorSheet -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = !state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
-            )
-
-            HomeAction.TogglePlaybackDisplayMode -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
-                isPlaying = state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
+            HomeAction.ToggleLibraryOverlay -> nextState(isLibraryOverlayVisible = !state.isLibraryOverlayVisible)
+            HomeAction.TogglePlaybackDisplayMode -> nextState(
                 displayMode = when (state.displayMode) {
                     PlaybackDisplayMode.NOTE_FOCUS -> PlaybackDisplayMode.NOTE_AND_SEQUENCE
                     PlaybackDisplayMode.NOTE_AND_SEQUENCE -> PlaybackDisplayMode.NOTE_FOCUS
                 },
             )
 
-            HomeAction.TogglePlayback -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
+            HomeAction.TogglePlayback -> nextState(
                 isPlaying = !state.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = state.isPlaying,
             )
 
-            is HomeAction.SyncPlaybackSnapshot -> stateFactory.create(
-                searchQuery = state.searchQuery,
-                libraryFilter = state.libraryFilter,
-                selectedLibraryItemId = state.selectedLibraryItemId,
-                favoriteLibraryItemIds = favoriteLibraryItemIds,
-                recentLibraryItemIds = recentLibraryItemIds,
-                selectedRoot = state.selectedRoot,
-                selectedPlaybackMode = state.selectedPlaybackMode,
-                loopEnabled = state.loopEnabled,
+            HomeAction.StopPlayback -> nextState(
+                isPlaying = false,
+                isPaused = false,
+            )
+
+            is HomeAction.SyncPlaybackSnapshot -> nextState(
                 isPlaying = action.snapshot.isPlaying,
-                bpm = state.bpm,
-                isSelectorSheetVisible = state.isSelectorSheetVisible,
-                displayMode = state.displayMode,
+                isPaused = action.snapshot.isPaused,
                 playbackSnapshot = action.snapshot,
             )
         }

@@ -1,15 +1,52 @@
+# IDE
 .idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.iml
+
+# Gradle
 .gradle/
 .kotlin/
 build/
 **/build/
 local.properties
 captures/
-.DS_Store
-Thumbs.db
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.log
+.externalNativeBuild/
+.cxx/
+
+# Node.js
 node_modules/
 dist/
 coverage/
-.superpowers/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npm/
+.yarn/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
 .tmp/
 builds/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Superpowers
+.superpowers/

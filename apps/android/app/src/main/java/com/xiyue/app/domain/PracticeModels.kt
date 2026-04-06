@@ -31,10 +31,12 @@ enum class PitchClass(
 enum class PlaybackMode(
     val label: String,
 ) {
-    SCALE_ASCENDING("上行"),
-    SCALE_ASCENDING_DESCENDING("上下行"),
-    CHORD_BLOCK("齐奏"),
-    CHORD_ARPEGGIO_UP("琶音");
+    SCALE_ASCENDING("Ascending"),
+    SCALE_ASCENDING_DESCENDING("Asc / Desc"),
+    CHORD_BLOCK("Block"),
+    CHORD_ARPEGGIO_UP("Up"),
+    CHORD_ARPEGGIO_DOWN("Down"),
+    CHORD_ARPEGGIO_UP_DOWN("Up & Down");
 }
 
 data class PracticeLibraryItem(
@@ -53,6 +55,8 @@ data class PracticeSelection(
     val bpm: Int,
     val loopEnabled: Boolean,
     val playbackMode: PlaybackMode,
+    val chordBlockEnabled: Boolean = true,
+    val chordArpeggioEnabled: Boolean = false,
 )
 
 data class PlaybackStep(

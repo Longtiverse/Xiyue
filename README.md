@@ -1,5 +1,8 @@
 # 习乐（Xiyue）
 
+[![CI](https://github.com/YOUR_USERNAME/xiyue/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/xiyue/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/xiyue/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/xiyue)
+
 习乐（Xiyue）是一个面向音乐学习者的练习工具，当前以 **Android App** 为主，辅以 **HTML sandbox** 做内部自测与共享逻辑验证。
 
 ## 仓库结构
@@ -18,9 +21,18 @@
 - BPM 调节
 - 播放 / 停止
 - 循环播放
+- **播放中热切换**（无需停止即可切换音阶/根音）
 - 后台播放（通过前台服务保持应用切后台后继续播放）
 - 键盘高亮预览
 - 版本号 + 时间戳 APK 归档
+
+## 技术特性
+
+- **统一数据源**：音阶和和弦定义使用 JSON 格式，JavaScript 和 Android 共享
+- **模块化架构**：清晰的职责分离，易于维护和扩展
+- **自动化 CI/CD**：GitHub Actions 自动运行测试和构建
+- **代码质量保证**：ESLint + Prettier + 测试覆盖率
+- **环境配置化**：通过 .env 文件管理本地环境，无硬编码路径
 
 ## 应用功能简介
 
@@ -57,10 +69,50 @@
 
 ## 构建与测试
 
+### 环境配置
+
+首次构建前，请配置环境变量：
+
+1. 复制 `.env.example` 为 `.env`
+2. 根据你的本地环境修改配置：
+
+```bash
+# .env 示例
+JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot
+ANDROID_SDK_ROOT=C:\Users\YourName\AppData\Local\Android\Sdk
+GRADLE_USER_HOME=C:\Users\YourName\.gradle
+```
+
+如果不设置，构建脚本会尝试自动检测这些路径。
+
+### 安装依赖
+
+```bash
+npm install
+```
+
 ### 运行全部测试
 
 ```bash
 npm test
+```
+
+### 测试覆盖率
+
+```bash
+npm run test:coverage
+```
+
+### 代码检查
+
+```bash
+npm run lint
+```
+
+### 代码格式化
+
+```bash
+npm run format
 ```
 
 ### 仅运行 Android 测试
@@ -71,15 +123,16 @@ npm run test:android
 
 ### 构建 Android APK
 
+**Windows:**
 ```bash
 npm run build:android
 ```
 
-构建脚本会复用本机现有环境：
-
-- `D:\AndroidStudio\jbr`
-- `C:\Users\Alien\AppData\Local\Android\Sdk`
-- 已缓存的 Gradle 8.14
+**Linux/macOS:**
+```bash
+chmod +x scripts/build-android.sh
+bash scripts/build-android.sh
+```
 
 ## APK 版本号、时间戳与归档
 
@@ -110,5 +163,24 @@ xiyue-android-v{version}-latest-debug.apk
 
 详见：
 
-- `D:\Project\Xiyue\apps\android\README.md`
-- `D:\Project\Xiyue\docs\android-build-and-release.md`
+- `apps/android/README.md` - Android 应用详细说明
+- `docs/android-build-and-release.md` - Android 构建和发布指南
+- `docs/improvement-plan.md` - 项目改进方案
+- `docs/improvement-completion-report.md` - 改进完成报告
+
+## 贡献
+
+欢迎贡献代码！请确保：
+
+1. 运行 `npm run lint` 检查代码风格
+2. 运行 `npm test` 确保所有测试通过
+3. 运行 `npm run format` 格式化代码
+4. 提交前查看 CI 检查结果
+
+## 许可证
+
+[待添加]
+
+## 联系方式
+
+[待添加]
