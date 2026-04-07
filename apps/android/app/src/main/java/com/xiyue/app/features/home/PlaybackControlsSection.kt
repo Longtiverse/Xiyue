@@ -47,6 +47,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
+import com.xiyue.app.ui.components.AnimatedPlayButton
+import com.xiyue.app.ui.components.EnhancedBpmSlider
+import com.xiyue.app.ui.theme.DesignTokens
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -74,109 +77,42 @@ fun PlaybackControlsSection(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // 播放控制按钮（带图标）
+            // 播放控制按钮（使用新的动画组件）
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                FilledTonalButton(
+                // 使用新的 AnimatedPlayButton
+                AnimatedPlayButton(
+                    isPlaying = state.playButtonLabel.contains("Pause", ignoreCase = true),
                     onClick = { onAction(HomeAction.TogglePlayback) },
-                    modifier = Modifier.weight(1f).height(56.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    colors = ButtonDefaults.filledTonalButtonColors(
-                        containerColor = if (state.playButtonLabel.contains("Pause", ignoreCase = true)) {
-                            MaterialTheme.colorScheme.secondary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
-                        contentColor = if (state.playButtonLabel.contains("Pause", ignoreCase = true)) {
-                            MaterialTheme.colorScheme.onSecondary
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
-                        },
-                    ),
-                ) {
-                    Icon(
-                        imageVector = if (state.playButtonLabel.contains("Pause", ignoreCase = true)) {
-                            Icons.Default.Pause
-                        } else {
-                            Icons.Default.PlayArrow
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = state.playButtonLabel,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    modifier = Modifier.weight(1f)
+                )
                 
                 // 停止按钮始终显示，但在未播放时禁用
                 OutlinedButton(
                     onClick = { onAction(HomeAction.StopPlayback) },
                     enabled = state.showStopButton,
-                    modifier = Modifier.width(100.dp).height(56.dp),
-                    shape = RoundedCornerShape(28.dp)
+                    modifier = Modifier.width(100.dp).height(DesignTokens.ButtonHeight.xl),
+                    shape = RoundedCornerShape(DesignTokens.CornerRadius.xl)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Stop,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(DesignTokens.IconSize.sm)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(DesignTokens.Spacing.xs))
                     Text("Stop")
                 }
             }
 
-            // BPM 控制
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = "${pendingBpm.roundToInt()} BPM",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable { onAction(HomeAction.OpenBpmInput) },
-                )
-                
-                // 快捷预设
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf(60 to "Slow", 90 to "Medium", 120 to "Fast", 150 to "Very Fast").forEach { (bpm, label) ->
-                        FilterChip(
-                            selected = state.bpm == bpm,
-                            onClick = { 
-                                pendingBpm = bpm.toFloat()
-                                onAction(HomeAction.UpdateBpm(bpm))
-                            },
-                            label = { Text(label, style = MaterialTheme.typography.labelSmall) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
-                
-                // 滑块
-                Slider(
-                    value = pendingBpm,
-                    onValueChange = { pendingBpm = it },
-                    onValueChangeFinished = {
-                        val nextBpm = pendingBpm.roundToInt()
-                        if (nextBpm != state.bpm) {
-                            onAction(HomeAction.UpdateBpm(nextBpm))
-                        }
-                    },
-                    valueRange = 40f..220f,
-                    steps = 35
-                )
-            }
+            // BPM 控制（使用新的增强滑块）
+            EnhancedBpmSlider(
+                value = state.bpm,
+                onValueChange = { onAction(HomeAction.UpdateBpm(it)) },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             // 其他控制选项
             FlowRow(

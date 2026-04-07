@@ -47,6 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.xiyue.app.ui.components.SwipeableRootNoteSelector
+import com.xiyue.app.ui.components.AnimatedLibraryItem
+import com.xiyue.app.ui.theme.DesignTokens
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -62,8 +65,8 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             // 播放显示区域（始终显示）
             PlaybackDisplaySection(
@@ -79,11 +82,30 @@ fun HomeScreen(
                 onAction = onAction,
             )
             
-            // 根音选择（横向滚动）
-            RootNoteSelector(
-                selectedRoot = state.selectedRoot,
-                onAction = onAction,
-            )
+            // 根音选择（使用新的滑动选择器）
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                ),
+                shape = MaterialTheme.shapes.large,
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = DesignTokens.Spacing.sm),
+                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)
+                ) {
+                    Text(
+                        text = "Root Note",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = DesignTokens.Spacing.md)
+                    )
+                    SwipeableRootNoteSelector(
+                        selectedRoot = state.selectedRoot,
+                        onRootChange = { onAction(HomeAction.SelectRoot(it)) }
+                    )
+                }
+            }
             
             // 播放控制
             PlaybackControlsSection(
@@ -102,7 +124,7 @@ private fun CompactLibrarySelector(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
     ) {
         OutlinedTextField(
             value = state.searchQuery,
@@ -123,7 +145,7 @@ private fun CompactLibrarySelector(
         // 筛选器
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm, Alignment.CenterHorizontally)
         ) {
             LibraryFilter.entries.forEach { filter ->
                 FilterChip(
@@ -149,91 +171,28 @@ private fun CompactLibrarySelector(
                 text = "${state.libraryItems.size} results",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 4.dp)
+                modifier = Modifier.padding(horizontal = DesignTokens.Spacing.xs)
             )
         }
         
-        // 音阶/和弦横向滚动列表
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(state.libraryItems) { item ->
-                FilterChip(
-                    selected = item.selected,
-                    onClick = { onAction(HomeAction.SelectLibraryItem(item.id)) },
-                    label = { 
-                        Text(
-                            item.label,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = if (item.selected) FontWeight.Bold else FontWeight.Normal
-                        ) 
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun RootNoteSelector(
-    selectedRoot: com.xiyue.app.domain.PitchClass,
-    onAction: (HomeAction) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
-        shape = MaterialTheme.shapes.large,
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = "Root Note",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            // 音阶/和弦横向滚动列表（使用新的动画组件）
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)
             ) {
-                items(com.xiyue.app.domain.PitchClass.entries) { pitchClass ->
-                    val isSelected = pitchClass == selectedRoot
-                    
+                items(state.libraryItems) { item ->
                     FilterChip(
-                        selected = isSelected,
-                        onClick = { onAction(HomeAction.SelectRoot(pitchClass)) },
+                        selected = item.selected,
+                        onClick = { onAction(HomeAction.SelectLibraryItem(item.id)) },
                         label = { 
                             Text(
-                                pitchClass.label,
-                                style = if (isSelected) {
-                                    MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                                } else {
-                                    MaterialTheme.typography.bodyMedium
-                                }
+                                item.label,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (item.selected) FontWeight.Bold else FontWeight.Normal
                             ) 
                         }
                     )
                 }
             }
-        }
     }
-}
-
-private fun previousRoot(selectedRoot: com.xiyue.app.domain.PitchClass): com.xiyue.app.domain.PitchClass {
-    val entries = com.xiyue.app.domain.PitchClass.entries
-    val currentIndex = entries.indexOf(selectedRoot).coerceAtLeast(0)
-    return entries[(currentIndex - 1 + entries.size) % entries.size]
-}
-
-private fun nextRoot(selectedRoot: com.xiyue.app.domain.PitchClass): com.xiyue.app.domain.PitchClass {
-    val entries = com.xiyue.app.domain.PitchClass.entries
-    val currentIndex = entries.indexOf(selectedRoot).coerceAtLeast(0)
-    return entries[(currentIndex + 1) % entries.size]
 }
