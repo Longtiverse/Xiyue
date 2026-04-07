@@ -1,156 +1,422 @@
-﻿{
+{
   "scales": [
     {
       "id": "Major",
       "label": "Major",
+      "kind": "SCALE",
       "intervals": [0, 2, 4, 5, 7, 9, 11, 12],
-      "aliases": ["ionian", "major scale", "maj"]
+      "aliases": ["ionian", "major scale", "maj"],
+      "category": "diatonic"
     },
     {
       "id": "NaturalMinor",
       "label": "Natural Minor",
+      "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 8, 10, 12],
-      "aliases": ["aeolian", "minor scale", "nat minor"]
+      "aliases": ["aeolian", "minor scale", "nat minor"],
+      "category": "diatonic"
     },
     {
       "id": "HarmonicMinor",
       "label": "Harmonic Minor",
+      "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 8, 11, 12],
-      "aliases": ["harmonic minor scale", "harm minor"]
+      "aliases": ["harmonic minor scale", "harm minor"],
+      "category": "diatonic"
     },
     {
       "id": "MelodicMinor",
       "label": "Melodic Minor",
+      "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 9, 11, 12],
-      "aliases": ["melodic minor scale", "mel minor"]
+      "aliases": ["melodic minor scale", "mel minor"],
+      "category": "diatonic"
     },
     {
       "id": "PentatonicMajor",
       "label": "Pentatonic Major",
+      "kind": "SCALE",
       "intervals": [0, 2, 4, 7, 9, 12],
-      "aliases": ["major pentatonic", "pentatonic", "penta major"]
+      "aliases": ["major pentatonic", "pentatonic", "penta major"],
+      "category": "pentatonic"
     },
     {
       "id": "PentatonicMinor",
       "label": "Pentatonic Minor",
+      "kind": "SCALE",
       "intervals": [0, 3, 5, 7, 10, 12],
-      "aliases": ["minor pentatonic", "penta minor"]
+      "aliases": ["minor pentatonic", "penta minor"],
+      "category": "pentatonic"
     },
     {
       "id": "Blues",
       "label": "Blues",
+      "kind": "SCALE",
       "intervals": [0, 3, 5, 6, 7, 10, 12],
-      "aliases": ["blues scale", "major blues", "minor blues"]
+      "aliases": ["blues scale", "major blues", "minor blues"],
+      "category": "blues"
+    },
+    {
+      "id": "MajorBlues",
+      "label": "Major Blues",
+      "kind": "SCALE",
+      "intervals": [0, 2, 3, 4, 7, 9, 12],
+      "aliases": ["blues major", "major blues scale"],
+      "category": "blues"
+    },
+    {
+      "id": "MinorBlues",
+      "label": "Minor Blues",
+      "kind": "SCALE",
+      "intervals": [0, 3, 5, 6, 7, 10, 12],
+      "aliases": ["blues minor", "minor blues scale"],
+      "category": "blues"
     },
     {
       "id": "Dorian",
       "label": "Dorian",
+      "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 9, 10, 12],
-      "aliases": ["dorian mode"]
+      "aliases": ["dorian mode"],
+      "category": "jazz"
     },
     {
       "id": "Mixolydian",
       "label": "Mixolydian",
+      "kind": "SCALE",
       "intervals": [0, 2, 4, 5, 7, 9, 10, 12],
-      "aliases": ["mixolydian mode", "dominant scale"]
+      "aliases": ["mixolydian mode", "dominant scale"],
+      "category": "jazz"
     },
     {
       "id": "Lydian",
       "label": "Lydian",
+      "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 7, 9, 11, 12],
-      "aliases": ["lydian mode"]
+      "aliases": ["lydian mode"],
+      "category": "jazz"
+    },
+    {
+      "id": "LydianDominant",
+      "label": "Lydian Dominant",
+      "kind": "SCALE",
+      "intervals": [0, 2, 4, 6, 7, 9, 10, 12],
+      "aliases": ["lydian dominant mode", "lydian b7"],
+      "category": "jazz"
     },
     {
       "id": "Phrygian",
       "label": "Phrygian",
+      "kind": "SCALE",
       "intervals": [0, 1, 3, 5, 7, 8, 10, 12],
-      "aliases": ["phrygian mode"]
+      "aliases": ["phrygian mode"],
+      "category": "exotic"
+    },
+    {
+      "id": "PhrygianDominant",
+      "label": "Phrygian Dominant",
+      "kind": "SCALE",
+      "intervals": [0, 1, 4, 5, 7, 8, 10, 12],
+      "aliases": ["spanish phrygian", "phrygian major", "freygish"],
+      "category": "exotic"
     },
     {
       "id": "Locrian",
       "label": "Locrian",
+      "kind": "SCALE",
       "intervals": [0, 1, 3, 5, 6, 8, 10, 12],
-      "aliases": ["locrian mode"]
+      "aliases": ["locrian mode"],
+      "category": "exotic"
     },
     {
       "id": "WholeTone",
       "label": "Whole Tone",
+      "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 8, 10, 12],
-      "aliases": ["whole tone scale"]
+      "aliases": ["whole tone scale"],
+      "category": "exotic"
+    },
+    {
+      "id": "Chromatic",
+      "label": "Chromatic",
+      "kind": "SCALE",
+      "intervals": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "aliases": ["chromatic scale", "twelve tone"],
+      "category": "exotic"
+    },
+    {
+      "id": "HungarianMinor",
+      "label": "Hungarian Minor",
+      "kind": "SCALE",
+      "intervals": [0, 2, 3, 6, 7, 8, 11, 12],
+      "aliases": ["hungarian minor scale", "gypsy minor"],
+      "category": "exotic"
+    },
+    {
+      "id": "Byzantine",
+      "label": "Byzantine",
+      "kind": "SCALE",
+      "intervals": [0, 1, 4, 5, 7, 8, 11, 12],
+      "aliases": ["byzantine scale", "arabic", "double harmonic major"],
+      "category": "exotic"
+    },
+    {
+      "id": "Octatonic",
+      "label": "Octatonic",
+      "kind": "SCALE",
+      "intervals": [0, 2, 3, 5, 6, 8, 9, 11, 12],
+      "aliases": ["diminished scale", "whole-half", "octatonic diminished"],
+      "category": "jazz"
+    },
+    {
+      "id": "Prometheus",
+      "label": "Prometheus",
+      "kind": "SCALE",
+      "intervals": [0, 2, 4, 6, 9, 10, 12],
+      "aliases": ["prometheus scale"],
+      "category": "exotic"
+    },
+    {
+      "id": "Enigmatic",
+      "label": "Enigmatic",
+      "kind": "SCALE",
+      "intervals": [0, 1, 4, 6, 8, 10, 11, 12],
+      "aliases": ["enigmatic scale", "verdi's scale"],
+      "category": "exotic"
     }
   ],
   "chords": [
     {
       "id": "MajorTriad",
       "label": "Major Triad",
+      "kind": "CHORD",
       "intervals": [0, 4, 7],
-      "aliases": ["maj triad", "major", "M"]
+      "aliases": ["maj triad", "major", "M"],
+      "category": "triad"
     },
     {
       "id": "MinorTriad",
       "label": "Minor Triad",
+      "kind": "CHORD",
       "intervals": [0, 3, 7],
-      "aliases": ["min triad", "minor", "m"]
+      "aliases": ["min triad", "minor", "m"],
+      "category": "triad"
     },
     {
       "id": "DiminishedTriad",
       "label": "Diminished",
+      "kind": "CHORD",
       "intervals": [0, 3, 6],
-      "aliases": ["dim", "diminished triad", "diminished"]
+      "aliases": ["dim", "diminished triad", "diminished"],
+      "category": "triad"
     },
     {
       "id": "AugmentedTriad",
       "label": "Augmented",
+      "kind": "CHORD",
       "intervals": [0, 4, 8],
-      "aliases": ["aug", "augmented triad", "augmented"]
-    },
-    {
-      "id": "Maj7",
-      "label": "Maj7",
-      "intervals": [0, 4, 7, 11],
-      "aliases": ["major 7", "maj 7", "M7"]
-    },
-    {
-      "id": "Min7",
-      "label": "Minor 7",
-      "intervals": [0, 3, 7, 10],
-      "aliases": ["minor 7", "min 7", "m7"]
-    },
-    {
-      "id": "Dom7",
-      "label": "Dom7",
-      "intervals": [0, 4, 7, 10],
-      "aliases": ["7", "dominant 7", "dom 7"]
-    },
-    {
-      "id": "Min7b5",
-      "label": "Half-Diminished 7",
-      "intervals": [0, 3, 6, 10],
-      "aliases": ["half diminished", "m7b5", "half-dim", "HalfDim7"]
-    },
-    {
-      "id": "Dim7",
-      "label": "Dim7",
-      "intervals": [0, 3, 6, 9],
-      "aliases": ["diminished 7", "dim7"]
-    },
-    {
-      "id": "Add9",
-      "label": "Add9",
-      "intervals": [0, 4, 7, 14],
-      "aliases": ["add 9", "add9"]
+      "aliases": ["aug", "augmented triad", "augmented"],
+      "category": "triad"
     },
     {
       "id": "Sus2",
       "label": "Sus2",
+      "kind": "CHORD",
       "intervals": [0, 2, 7],
-      "aliases": ["suspended 2", "sus2"]
+      "aliases": ["suspended 2", "sus2"],
+      "category": "suspended"
     },
     {
       "id": "Sus4",
       "label": "Sus4",
+      "kind": "CHORD",
       "intervals": [0, 5, 7],
-      "aliases": ["suspended 4", "sus4"]
+      "aliases": ["suspended 4", "sus4"],
+      "category": "suspended"
+    },
+    {
+      "id": "Sus2Add9",
+      "label": "Sus2(add9)",
+      "kind": "CHORD",
+      "intervals": [0, 2, 7, 14],
+      "aliases": ["sus2 add9", "suspended 2 add 9"],
+      "category": "suspended"
+    },
+    {
+      "id": "Sus4Add9",
+      "label": "Sus4(add9)",
+      "kind": "CHORD",
+      "intervals": [0, 5, 7, 14],
+      "aliases": ["sus4 add9", "suspended 4 add 9"],
+      "category": "suspended"
+    },
+    {
+      "id": "Maj7",
+      "label": "Maj7",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 11],
+      "aliases": ["major 7", "maj 7", "M7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Min7",
+      "label": "Minor 7",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 10],
+      "aliases": ["minor 7", "min 7", "m7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Dom7",
+      "label": "Dom7",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10],
+      "aliases": ["7", "dominant 7", "dom 7"],
+      "category": "seventh"
+    },
+    {
+      "id": "MinMaj7",
+      "label": "Minor Major 7",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 11],
+      "aliases": ["mM7", "minor major 7", "min maj 7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Min7b5",
+      "label": "Half-Diminished 7",
+      "kind": "CHORD",
+      "intervals": [0, 3, 6, 10],
+      "aliases": ["half diminished", "m7b5", "half-dim", "HalfDim7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Dim7",
+      "label": "Dim7",
+      "kind": "CHORD",
+      "intervals": [0, 3, 6, 9],
+      "aliases": ["diminished 7", "dim7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Aug7",
+      "label": "Augmented 7",
+      "kind": "CHORD",
+      "intervals": [0, 4, 8, 10],
+      "aliases": ["aug7", "augmented 7", "+7"],
+      "category": "seventh"
+    },
+    {
+      "id": "Maj6",
+      "label": "Major 6",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 9],
+      "aliases": ["6", "major 6th", "M6"],
+      "category": "seventh"
+    },
+    {
+      "id": "Min6",
+      "label": "Minor 6",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 9],
+      "aliases": ["m6", "minor 6th", "min 6"],
+      "category": "seventh"
+    },
+    {
+      "id": "Add9",
+      "label": "Add9",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 14],
+      "aliases": ["add 9", "add9"],
+      "category": "extended"
+    },
+    {
+      "id": "Maj9",
+      "label": "Major 9",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 11, 14],
+      "aliases": ["maj9", "major 9th", "M9"],
+      "category": "extended"
+    },
+    {
+      "id": "Min9",
+      "label": "Minor 9",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 10, 14],
+      "aliases": ["m9", "minor 9th", "min 9"],
+      "category": "extended"
+    },
+    {
+      "id": "Dom9",
+      "label": "Dominant 9",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10, 14],
+      "aliases": ["9", "dominant 9th", "dom 9"],
+      "category": "extended"
+    },
+    {
+      "id": "Maj11",
+      "label": "Major 11",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 11, 14, 17],
+      "aliases": ["maj11", "major 11th", "M11"],
+      "category": "extended"
+    },
+    {
+      "id": "Min11",
+      "label": "Minor 11",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 10, 14, 17],
+      "aliases": ["m11", "minor 11th", "min 11"],
+      "category": "extended"
+    },
+    {
+      "id": "Dom11",
+      "label": "Dominant 11",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10, 14, 17],
+      "aliases": ["11", "dominant 11th", "dom 11"],
+      "category": "extended"
+    },
+    {
+      "id": "Maj13",
+      "label": "Major 13",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 11, 14, 17, 21],
+      "aliases": ["maj13", "major 13th", "M13"],
+      "category": "extended"
+    },
+    {
+      "id": "Min13",
+      "label": "Minor 13",
+      "kind": "CHORD",
+      "intervals": [0, 3, 7, 10, 14, 17, 21],
+      "aliases": ["m13", "minor 13th", "min 13"],
+      "category": "extended"
+    },
+    {
+      "id": "Dom13",
+      "label": "Dominant 13",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10, 14, 17, 21],
+      "aliases": ["13", "dominant 13th", "dom 13"],
+      "category": "extended"
+    },
+    {
+      "id": "Dom7b9",
+      "label": "Dominant 7(b9)",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10, 13],
+      "aliases": ["7b9", "dominant 7 flat 9", "dom 7 b9"],
+      "category": "extended"
+    },
+    {
+      "id": "Dom7Sharp9",
+      "label": "Dominant 7(#9)",
+      "kind": "CHORD",
+      "intervals": [0, 4, 7, 10, 15],
+      "aliases": ["7#9", "dominant 7 sharp 9", "hendrix chord"],
+      "category": "extended"
     }
   ]
 }
