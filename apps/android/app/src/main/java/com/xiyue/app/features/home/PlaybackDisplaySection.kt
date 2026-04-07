@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.xiyue.app.ui.theme.DesignTokens
 
 
 
@@ -59,9 +60,9 @@ fun PlaybackDisplaySection(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.md)
                 .animateContentSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // 极简模式：只显示当前音符
@@ -85,7 +86,7 @@ fun PlaybackDisplaySection(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 40.dp),
+                            .padding(vertical = DesignTokens.Spacing.xxl),
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center,
                     )
@@ -149,7 +150,7 @@ fun PlaybackDisplaySection(
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 20.dp),
+                                .padding(horizontal = DesignTokens.Spacing.lg, vertical = DesignTokens.Spacing.lg),
                             color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Center,
                         )
@@ -165,8 +166,8 @@ fun PlaybackDisplaySection(
                     label = "sequence-notes",
                 ) { sequenceNotes ->
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm, Alignment.CenterHorizontally),
+                        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
                     ) {
                         sequenceNotes.forEach { note ->
                             Surface(
@@ -179,7 +180,7 @@ fun PlaybackDisplaySection(
                             ) {
                                 Text(
                                     text = note.label,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    modifier = Modifier.padding(horizontal = DesignTokens.Spacing.sm, vertical = DesignTokens.Spacing.sm),
                                     color = if (note.active) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
@@ -266,7 +267,7 @@ private fun PianoKeyboardDisplay(
                             .height(whiteKeyHeight.dp)
                             .background(
                                 color = keyColor,
-                                shape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp),
+                                shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
                             ),
                         contentAlignment = Alignment.BottomCenter,
                     ) {
@@ -275,7 +276,7 @@ private fun PianoKeyboardDisplay(
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = if (key.active) FontWeight.Bold else FontWeight.Normal,
                             color = if (key.active) Color.White else Color(0xFF888888),
-                            modifier = Modifier.padding(bottom = 4.dp),
+                            modifier = Modifier.padding(bottom = DesignTokens.Spacing.xs),
                         )
                     }
                 }
@@ -310,7 +311,7 @@ private fun PianoKeyboardDisplay(
                         .height(blackKeyHeight.dp)
                         .background(
                             color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = 3.dp, bottomEnd = 3.dp),
+                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
                         ),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
@@ -319,7 +320,7 @@ private fun PianoKeyboardDisplay(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (key.active) FontWeight.Bold else FontWeight.Normal,
                         color = if (key.active) Color.White else Color(0xFFAAAAAA),
-                        modifier = Modifier.padding(bottom = 3.dp),
+                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.xs),
                     )
                 }
             }

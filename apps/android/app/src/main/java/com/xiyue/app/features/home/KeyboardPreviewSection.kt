@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.xiyue.app.ui.theme.DesignTokens
 
 @Composable
 fun KeyboardPreviewSection(
@@ -28,8 +29,8 @@ fun KeyboardPreviewSection(
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(DesignTokens.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
             Text(text = state.title, style = MaterialTheme.typography.titleMedium)
             Text(
@@ -79,7 +80,7 @@ private fun PianoKeyboard(
                         .height(whiteKeyHeight.dp)
                         .background(
                             color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp),
+                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
                         ),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
@@ -87,7 +88,7 @@ private fun PianoKeyboard(
                         text = key.label,
                         style = MaterialTheme.typography.labelSmall,
                         color = Color(0xFF666666),
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
                     )
                 }
             }
@@ -112,7 +113,7 @@ private fun PianoKeyboard(
                         .height(blackKeyHeight.dp)
                         .background(
                             color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp),
+                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
                         ),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
@@ -120,7 +121,7 @@ private fun PianoKeyboard(
                         text = key.label,
                         style = MaterialTheme.typography.labelSmall,
                         color = Color(0xFFCCCCCC),
-                        modifier = Modifier.padding(bottom = 6.dp),
+                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
                     )
                 }
             } else {
