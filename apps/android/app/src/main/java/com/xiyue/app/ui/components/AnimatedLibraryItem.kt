@@ -94,15 +94,7 @@ fun AnimatedLibraryItem(
                 )
             }
             
-            if (isSelected) {
-                AnimatedIcon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Check,
-                    contentDescription = "Selected",
-                    isActive = true,
-                    size = DesignTokens.IconSize.md,
-                    tint = contentColor
-                )
-            }
+            // Selected indicator removed for now - can be added back with proper icon
         }
     }
 }
