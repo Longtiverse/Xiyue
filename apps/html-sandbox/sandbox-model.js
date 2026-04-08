@@ -8,7 +8,7 @@ import {
   getDefaultPlaybackMode,
   getSupportedPlaybackModes,
   searchLibraryItems,
-} from '../../packages/music-core/src/index.js';
+} from '#music-core';
 
 const DEFAULT_STATE = {
   kindFilter: 'all',

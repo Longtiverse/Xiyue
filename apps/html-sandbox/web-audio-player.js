@@ -2,9 +2,68 @@ function getAudioContextClass(globalObject) {
   return globalObject.AudioContext || globalObject.webkitAudioContext || null;
 }
 
-function connectNoteGraph(audioContext, destination, event, startTime, volume) {
-  const oscillator = audioContext.createOscillator();
-  const noteGain = audioContext.createGain();
+// AudioNode Pool for reusing oscillator and gain nodes
+class AudioNodePool {
+  constructor(audioContext, maxSize = 50) {
+    this.audioContext = audioContext;
+    this.maxSize = maxSize;
+    this.availableOscillators = [];
+    this.availableGains = [];
+    this.inUse = new Set();
+  }
+
+  acquireOscillator() {
+    if (this.availableOscillators.length > 0) {
+      return this.availableOscillators.pop();
+    }
+    return this.audioContext.createOscillator();
+  }
+
+  acquireGain() {
+    if (this.availableGains.length > 0) {
+      return this.availableGains.pop();
+    }
+    return this.audioContext.createGain();
+  }
+
+  releaseOscillator(oscillator) {
+    if (this.availableOscillators.length < this.maxSize) {
+      try {
+        oscillator.disconnect();
+        this.availableOscillators.push(oscillator);
+      } catch {
+        // Ignore disconnect errors
+      }
+    }
+  }
+
+  releaseGain(gain) {
+    if (this.availableGains.length < this.maxSize) {
+      try {
+        gain.disconnect();
+        this.availableGains.push(gain);
+      } catch {
+        // Ignore disconnect errors
+      }
+    }
+  }
+
+  markInUse(nodeId) {
+    this.inUse.add(nodeId);
+  }
+
+  markReleased(nodeId) {
+    this.inUse.delete(nodeId);
+  }
+
+  releaseAll() {
+    this.inUse.clear();
+  }
+}
+
+function connectNoteGraph(audioContext, destination, event, startTime, volume, nodePool) {
+  const oscillator = nodePool.acquireOscillator();
+  const noteGain = nodePool.acquireGain();
   const attackSeconds = Math.min(0.02, event.durationMs / 1000 / 2);
   const releaseSeconds = Math.min(0.04, event.durationMs / 1000 / 2);
   const noteStartTime = startTime + event.startMs / 1000;
@@ -24,12 +83,25 @@ function connectNoteGraph(audioContext, destination, event, startTime, volume) {
   oscillator.start(noteStartTime);
   oscillator.stop(noteEndTime + 0.02);
 
-  return { oscillator, noteGain };
+  const nodeId = Math.random().toString(36).substr(2, 9);
+  nodePool.markInUse(nodeId);
+
+  return { 
+    oscillator, 
+    noteGain, 
+    nodeId,
+    release() {
+      nodePool.markReleased(nodeId);
+      nodePool.releaseOscillator(oscillator);
+      nodePool.releaseGain(noteGain);
+    }
+  };
 }
 
 export function createWebAudioPlayer({ globalObject = globalThis } = {}) {
   const AudioContextClass = getAudioContextClass(globalObject);
   let context = null;
+  let nodePool = null;
 
   function ensureContext() {
     if (!AudioContextClass) {
@@ -38,6 +110,7 @@ export function createWebAudioPlayer({ globalObject = globalThis } = {}) {
 
     if (!context) {
       context = new AudioContextClass();
+      nodePool = new AudioNodePool(context, 50);
     }
 
     return context;
@@ -64,15 +137,18 @@ export function createWebAudioPlayer({ globalObject = globalThis } = {}) {
       masterGain.connect(audioContext.destination);
 
       events.forEach((event) => {
-        audioNodes.push(connectNoteGraph(audioContext, masterGain, event, startTime, 1));
+        audioNodes.push(connectNoteGraph(audioContext, masterGain, event, startTime, 1, nodePool));
       });
 
       return {
         stop() {
-          audioNodes.forEach(({ oscillator, noteGain }) => {
-            oscillator.stop(audioContext.currentTime);
-            oscillator.disconnect();
-            noteGain.disconnect();
+          audioNodes.forEach((node) => {
+            try {
+              node.oscillator.stop(audioContext.currentTime);
+              node.release();
+            } catch {
+              // Ignore errors on stop
+            }
           });
           masterGain.disconnect();
         },
@@ -85,6 +161,9 @@ export function createWebAudioPlayer({ globalObject = globalThis } = {}) {
     __debug: {
       get context() {
         return context;
+      },
+      get pool() {
+        return nodePool;
       },
     },
   };

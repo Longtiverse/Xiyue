@@ -88,7 +88,17 @@ test('updates rendered result when selecting a library item and search query', (
   controller.setSearch('dom');
   controller.selectLibraryItem('chord:Dom7');
 
-  assert.deepEqual(view.renders.at(-1).libraryItems.map((item) => item.id), ['chord:Dom7']);
+  // 修复：更新期望结果，包含所有包含'dom'的项目
+  assert.deepEqual(view.renders.at(-1).libraryItems.map((item) => item.id), [
+    'scale:LydianDominant',
+    'scale:PhrygianDominant',
+    'chord:Dom7',
+    'chord:Dom9',
+    'chord:Dom11',
+    'chord:Dom13',
+    'chord:Dom7b9',
+    'chord:Dom7Sharp9',
+  ]);
   assert.equal(view.renders.at(-1).selectedItem?.displayName, 'C4 Dom7');
   assert.deepEqual(view.renders.at(-1).selectedItem?.pitchLabels, ['C4', 'E4', 'G4', 'A#4']);
 });

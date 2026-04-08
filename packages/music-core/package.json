@@ -1,0 +1,38 @@
+{
+  "name": "@xiyue/music-core",
+  "version": "0.1.0",
+  "description": "Core music theory and playback library for Xiyue",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./theory": {
+      "import": "./src/theory.js"
+    },
+    "./patterns": {
+      "import": "./src/patterns.js"
+    },
+    "./library": {
+      "import": "./src/library.js"
+    },
+    "./playback": {
+      "import": "./src/playback.js"
+    },
+    "./highlight": {
+      "import": "./src/highlight.js"
+    }
+  },
+  "scripts": {
+    "test": "node --test --test-isolation=none test/*.test.js"
+  },
+  "keywords": [
+    "music",
+    "theory",
+    "guzheng",
+    "playback",
+    "chinese-music"
+  ],
+  "license": "MIT"
+}

@@ -3,25 +3,33 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#music-core": "./packages/music-core/src/index.js"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "sandbox": "node scripts/html-sandbox-server.js",
     "sandbox:open": "node scripts/open-html-sandbox.js",
     "build:android": "powershell -ExecutionPolicy Bypass -File scripts/build-android.ps1",
-    "codex:next": "powershell -ExecutionPolicy Bypass -File scripts/codex-next-iteration.ps1 -Iterations 1",
-    "codex:loop": "powershell -ExecutionPolicy Bypass -File scripts/codex-next-iteration.ps1 -Iterations 3",
     "test": "npm run test:music-core && npm run test:html-sandbox && npm run test:android",
     "test:android": "node --test --test-isolation=none apps/android/test/*.test.js",
     "test:music-core": "node --test --test-isolation=none packages/music-core/test/*.test.js",
     "test:html-sandbox": "node --test --test-isolation=none apps/html-sandbox/test/*.test.js",
     "test:coverage": "c8 npm test",
     "lint": "eslint packages apps/html-sandbox apps/android/test scripts",
+    "lint:fix": "eslint --fix packages apps/html-sandbox apps/android/test scripts",
     "format": "prettier --write \"**/*.{js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,json,md}\""
+    "format:check": "prettier --check \"**/*.{js,json,md}\"",
+    "typecheck": "cd packages/music-core && npx tsc --noEmit"
   },
   "devDependencies": {
     "c8": "^11.0.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "typescript": "^5.4.0"
   }
 }

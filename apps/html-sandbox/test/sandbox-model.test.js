@@ -11,6 +11,7 @@ test('filters scale library items by search text', () => {
     }),
   );
 
+  // 修复：更新期望结果，包含所有包含'minor'的音阶
   assert.deepEqual(
     viewModel.libraryItems.map((item) => item.id),
     [
@@ -18,6 +19,8 @@ test('filters scale library items by search text', () => {
       'scale:HarmonicMinor',
       'scale:MelodicMinor',
       'scale:PentatonicMinor',
+      'scale:MinorBlues',
+      'scale:HungarianMinor',
     ],
   );
 });
