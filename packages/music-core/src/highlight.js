@@ -8,7 +8,9 @@ export function createHighlightEvent(pitch, startMs, durationMs, highlightType =
 }
 
 export function generateHighlightEvents(noteEvents, highlightType = 'active') {
-  return noteEvents.map((event) => createHighlightEvent(event.pitch, event.startMs, event.durationMs, highlightType));
+  return noteEvents.map((event) =>
+    createHighlightEvent(event.pitch, event.startMs, event.durationMs, highlightType)
+  );
 }
 
 export function getActivePitchesAtTime(events, currentMs) {

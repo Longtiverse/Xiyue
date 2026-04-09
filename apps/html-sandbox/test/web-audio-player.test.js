@@ -108,7 +108,7 @@ test('schedules oscillators and gain envelopes for note events', () => {
         velocity: 1,
       },
     ],
-    { volume: 0.4 },
+    { volume: 0.4 }
   );
 
   const context = player.__debug.context;
@@ -130,7 +130,11 @@ test('schedules oscillators and gain envelopes for note events', () => {
 
   session.setVolume(0.2);
 
-  assert.deepEqual(masterGain.gain.calls.at(-1), { method: 'setValueAtTime', value: 0.2, time: 10 });
+  assert.deepEqual(masterGain.gain.calls.at(-1), {
+    method: 'setValueAtTime',
+    value: 0.2,
+    time: 10,
+  });
 });
 
 test('stops all oscillators and disconnects gains', () => {
@@ -149,7 +153,7 @@ test('stops all oscillators and disconnects gains', () => {
         velocity: 1,
       },
     ],
-    { volume: 0.3 },
+    { volume: 0.3 }
   );
 
   const context = player.__debug.context;

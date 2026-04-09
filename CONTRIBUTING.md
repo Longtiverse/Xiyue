@@ -32,7 +32,9 @@
 你可以通过以下方式贡献：
 
 ### 🐛 报告 Bug
+
 发现问题？请[创建 Issue](https://github.com/YOUR_USERNAME/xiyue/issues/new)，包含：
+
 - 问题描述
 - 复现步骤
 - 预期行为
@@ -40,20 +42,26 @@
 - 环境信息（Android 版本、设备型号等）
 
 ### 💡 提出新功能
+
 有好想法？请先[创建 Issue](https://github.com/YOUR_USERNAME/xiyue/issues/new) 讨论：
+
 - 功能描述
 - 使用场景
 - 可能的实现方案
 
 ### 📝 改进文档
+
 文档永远可以更好：
+
 - 修正错别字
 - 补充说明
 - 添加示例
 - 翻译文档
 
 ### 💻 贡献代码
+
 修复 Bug 或实现新功能：
+
 - Fork 项目
 - 创建分支
 - 编写代码
@@ -79,6 +87,7 @@ cp .env.example .env
 ```
 
 编辑 `.env`：
+
 ```bash
 JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot
 ANDROID_SDK_ROOT=C:\Users\YourName\AppData\Local\Android\Sdk
@@ -111,16 +120,19 @@ npm run build:android
 我们使用 ESLint + Prettier 确保代码风格一致。
 
 **运行检查**:
+
 ```bash
 npm run lint
 ```
 
 **自动格式化**:
+
 ```bash
 npm run format
 ```
 
 **规则**:
+
 - 使用 ES Modules (`import`/`export`)
 - 使用单引号
 - 每行最多 100 字符
@@ -128,6 +140,7 @@ npm run format
 - 函数和变量使用驼峰命名
 
 **示例**:
+
 ```javascript
 // ✅ 好的
 export function generateScalePitches(rootNoteName, scaleType, octave = 4) {
@@ -136,9 +149,9 @@ export function generateScalePitches(rootNoteName, scaleType, octave = 4) {
 }
 
 // ❌ 不好的
-export function generate_scale_pitches(rootNoteName,scaleType,octave=4){
-    const intervals=SCALE_INTERVALS[scaleType]
-    return intervals.map(interval=>transposePitch(rootPitch,interval))
+export function generate_scale_pitches(rootNoteName, scaleType, octave = 4) {
+  const intervals = SCALE_INTERVALS[scaleType];
+  return intervals.map((interval) => transposePitch(rootPitch, interval));
 }
 ```
 
@@ -147,6 +160,7 @@ export function generate_scale_pitches(rootNoteName,scaleType,octave=4){
 遵循 [Kotlin 官方代码规范](https://kotlinlang.org/docs/coding-conventions.html)。
 
 **规则**:
+
 - 使用 4 空格缩进
 - 类名使用 PascalCase
 - 函数和变量使用 camelCase
@@ -154,6 +168,7 @@ export function generate_scale_pitches(rootNoteName,scaleType,octave=4){
 - 每行最多 120 字符
 
 **示例**:
+
 ```kotlin
 // ✅ 好的
 data class PlaybackSnapshot(
@@ -288,25 +303,31 @@ git push origin feat/add-metronome
 **标题**: 简洁描述（如 `feat(playback): add metronome support`）
 
 **描述模板**:
+
 ```markdown
 ## 变更类型
+
 - [ ] Bug 修复
 - [x] 新功能
 - [ ] 重构
 - [ ] 文档更新
 
 ## 变更说明
+
 添加节拍器功能，支持自定义 BPM 和节拍模式。
 
 ## 测试
+
 - [x] 单元测试通过
 - [x] 手动测试通过
 - [ ] 需要额外测试
 
 ## 截图（如适用）
+
 [添加截图]
 
 ## 相关 Issue
+
 Closes #123
 ```
 
@@ -331,6 +352,7 @@ Closes #123
 简洁描述问题。
 
 **复现步骤**
+
 1. 打开应用
 2. 选择 C Major 音阶
 3. 点击播放
@@ -343,13 +365,16 @@ Closes #123
 应用崩溃。
 
 **环境**
+
 - Android 版本: 14
 - 设备: Pixel 7
 - 应用版本: v0.1.0
 
 **日志**
 ```
+
 [粘贴相关日志]
+
 ```
 
 **截图**

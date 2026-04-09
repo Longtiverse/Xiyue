@@ -19,6 +19,7 @@ Comprehensive documentation for all UI components in the Xiyue music practice ap
 ## Overview
 
 Xiyue uses Jetpack Compose for its UI layer. All components are located in:
+
 ```
 apps/android/app/src/main/java/com/xiyue/app/ui/components/
 ```
@@ -32,6 +33,7 @@ import com.xiyue.app.ui.components.*
 ### Design System
 
 All components follow the Xiyue Design System defined in:
+
 - `DesignTokens.kt` - Spacing, elevation, durations, sizes
 - `ColorPalette.kt` - Color schemes for light/dark themes
 - `Typography.kt` - Text styles and fonts
@@ -60,6 +62,7 @@ fun XiyueCard(
 ```
 
 **Parameters:**
+
 - `modifier` - Modifier to be applied to the card
 - `onClick` - Optional click handler. If null, card is not clickable
 - `elevation` - Shadow depth of the card (default: 2dp)
@@ -69,6 +72,7 @@ fun XiyueCard(
 - `content` - The composable content inside the card
 
 **Usage Example:**
+
 ```kotlin
 XiyueCard(
     onClick = { /* Handle click */ },
@@ -99,6 +103,7 @@ fun SelectableCard(
 ```
 
 **Parameters:**
+
 - `selected` - Whether the card is currently selected
 - `onClick` - Click handler for selection
 - `modifier` - Modifier to be applied to the card
@@ -106,11 +111,13 @@ fun SelectableCard(
 - `content` - The composable content inside the card
 
 **Features:**
+
 - Scale animation (1.02x when selected)
 - Elevation animation (2x when selected)
 - Color change to primaryContainer when selected
 
 **Usage Example:**
+
 ```kotlin
 var isSelected by remember { mutableStateOf(false) }
 
@@ -140,6 +147,7 @@ fun CompactCard(
 ```
 
 **Usage Example:**
+
 ```kotlin
 CompactCard(onClick = { /* Navigate to detail */ }) {
     Text("Compact List Item")
@@ -167,12 +175,14 @@ fun SectionHeader(
 ```
 
 **Parameters:**
+
 - `title` - The main title text
 - `modifier` - Modifier to be applied to the header
 - `subtitle` - Optional subtitle text below the title
 - `action` - Optional composable action (e.g., button, icon) on the right side
 
 **Usage Example:**
+
 ```kotlin
 SectionHeader(
     title = "Practice Library",
@@ -203,6 +213,7 @@ fun CompactSectionHeader(
 ```
 
 **Usage Example:**
+
 ```kotlin
 CompactSectionHeader(
     title = "Quick Actions",
@@ -231,6 +242,7 @@ fun SectionDivider(
 ```
 
 **Usage Example:**
+
 ```kotlin
 // Simple divider
 SectionDivider()
@@ -260,17 +272,20 @@ fun AnimatedPlayButton(
 ```
 
 **Parameters:**
+
 - `isPlaying` - Whether playback is currently active
 - `onClick` - Click handler to toggle playback
 - `modifier` - Modifier to be applied to the button
 - `size` - Size of the button (default: 56dp)
 
 **Features:**
+
 - Scale animation (1.1x when playing)
 - Rotation animation (360° when playing)
 - Color change based on state
 
 **Usage Example:**
+
 ```kotlin
 var isPlaying by remember { mutableStateOf(false) }
 
@@ -299,6 +314,7 @@ fun CompactPlayButton(
 ```
 
 **Usage Example:**
+
 ```kotlin
 CompactPlayButton(
     isPlaying = isPlaying,
@@ -324,16 +340,19 @@ fun SwipeableRootNoteSelector(
 ```
 
 **Parameters:**
+
 - `selectedRoot` - Currently selected root note
 - `onRootChange` - Callback when root note is selected
 - `modifier` - Modifier to be applied to the selector
 
 **Features:**
+
 - Horizontal scrollable list
 - Scale animation on selected item (1.2x)
 - Lazy loading for performance
 
 **Usage Example:**
+
 ```kotlin
 var selectedRoot by remember { mutableStateOf(PitchClass.C) }
 
@@ -379,18 +398,21 @@ fun EnhancedBpmSlider(
 ```
 
 **Parameters:**
+
 - `value` - Current BPM value
 - `onValueChange` - Callback when BPM value changes
 - `modifier` - Modifier to be applied to the slider
 - `valueRange` - Range of allowed BPM values (default: 40-240)
 
 **Features:**
+
 - Animated BPM value display (slide up/down animation)
 - Scale animation when interacting
 - Quick preset buttons (60, 80, 100, 120, 140 BPM)
 - BPM description text (e.g., "Moderate (Andante)")
 
 **Usage Example:**
+
 ```kotlin
 var bpm by remember { mutableStateOf(120) }
 
@@ -439,10 +461,12 @@ fun AnimatedPlayPauseIcon(
 ```
 
 **Features:**
+
 - Rotation animation (90° when playing)
 - Scale animation (1.1x when playing)
 
 **Usage Example:**
+
 ```kotlin
 AnimatedPlayPauseIcon(
     isPlaying = isPlaying,
@@ -472,6 +496,7 @@ fun AnimatedIcon(
 ```
 
 **Usage Example:**
+
 ```kotlin
 AnimatedIcon(
     imageVector = Icons.Default.Favorite,
@@ -502,6 +527,7 @@ fun PulsingIcon(
 ```
 
 **Usage Example:**
+
 ```kotlin
 PulsingIcon(
     imageVector = Icons.Default.Notifications,
@@ -531,18 +557,21 @@ fun AnimatedKeyboardKey(
 ```
 
 **Parameters:**
+
 - `isActive` - Whether this key is currently being played
 - `label` - The label to display on the key (note name)
 - `isBlackKey` - Whether this is a black key (sharp/flat)
 - `modifier` - Modifier to be applied to the key
 
 **Features:**
+
 - Scale animation (1.15x when active)
 - Elevation animation
 - Color animation (primary color when active)
 - Automatic size based on key type (white: 48x120dp, black: 32x80dp)
 
 **Usage Example:**
+
 ```kotlin
 Row {
     AnimatedKeyboardKey(
@@ -576,6 +605,7 @@ fun CompactKeyboardKey(
 ```
 
 **Usage Example:**
+
 ```kotlin
 CompactKeyboardKey(
     isActive = isPlaying,
@@ -604,17 +634,20 @@ fun AnimatedLibraryItem(
 ```
 
 **Parameters:**
+
 - `item` - The practice library item to display
 - `isSelected` - Whether this item is currently selected
 - `onClick` - Click handler for selection
 - `modifier` - Modifier to be applied to the card
 
 **Features:**
+
 - Scale animation (1.02x when selected)
 - Background color animation
 - Shows item label, type, and note count
 
 **Usage Example:**
+
 ```kotlin
 AnimatedLibraryItem(
     item = libraryItem,
@@ -642,6 +675,7 @@ fun AnimatedSearchResultItem(
 ```
 
 **Usage Example:**
+
 ```kotlin
 AnimatedSearchResultItem(
     item = searchResult,
@@ -674,6 +708,7 @@ fun SwipeableContainer(
 ```
 
 **Usage Example:**
+
 ```kotlin
 SwipeableContainer(
     onSwipeLeft = { /* Next item */ },
@@ -705,6 +740,7 @@ fun LongPressContainer(
 ```
 
 **Usage Example:**
+
 ```kotlin
 LongPressContainer(
     onLongPress = { /* Show context menu */ },
@@ -733,6 +769,7 @@ fun DoubleTapContainer(
 ```
 
 **Usage Example:**
+
 ```kotlin
 DoubleTapContainer(
     onDoubleTap = { /* Like item */ },
@@ -839,6 +876,7 @@ fun WaveformVisualizer(
 ```
 
 **Usage Example:**
+
 ```kotlin
 val amplitudes = List(32) { Random.nextFloat() }
 
@@ -902,6 +940,7 @@ fun AnimatedGradientBackground(
 ```
 
 **Usage Example:**
+
 ```kotlin
 AnimatedGradientBackground(
     colors = listOf(
@@ -984,6 +1023,7 @@ fun RippleEffect(
 ## Design Tokens Reference
 
 ### Spacing
+
 ```kotlin
 DesignTokens.Spacing.xs   // 4dp
 DesignTokens.Spacing.sm   // 8dp
@@ -994,6 +1034,7 @@ DesignTokens.Spacing.xxl  // 48dp
 ```
 
 ### Elevation
+
 ```kotlin
 DesignTokens.Elevation.none  // 0dp
 DesignTokens.Elevation.sm    // 2dp
@@ -1003,6 +1044,7 @@ DesignTokens.Elevation.xl    // 16dp
 ```
 
 ### Animation Duration
+
 ```kotlin
 DesignTokens.Duration.fast       // 150ms
 DesignTokens.Duration.normal     // 300ms
@@ -1011,6 +1053,7 @@ DesignTokens.Duration.extraSlow  // 800ms
 ```
 
 ### Icon Size
+
 ```kotlin
 DesignTokens.IconSize.sm  // 16dp
 DesignTokens.IconSize.md  // 24dp
@@ -1019,6 +1062,7 @@ DesignTokens.IconSize.xl  // 48dp
 ```
 
 ### Button Height
+
 ```kotlin
 DesignTokens.ButtonHeight.sm  // 32dp
 DesignTokens.ButtonHeight.md  // 40dp
@@ -1041,6 +1085,7 @@ DesignTokens.ButtonHeight.xl  // 56dp
 ## Contributing
 
 When adding new components:
+
 1. Follow the existing file naming convention
 2. Add KDoc documentation
 3. Include usage examples in this guide
@@ -1049,4 +1094,4 @@ When adding new components:
 
 ---
 
-*Last updated: 2026-04-08*
+_Last updated: 2026-04-08_

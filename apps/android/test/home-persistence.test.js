@@ -16,10 +16,19 @@ test('android home persistence files exist', () => {
 });
 
 test('android home persists last selection, display settings, and recent items', () => {
-  const repository = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomePreferencesRepository.kt', 'utf8');
+  const repository = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomePreferencesRepository.kt',
+    'utf8'
+  );
   const app = readFileSync('apps/android/app/src/main/java/com/xiyue/app/ui/XiyueApp.kt', 'utf8');
-  const factory = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt', 'utf8');
-  const reducer = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeReducer.kt', 'utf8');
+  const factory = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt',
+    'utf8'
+  );
+  const reducer = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeReducer.kt',
+    'utf8'
+  );
 
   assert.match(repository, /class HomePreferencesRepository/);
   assert.match(repository, /data class HomePreferencesState/);

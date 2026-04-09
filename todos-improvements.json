@@ -1,1 +1,128 @@
-[{"content":"中文本地化 - 音阶和弦名称翻译","status":"in_progress","priority":"high","metadata":{"category":"P0"}},{"content":"新用户引导流程 - 首次使用引导","status":"pending","priority":"high","metadata":{"category":"P0"}},{"content":"指法标注 - 琴键上显示指法数字","status":"pending","priority":"high","metadata":{"category":"P0"}},{"content":"练习进度自动保存 - 状态持久化","status":"pending","priority":"high","metadata":{"category":"P0"}},{"content":"听力训练模式 - 盲听和测试","status":"pending","priority":"high","metadata":{"category":"P1"}},{"content":"底部Tab导航 - 简化操作路径","status":"pending","priority":"high","metadata":{"category":"P1"}},{"content":"手势操作支持 - 滑动和长按","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"音频焦点处理 - Android音频规范","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"内存泄漏修复 - ServiceConnection","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"游戏化元素 - 分数和成就","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"乐理知识卡片 - 音阶理论","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"BPM精度自定义 - 精确输入","status":"pending","priority":"medium","metadata":{"category":"P1"}},{"content":"空状态设计 - 收藏历史为空","status":"pending","priority":"low","metadata":{"category":"P1"}},{"content":"高级和弦库扩展 - Dim7/Aug","status":"pending","priority":"medium","metadata":{"category":"P2"}},{"content":"多种音色选择 - 弦乐管乐等","status":"pending","priority":"medium","metadata":{"category":"P2"}},{"content":"节奏型变体 - Swing/三连音","status":"pending","priority":"medium","metadata":{"category":"P2"}},{"content":"录音回放功能 - 麦克风录音","status":"pending","priority":"medium","metadata":{"category":"P2"}},{"content":"低延迟路径优化 - AAudio","status":"pending","priority":"medium","metadata":{"category":"P2"}},{"content":"社交元素 - 分享和排行榜","status":"pending","priority":"low","metadata":{"category":"P2"}},{"content":"数据分析埋点 - 用户行为","status":"pending","priority":"low","metadata":{"category":"P2"}},{"content":"编译生成新APK","status":"pending","priority":"high","metadata":{"category":"FINAL"}}]
+[
+  {
+    "content": "中文本地化 - 音阶和弦名称翻译",
+    "status": "completed",
+    "priority": "high",
+    "metadata": { "category": "P0" }
+  },
+  {
+    "content": "新用户引导流程 - 首次使用引导",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "P0" }
+  },
+  {
+    "content": "指法标注 - 琴键上显示指法数字",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "P0" }
+  },
+  {
+    "content": "练习进度自动保存 - 状态持久化",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "P0" }
+  },
+  {
+    "content": "听力训练模式 - 盲听和测试",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "底部Tab导航 - 简化操作路径",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "手势操作支持 - 滑动和长按",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "音频焦点处理 - Android音频规范",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "内存泄漏修复 - ServiceConnection",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "游戏化元素 - 分数和成就",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "乐理知识卡片 - 音阶理论",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "BPM精度自定义 - 精确输入",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "空状态设计 - 收藏历史为空",
+    "status": "pending",
+    "priority": "low",
+    "metadata": { "category": "P1" }
+  },
+  {
+    "content": "高级和弦库扩展 - Dim7/Aug",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "多种音色选择 - 弦乐管乐等",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "节奏型变体 - Swing/三连音",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "录音回放功能 - 麦克风录音",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "低延迟路径优化 - AAudio",
+    "status": "pending",
+    "priority": "medium",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "社交元素 - 分享和排行榜",
+    "status": "pending",
+    "priority": "low",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "数据分析埋点 - 用户行为",
+    "status": "pending",
+    "priority": "low",
+    "metadata": { "category": "P2" }
+  },
+  {
+    "content": "编译生成新APK",
+    "status": "pending",
+    "priority": "high",
+    "metadata": { "category": "FINAL" }
+  }
+]

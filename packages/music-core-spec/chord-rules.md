@@ -17,4 +17,3 @@
 
 - `C4 MajorTriad -> C4 E4 G4 C5`
 - `C4 Maj7 -> C4 E4 G4 B4 C5`
-

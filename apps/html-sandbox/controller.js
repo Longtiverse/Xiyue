@@ -129,15 +129,16 @@ export function createSandboxController({
   function setRoot(root) {
     const wasPlaying = state.isPlaying;
     const progressMs = getPlaybackProgress();
-    
+
     stopPlaybackState();
     updateState({ root, activeTimeMs: null, isPlaying: false });
-    
+
     // Resume from saved position if was playing
     if (wasPlaying && progressMs !== null && progressMs > 0) {
-      const scheduleResume = typeof requestAnimationFrame !== 'undefined'
-        ? (cb) => requestAnimationFrame(cb)
-        : (cb) => setTimeout(cb, 0);
+      const scheduleResume =
+        typeof requestAnimationFrame !== 'undefined'
+          ? (cb) => requestAnimationFrame(cb)
+          : (cb) => setTimeout(cb, 0);
       scheduleResume(() => {
         playFromTime(progressMs);
       });
@@ -148,14 +149,15 @@ export function createSandboxController({
   function setOctave(octave) {
     const wasPlaying = state.isPlaying;
     const progressMs = getPlaybackProgress();
-    
+
     stopPlaybackState();
     updateState({ octave, activeTimeMs: null, isPlaying: false });
-    
+
     if (wasPlaying && progressMs !== null && progressMs > 0) {
-      const scheduleResume = typeof requestAnimationFrame !== 'undefined'
-        ? (cb) => requestAnimationFrame(cb)
-        : (cb) => setTimeout(cb, 0);
+      const scheduleResume =
+        typeof requestAnimationFrame !== 'undefined'
+          ? (cb) => requestAnimationFrame(cb)
+          : (cb) => setTimeout(cb, 0);
       scheduleResume(() => {
         playFromTime(progressMs);
       });
@@ -167,14 +169,15 @@ export function createSandboxController({
     const wasPlaying = state.isPlaying;
     const progressMs = getPlaybackProgress();
     const clampedBpm = clampNumber(bpm, 40, 240);
-    
+
     stopPlaybackState();
     updateState({ bpm: clampedBpm, activeTimeMs: null, isPlaying: false });
-    
+
     if (wasPlaying && progressMs !== null && progressMs > 0) {
-      const scheduleResume = typeof requestAnimationFrame !== 'undefined'
-        ? (cb) => requestAnimationFrame(cb)
-        : (cb) => setTimeout(cb, 0);
+      const scheduleResume =
+        typeof requestAnimationFrame !== 'undefined'
+          ? (cb) => requestAnimationFrame(cb)
+          : (cb) => setTimeout(cb, 0);
       scheduleResume(() => {
         playFromTime(progressMs);
       });
@@ -193,12 +196,12 @@ export function createSandboxController({
 
   function selectLibraryItem(selectedLibraryItemId) {
     stopPlaybackState();
-    
+
     // Add to history when selecting an item
     if (selectedLibraryItemId) {
       storage.addToHistory(selectedLibraryItemId);
     }
-    
+
     updateState({
       selectedLibraryItemId,
       playbackMode: null,
@@ -251,7 +254,7 @@ export function createSandboxController({
     playbackStartTime = startTime;
 
     // Play audio from current position
-    const remainingEvents = events.filter(e => e.startMs >= startFromMs);
+    const remainingEvents = events.filter((e) => e.startMs >= startFromMs);
     if (remainingEvents.length > 0) {
       playbackSession = player.play(remainingEvents, {
         volume: state.volume,
@@ -265,52 +268,54 @@ export function createSandboxController({
 
     // Use RAF for smooth visual updates instead of setTimeout (with fallback for Node.js)
     // If scheduler is provided (testing), use setTimeout to populate scheduledTaskIds
-    const useSchedulerForTesting = scheduler && typeof scheduler.setTimeout === 'function' && typeof requestAnimationFrame === 'undefined';
-    
+    const useSchedulerForTesting =
+      scheduler &&
+      typeof scheduler.setTimeout === 'function' &&
+      typeof requestAnimationFrame === 'undefined';
+
     if (useSchedulerForTesting) {
       // Fallback to setTimeout for testing environment
       viewModel.selectedItem.sequenceRows.forEach((row) => {
         scheduledTaskIds.push(
           scheduler.setTimeout(() => {
             updateState({ activeTimeMs: row.startMs });
-          }, row.startMs),
+          }, row.startMs)
         );
       });
 
-      const endMs = Math.max(...viewModel.selectedItem.sequenceRows.map((row) => row.startMs + row.durationMs));
+      const endMs = Math.max(
+        ...viewModel.selectedItem.sequenceRows.map((row) => row.startMs + row.durationMs)
+      );
       scheduledTaskIds.push(
         scheduler.setTimeout(() => {
           if (playbackSession) {
             playbackSession = null;
           }
           updateState({ activeTimeMs: null, isPlaying: false });
-        }, endMs),
+        }, endMs)
       );
     } else {
       // Use RAF for production environment
-      const scheduleTick = typeof requestAnimationFrame !== 'undefined' 
-        ? (cb) => requestAnimationFrame(cb)
-        : (cb) => setTimeout(cb, 16);
-      
-      const cancelTick = typeof cancelAnimationFrame !== 'undefined'
-        ? (id) => cancelAnimationFrame(id)
-        : (id) => clearTimeout(id);
+      const scheduleTick =
+        typeof requestAnimationFrame !== 'undefined'
+          ? (cb) => requestAnimationFrame(cb)
+          : (cb) => setTimeout(cb, 16);
 
       function tick() {
         const elapsed = performance.now() - startTime;
         const viewModel = deriveSandboxViewModel(state);
-        
+
         if (!viewModel.selectedItem || !state.isPlaying) {
           return;
         }
 
         // Find current active row
-        const activeRow = viewModel.selectedItem.sequenceRows.find((row) =>
-          elapsed >= row.startMs && elapsed < row.startMs + row.durationMs
+        const activeRow = viewModel.selectedItem.sequenceRows.find(
+          (row) => elapsed >= row.startMs && elapsed < row.startMs + row.durationMs
         );
 
         const currentActiveMs = activeRow ? activeRow.startMs : null;
-        
+
         // Only update if changed
         if (state.activeTimeMs !== currentActiveMs) {
           updateState({ activeTimeMs: currentActiveMs });
@@ -367,7 +372,7 @@ export function createSandboxController({
   function init() {
     // Load saved settings first
     loadSavedSettings();
-    
+
     if (typeof view.bindHandlers === 'function') {
       view.bindHandlers({
         onSearchChange: setSearch,

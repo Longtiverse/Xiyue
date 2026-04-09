@@ -13,6 +13,7 @@
 ### Task 1: Model the tone preset state
 
 **Files:**
+
 - Create: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\TonePreset.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\PlaybackSnapshot.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeUiState.kt`
@@ -30,6 +31,7 @@
 ### Task 2: Persist and transport the selected tone preset
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomePreferencesRepository.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\ui\XiyueApp.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\PlaybackSnapshot.kt`
@@ -45,6 +47,7 @@
 ### Task 3: Add the playback-controls tone selector
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\PlaybackControlsSection.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeScreen.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\PracticeLibrarySection.kt`
@@ -58,6 +61,7 @@
 ### Task 4: Implement preset-specific synth shaping and seamless switching
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\ToneSynth.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\PracticePlaybackService.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\ui\XiyueApp.kt`
@@ -71,6 +75,7 @@
 ### Task 5: Full verification and APK build
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\scripts\build-android.ps1`
 - Test: `D:\Project\Xiyue\package.json`
 - Test: `D:\Project\Xiyue\apps\android\test\build-archive.test.js`

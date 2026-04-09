@@ -3,8 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 test('android theme palette aligns with icon direction', () => {
-  const colors = readFileSync('apps/android/app/src/main/java/com/xiyue/app/ui/theme/Color.kt', 'utf8');
-  const theme = readFileSync('apps/android/app/src/main/java/com/xiyue/app/ui/theme/Theme.kt', 'utf8');
+  const colors = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/ui/theme/Color.kt',
+    'utf8'
+  );
+  const theme = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/ui/theme/Theme.kt',
+    'utf8'
+  );
 
   assert.match(colors, /XiyueMint|XiyueTeal/);
   assert.match(colors, /XiyueBackground/);
@@ -14,9 +20,18 @@ test('android theme palette aligns with icon direction', () => {
 });
 
 test('android adaptive icon resources define foreground and background layers', () => {
-  const foreground = readFileSync('apps/android/app/src/main/res/drawable/ic_launcher_foreground.xml', 'utf8');
-  const background = readFileSync('apps/android/app/src/main/res/color/ic_launcher_background.xml', 'utf8');
-  const icon = readFileSync('apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml', 'utf8');
+  const foreground = readFileSync(
+    'apps/android/app/src/main/res/drawable/ic_launcher_foreground.xml',
+    'utf8'
+  );
+  const background = readFileSync(
+    'apps/android/app/src/main/res/color/ic_launcher_background.xml',
+    'utf8'
+  );
+  const icon = readFileSync(
+    'apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
+    'utf8'
+  );
 
   assert.match(foreground, /vector|shape|group/);
   assert.match(foreground, /path|circle/);

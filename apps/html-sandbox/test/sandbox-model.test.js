@@ -8,7 +8,7 @@ test('filters scale library items by search text', () => {
     createSandboxState({
       kindFilter: 'scale',
       search: 'minor',
-    }),
+    })
   );
 
   // 修复：更新期望结果，包含所有包含'minor'的音阶
@@ -21,7 +21,7 @@ test('filters scale library items by search text', () => {
       'scale:PentatonicMinor',
       'scale:MinorBlues',
       'scale:HungarianMinor',
-    ],
+    ]
   );
 });
 
@@ -32,7 +32,7 @@ test('builds selected chord result from music-core data', () => {
       octave: 4,
       bpm: 120,
       selectedLibraryItemId: 'chord:Dom7',
-    }),
+    })
   );
 
   assert.equal(viewModel.selectedItem?.displayName, 'G4 Dom7');
@@ -49,7 +49,7 @@ test('builds selected chord result from music-core data', () => {
       { pitchLabel: 'B4', startMs: 0, durationMs: 500 },
       { pitchLabel: 'D5', startMs: 0, durationMs: 500 },
       { pitchLabel: 'F5', startMs: 0, durationMs: 500 },
-    ],
+    ]
   );
   assert.ok(viewModel.keyboardKeys.some((key) => key.label === 'G4' && key.isPreview));
 });
@@ -60,15 +60,15 @@ test('highlights active key and sequence row for arpeggio playback time', () => 
       selectedLibraryItemId: 'chord:Maj7',
       playbackMode: 'chordArpeggioUp',
       activeTimeMs: 1250,
-    }),
+    })
   );
 
   assert.deepEqual(
     viewModel.keyboardKeys.filter((key) => key.isActive).map((key) => key.label),
-    ['G4'],
+    ['G4']
   );
   assert.deepEqual(
     viewModel.selectedItem?.sequenceRows.filter((row) => row.isActive).map((row) => row.pitchLabel),
-    ['G4'],
+    ['G4']
   );
 });

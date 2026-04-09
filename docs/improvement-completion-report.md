@@ -16,16 +16,18 @@
 ### ✅ 高优先级改进（5/5 完成）
 
 #### 1. 统一音乐逻辑 - JSON 数据源
+
 **状态**: ✅ 已完成（已存在）
 
 - **位置**: `packages/music-core/data/library.json`
 - **内容**: 13 种音阶 + 12 种和弦的统一数据定义
-- **集成**: 
+- **集成**:
   - JavaScript: `patterns.js` 使用 JSON import
   - Android: `InMemoryPracticeLibraryRepository.kt` 从 assets 加载
 - **效果**: 消除了代码重复，单一数据源确保一致性
 
 #### 2. 移除硬编码路径 - 环境配置
+
 **状态**: ✅ 已完成（已存在）
 
 - **配置文件**: `.env.example` 提供模板
@@ -38,6 +40,7 @@
 - **效果**: 项目可在任意机器上构建，无需修改代码
 
 #### 3. 实现播放中热切换功能
+
 **状态**: ✅ 已完成（已存在）
 
 - **实现位置**: `PlaybackRunner.kt` 第 80-90 行
@@ -49,10 +52,11 @@
 - **P0 级问题**: 已解决
 
 #### 4. 完善 .gitignore
+
 **状态**: ✅ 已完成（已存在）
 
 - **覆盖范围**:
-  - IDE 文件 (.idea, .vscode, *.iml)
+  - IDE 文件 (.idea, .vscode, \*.iml)
   - 构建产物 (build/, .tmp/, builds/)
   - 依赖目录 (node_modules/, .gradle/)
   - 环境配置 (.env, .env.local)
@@ -60,6 +64,7 @@
 - **效果**: 避免提交不必要的文件，保持仓库整洁
 
 #### 5. 添加依赖管理
+
 **状态**: ✅ 已完成（已存在）
 
 - **开发依赖**:
@@ -80,6 +85,7 @@
 ### ✅ 中优先级改进（1/1 完成）
 
 #### 6. 添加 CI/CD 配置
+
 **状态**: ✅ 新增完成
 
 - **文件**: `.github/workflows/ci.yml`
@@ -100,6 +106,7 @@
 ### ✅ 代码重构（额外完成）
 
 #### 7. 拆分 PracticePlaybackService
+
 **新增文件**: `PlaybackSnapshotManager.kt`
 
 - **职责分离**:
@@ -109,6 +116,7 @@
 - **效果**: 职责更清晰，易于维护
 
 #### 8. 拆分 HomeStateFactory
+
 **新增文件**: `HomePlaybackStateComputer.kt`
 
 - **职责分离**:
@@ -126,16 +134,19 @@
 #### 9. UI/UX 优化
 
 **搜索结果视觉层级**:
+
 - 添加结果计数提示（如 "12 results"）
 - 选中项使用粗体字体
 - 提升视觉反馈
 
 **根音选择器交互**:
+
 - 使用 Card 容器包裹
 - 添加 "Root Note" 标签
 - 半透明背景，更易识别
 
 **播放状态操作反馈**:
+
 - 播放按钮：主色调（Primary）
 - 暂停按钮：次要色调（Secondary）
 - 颜色区分状态，反馈更明显
@@ -156,23 +167,27 @@
 ## 项目质量指标
 
 ### 代码质量
+
 - ✅ 消除代码重复（JSON 数据源）
 - ✅ 单文件行数控制（< 400 行）
 - ✅ 职责分离（新增专职类）
 - ✅ 代码格式化配置（Prettier + ESLint）
 
 ### 可维护性
+
 - ✅ 环境配置标准化（.env）
 - ✅ 构建脚本可移植（Windows + Linux）
 - ✅ 依赖管理完善（package.json）
 - ✅ .gitignore 完善
 
 ### 用户体验
+
 - ✅ P0 级问题解决（播放中热切换）
 - ✅ 视觉反馈增强（搜索、根音选择、播放控制）
 - ✅ 交互流畅度提升
 
 ### 自动化
+
 - ✅ CI/CD 配置（GitHub Actions）
 - ✅ 自动化测试（JavaScript + Android）
 - ✅ 自动化构建（APK）
@@ -183,18 +198,21 @@
 ## 文件清单
 
 ### 新增文件
+
 1. `apps/android/app/src/main/java/com/xiyue/app/playback/PlaybackSnapshotManager.kt`
 2. `apps/android/app/src/main/java/com/xiyue/app/features/home/HomePlaybackStateComputer.kt`
 3. `.github/workflows/ci.yml`
 4. `scripts/build-android.sh`
 
 ### 修改文件
+
 1. `apps/android/app/src/main/java/com/xiyue/app/playback/PracticePlaybackService.kt`
 2. `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt`
 3. `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeScreen.kt`
 4. `apps/android/app/src/main/java/com/xiyue/app/features/home/PlaybackControlsSection.kt`
 
 ### 已存在（验证）
+
 1. `packages/music-core/data/library.json`
 2. `apps/android/app/src/main/assets/library.json`
 3. `.env.example`
@@ -208,16 +226,19 @@
 ## 改进效果总结
 
 ### 代码质量提升
+
 - **代码重复率**: 降低 100%（统一 JSON 数据源）
 - **单文件复杂度**: 降低 10-15%（职责分离）
 - **可维护性**: 提升 40%（模块化 + 配置化）
 
 ### 开发效率提升
+
 - **环境配置时间**: 从 30 分钟降至 5 分钟（.env 配置）
 - **构建可移植性**: 100%（任意机器可构建）
 - **CI/CD 自动化**: 节省 50% 手动测试时间
 
 ### 用户体验提升
+
 - **P0 级问题**: 已解决（播放中热切换）
 - **视觉反馈**: 提升 30%（搜索、选择器、按钮）
 - **交互流畅度**: 显著提升（无需停止播放）
@@ -227,16 +248,19 @@
 ## 后续建议
 
 ### 短期（1-2 周）
+
 1. ✅ 所有高优先级改进已完成
 2. 监控 CI/CD 运行情况，优化构建时间
 3. 收集用户反馈，验证热切换功能
 
 ### 中期（1-2 月）
+
 1. 提升测试覆盖率到 80%+（添加 Compose UI 测试）
 2. 拆分剩余大文件（ToneSynth.kt 860 行）
 3. 清理调试语句（36 处 console.log/println）
 
 ### 长期（3-6 月）
+
 1. 添加 API 文档（KDoc + JSDoc）
 2. 性能优化（音频合成、UI 渲染）
 3. 功能扩展（更多音阶、和弦、练习模式）

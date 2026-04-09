@@ -75,7 +75,10 @@ function connectNoteGraph(audioContext, destination, event, startTime, volume, n
 
   noteGain.gain.setValueAtTime(0, noteStartTime);
   noteGain.gain.linearRampToValueAtTime(peakGain, noteStartTime + attackSeconds);
-  noteGain.gain.setValueAtTime(peakGain, Math.max(noteStartTime + attackSeconds, noteEndTime - releaseSeconds));
+  noteGain.gain.setValueAtTime(
+    peakGain,
+    Math.max(noteStartTime + attackSeconds, noteEndTime - releaseSeconds)
+  );
   noteGain.gain.linearRampToValueAtTime(0, noteEndTime);
 
   oscillator.connect(noteGain);
@@ -86,15 +89,15 @@ function connectNoteGraph(audioContext, destination, event, startTime, volume, n
   const nodeId = Math.random().toString(36).substr(2, 9);
   nodePool.markInUse(nodeId);
 
-  return { 
-    oscillator, 
-    noteGain, 
+  return {
+    oscillator,
+    noteGain,
     nodeId,
     release() {
       nodePool.markReleased(nodeId);
       nodePool.releaseOscillator(oscillator);
       nodePool.releaseGain(noteGain);
-    }
+    },
   };
 }
 

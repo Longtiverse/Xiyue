@@ -11,6 +11,7 @@ Xiyue is a minimalist music-practice app centered on selecting scales/chords qui
 A quiet dark tile with a ring of 12 dots (semitones). Three accent dots form a simple triad, and one dot is slightly larger to suggest the "currently active" note during playback.
 
 Why this fits:
+
 - Directly maps to the app's core idea: notes, pitch classes, highlighting.
 - Stays abstract (not a literal piano) and remains elegant.
 - Scales down well: the silhouette is basically "ring + 3 bright points".
@@ -20,10 +21,12 @@ Why this fits:
 A stylized "X" built from two thin stems (like simplified music notation), with a single accent circle at the crossing (active note).
 
 Pros:
+
 - Very brandable (Xiyue -> X).
 - Extremely simple.
 
 Cons:
+
 - Risk of looking like a generic "X" or close icon at small sizes.
 
 ### Concept C: "Single key + sharp"
@@ -31,9 +34,11 @@ Cons:
 A single piano key shape with a small sharp sign (#) above, hinting at keyboard mapping.
 
 Pros:
+
 - Immediately music-related.
 
 Cons:
+
 - Piano-key icons are common; higher risk of looking generic.
 - Sharp sign can get noisy at small sizes.
 
@@ -44,16 +49,19 @@ Pick **Concept A**. It communicates "notes + highlight" with minimal parts and s
 ## Shape and Color Guidance (Concept A)
 
 Shape:
+
 - Use a rounded-square tile (adaptive icon background), with a centered circular composition.
 - Ring dots: 12 evenly spaced points.
 - Highlight: 3 points (triad) in the accent color; 1 of them larger (active note).
 
 Color:
+
 - Background: near-black navy/graphite, optionally with a subtle radial glow.
 - Ring dots (inactive): muted cool gray-blue.
 - Accent: soft mint/teal (not neon) to keep the overall feel calm.
 
 Contrast:
+
 - Ensure accent dots remain visible on both light and dark wallpapers.
 - Avoid thin strokes as the primary identifier; rely on the dot-ring silhouette.
 
@@ -73,5 +81,5 @@ Contrast:
 ## Draft Assets
 
 Recommended draft SVG:
-- [Concept A SVG](/D:/Project/Xiyue/docs/design/assets/xiyue-icon-concept-a.svg)
 
+- [Concept A SVG](/D:/Project/Xiyue/docs/design/assets/xiyue-icon-concept-a.svg)

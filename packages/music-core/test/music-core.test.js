@@ -69,7 +69,10 @@ test('generates chord block note events with the same start time', () => {
   assert.equal(events.length, 4);
   assert.ok(events.every((event) => event.startMs === 0));
   assert.ok(events.every((event) => event.durationMs === 500));
-  assert.deepEqual(events.map((event) => formatPitch(event.pitch)), ['G4', 'B4', 'D5', 'F5']);
+  assert.deepEqual(
+    events.map((event) => formatPitch(event.pitch)),
+    ['G4', 'B4', 'D5', 'F5']
+  );
 });
 
 test('generates chord arpeggio up events in sequence', () => {
@@ -88,6 +91,6 @@ test('generates chord arpeggio up events in sequence', () => {
       { pitch: 'G4', startMs: 1000, durationMs: 500 },
       { pitch: 'B4', startMs: 1500, durationMs: 500 },
       { pitch: 'C5', startMs: 2000, durationMs: 500 },
-    ],
+    ]
   );
 });

@@ -14,9 +14,18 @@ test('android home action and reducer files exist', () => {
 });
 
 test('android home reducer supports library selection and playback control actions', () => {
-  const actions = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeAction.kt', 'utf8');
-  const reducer = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeReducer.kt', 'utf8');
-  const uiState = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeUiState.kt', 'utf8');
+  const actions = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeAction.kt',
+    'utf8'
+  );
+  const reducer = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeReducer.kt',
+    'utf8'
+  );
+  const uiState = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeUiState.kt',
+    'utf8'
+  );
 
   assert.match(actions, /sealed interface HomeAction/);
   assert.match(actions, /data class SelectLibraryItem/);

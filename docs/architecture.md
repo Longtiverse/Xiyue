@@ -58,7 +58,9 @@ xiyue/
 │   │               └── library.json     # 音乐数据
 │   │
 │   └── html-sandbox/         # HTML 测试沙箱
-│       ├── src/
+│       ├── app.js
+│       ├── controller.js
+│       ├── index.html
 │       └── test/
 │
 ├── packages/
@@ -98,6 +100,7 @@ xiyue/
 **职责**: 提供音乐理论计算和数据定义
 
 **组件**:
+
 - `library.json`: 音阶和和弦的统一数据源
   - 13 种音阶（Major, Minor, Pentatonic, Blues, Modes...）
   - 12 种和弦（Triads, 7th chords, Sus...）
@@ -105,6 +108,7 @@ xiyue/
 - `patterns.js`: 根据根音和类型生成音阶/和弦
 
 **数据格式**:
+
 ```json
 {
   "scales": [
@@ -143,11 +147,13 @@ xiyue/
 #### 2.2 模块划分
 
 **Domain 层** (`domain/`)
+
 - `PracticeLibraryRepository`: 音阶/和弦数据仓储
 - `PracticeSessionFactory`: 练习会话工厂
 - `PitchClass`, `PlaybackMode`: 领域模型
 
 **Features 层** (`features/home/`)
+
 - `HomeScreen`: Compose UI
 - `HomeReducer`: 状态管理
 - `HomeStateFactory`: 状态工厂
@@ -156,6 +162,7 @@ xiyue/
 - `HomeUiStateBuilder`: UI 状态构建
 
 **Playback 层** (`playback/`)
+
 - `PracticePlaybackService`: Android 前台服务
 - `PlaybackRunner`: 播放循环控制
 - `PlaybackSnapshotManager`: 快照管理（新增）
@@ -166,12 +173,13 @@ xiyue/
 #### 2.3 关键设计
 
 **播放中热切换**:
+
 ```kotlin
 // PlaybackRunner.kt
 while (true) {
     for (step in plan.steps) {
         toneSynth.playStep(step)
-        
+
         // 检查是否有待切换的请求
         switchRequestProvider()?.let { newRequest ->
             activePlan = createNewPlan(newRequest)
@@ -182,6 +190,7 @@ while (true) {
 ```
 
 **状态快照**:
+
 ```kotlin
 data class PlaybackSnapshot(
     val isPlaying: Boolean,
@@ -200,6 +209,7 @@ data class PlaybackSnapshot(
 **职责**: 快速验证音乐核心逻辑
 
 **特点**:
+
 - 直接使用 `music-core` 包
 - 浏览器环境测试
 - 可视化音阶/和弦生成
@@ -261,39 +271,39 @@ PlaybackRunner.run()
 
 ### Android
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Kotlin | 2.1.0 | 主要开发语言 |
-| Jetpack Compose | 1.7.x | UI 框架 |
-| Coroutines | 1.9.x | 异步编程 |
-| Android SDK | 36 (compileSdk) | 平台 API |
-| Gradle | 8.14 | 构建工具 |
+| 技术            | 版本            | 用途                |
+| --------------- | --------------- | ------------------- |
+| Kotlin          | 2.0.21          | 主要开发语言        |
+| Jetpack Compose | BOM 2025.02.00  | UI 框架             |
+| Coroutines      | 1.9.0           | 异步编程            |
+| Android SDK     | 36 (compileSdk) | 平台 API            |
+| AGP             | 8.7.3           | Android Gradle 插件 |
 
 ### JavaScript
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Node.js | 20+ | 运行环境 |
-| ES Modules | - | 模块系统 |
-| node:test | - | 测试框架 |
-| c8 | 11.0.0 | 覆盖率工具 |
-| ESLint | 10.2.0 | 代码检查 |
-| Prettier | 3.8.1 | 代码格式化 |
+| 技术       | 版本   | 用途       |
+| ---------- | ------ | ---------- |
+| Node.js    | 20+    | 运行环境   |
+| ES Modules | -      | 模块系统   |
+| node:test  | -      | 测试框架   |
+| c8         | 11.0.0 | 覆盖率工具 |
+| ESLint     | 10.2.0 | 代码检查   |
+| Prettier   | 3.8.1  | 代码格式化 |
 
 ### 音频
 
-| 技术 | 用途 |
-|------|------|
+| 技术               | 用途           |
+| ------------------ | -------------- |
 | Android AudioTrack | 低延迟音频播放 |
-| PCM 16-bit | 音频格式 |
-| 44.1kHz | 采样率 |
+| PCM 16-bit         | 音频格式       |
+| 44.1kHz            | 采样率         |
 
 ### CI/CD
 
-| 技术 | 用途 |
-|------|------|
+| 技术           | 用途         |
+| -------------- | ------------ |
 | GitHub Actions | 自动化 CI/CD |
-| Codecov | 覆盖率报告 |
+| Codecov        | 覆盖率报告   |
 
 ---
 

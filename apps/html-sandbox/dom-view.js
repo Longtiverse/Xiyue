@@ -8,7 +8,10 @@ const PLAYBACK_MODE_LABELS = {
 
 function createOptionMarkup(options, selectedValue) {
   return options
-    .map((value) => `<option value="${value}"${String(value) === String(selectedValue) ? ' selected' : ''}>${value}</option>`)
+    .map(
+      (value) =>
+        `<option value="${value}"${String(value) === String(selectedValue) ? ' selected' : ''}>${value}</option>`
+    )
     .join('');
 }
 
@@ -55,7 +58,9 @@ function renderKeyboard(container, keyboardKeys) {
   container.style.width = `${whiteKeyCount * whiteKeyWidth}px`;
   container.innerHTML = keyboardKeys
     .map((key) => {
-      const left = key.isSharp ? whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2 : whiteKeyIndex * whiteKeyWidth;
+      const left = key.isSharp
+        ? whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2
+        : whiteKeyIndex * whiteKeyWidth;
       const markup = `
         <button
           type="button"
@@ -103,15 +108,27 @@ export function createDomView(doc = globalThis.document) {
   };
 
   function bindHandlers(handlers) {
-    elements.searchInput?.addEventListener('input', (event) => handlers.onSearchChange?.(event.target.value));
-    elements.kindFilter?.addEventListener('change', (event) => handlers.onKindFilterChange?.(event.target.value));
-    elements.rootSelect?.addEventListener('change', (event) => handlers.onRootChange?.(event.target.value));
-    elements.octaveSelect?.addEventListener('change', (event) => handlers.onOctaveChange?.(Number(event.target.value)));
-    elements.bpmInput?.addEventListener('change', (event) => handlers.onBpmChange?.(Number(event.target.value)));
-    elements.volumeInput?.addEventListener('input', (event) => handlers.onVolumeChange?.(Number(event.target.value)));
+    elements.searchInput?.addEventListener('input', (event) =>
+      handlers.onSearchChange?.(event.target.value)
+    );
+    elements.kindFilter?.addEventListener('change', (event) =>
+      handlers.onKindFilterChange?.(event.target.value)
+    );
+    elements.rootSelect?.addEventListener('change', (event) =>
+      handlers.onRootChange?.(event.target.value)
+    );
+    elements.octaveSelect?.addEventListener('change', (event) =>
+      handlers.onOctaveChange?.(Number(event.target.value))
+    );
+    elements.bpmInput?.addEventListener('change', (event) =>
+      handlers.onBpmChange?.(Number(event.target.value))
+    );
+    elements.volumeInput?.addEventListener('input', (event) =>
+      handlers.onVolumeChange?.(Number(event.target.value))
+    );
     elements.resetButton?.addEventListener('click', () => handlers.onResetControls?.());
     elements.playbackModeSelect?.addEventListener('change', (event) =>
-      handlers.onPlaybackModeChange?.(event.target.value),
+      handlers.onPlaybackModeChange?.(event.target.value)
     );
     elements.playButton?.addEventListener('click', () => handlers.onPlaySelection?.());
     elements.stopButton?.addEventListener('click', () => handlers.onStopSelection?.());
@@ -157,7 +174,9 @@ export function createDomView(doc = globalThis.document) {
       .map((item) => createLibraryItemMarkup(item, item.id === viewModel.selectedLibraryItemId))
       .join('');
     elements.emptyState.hidden = viewModel.libraryItems.length > 0;
-    elements.playbackStatus.textContent = viewModel.isPlaying ? '播放中：高亮与音频已同步' : '就绪：可预览当前选择';
+    elements.playbackStatus.textContent = viewModel.isPlaying
+      ? '播放中：高亮与音频已同步'
+      : '就绪：可预览当前选择';
 
     if (!viewModel.selectedItem) {
       elements.selectedTitle.textContent = '从左侧选择一个音阶或和弦';
@@ -176,14 +195,18 @@ export function createDomView(doc = globalThis.document) {
     elements.selectedMeta.textContent = `${viewModel.selectedItem.kind === 'scale' ? '音阶' : '和弦'} · BPM ${
       viewModel.bpm
     } · 音量 ${Math.round(viewModel.volume * 100)}%`;
-    elements.pitchList.innerHTML = viewModel.selectedItem.pitchLabels.map(createPitchChipMarkup).join('');
+    elements.pitchList.innerHTML = viewModel.selectedItem.pitchLabels
+      .map(createPitchChipMarkup)
+      .join('');
     elements.playbackModeSelect.innerHTML = viewModel.selectedItem.supportedModes
       .map((mode) => createPlaybackModeMarkup(mode, viewModel.selectedItem.playbackMode))
       .join('');
     elements.playbackModeSelect.disabled = false;
     elements.playButton.disabled = viewModel.isPlaying;
     elements.stopButton.disabled = !viewModel.isPlaying;
-    elements.sequenceList.innerHTML = viewModel.selectedItem.sequenceRows.map(createSequenceRowMarkup).join('');
+    elements.sequenceList.innerHTML = viewModel.selectedItem.sequenceRows
+      .map(createSequenceRowMarkup)
+      .join('');
     renderKeyboard(elements.keyboard, viewModel.keyboardKeys);
   }
 

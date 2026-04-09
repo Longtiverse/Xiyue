@@ -42,7 +42,7 @@ export function createStaticServer({ rootDir }) {
       const content = await readFile(targetPath);
       response.writeHead(200, { 'content-type': getContentType(targetPath) });
       response.end(content);
-    } catch (error) {
+    } catch {
       response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
       response.end('Not Found');
     }

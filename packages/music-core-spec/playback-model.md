@@ -35,4 +35,3 @@
 - `startMs`
 - `durationMs`
 - `highlightType`
-

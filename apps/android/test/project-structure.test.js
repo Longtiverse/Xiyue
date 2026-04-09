@@ -2,6 +2,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 
+const read = (filePath) => readFileSync(filePath, 'utf8');
+
 const requiredFiles = [
   'apps/android/settings.gradle.kts',
   'apps/android/build.gradle.kts',
@@ -21,7 +23,6 @@ const requiredFiles = [
   'apps/android/app/src/main/res/drawable/ic_launcher_foreground.xml',
   'apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml',
   'apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml',
-  'scripts/codex-next-iteration.ps1',
 ];
 
 test('android project skeleton files exist', () => {
@@ -31,10 +32,10 @@ test('android project skeleton files exist', () => {
 });
 
 test('android gradle settings and app config declare the xiyue compose app', () => {
-  const settings = readFileSync('apps/android/settings.gradle.kts', 'utf8');
-  const appGradle = readFileSync('apps/android/app/build.gradle.kts', 'utf8');
-  const manifest = readFileSync('apps/android/app/src/main/AndroidManifest.xml', 'utf8');
-  const mainActivity = readFileSync('apps/android/app/src/main/java/com/xiyue/app/MainActivity.kt', 'utf8');
+  const settings = read('apps/android/settings.gradle.kts');
+  const appGradle = read('apps/android/app/build.gradle.kts');
+  const manifest = read('apps/android/app/src/main/AndroidManifest.xml');
+  const mainActivity = read('apps/android/app/src/main/java/com/xiyue/app/MainActivity.kt');
 
   assert.match(settings, /rootProject\.name\s*=\s*"XiyueAndroid"/);
   assert.match(settings, /include\(":app"\)/);
@@ -49,25 +50,17 @@ test('android gradle settings and app config declare the xiyue compose app', () 
 });
 
 test('android app screen includes core practice placeholders', () => {
-  const appScreen = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeScreen.kt', 'utf8');
-  const stateFactory = readFileSync('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt', 'utf8');
-  const strings = readFileSync('apps/android/app/src/main/res/values/strings.xml', 'utf8');
+  const appScreen = read(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeScreen.kt'
+  );
+  const stateFactory = read(
+    'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt'
+  );
+  const strings = read('apps/android/app/src/main/res/values/strings.xml');
 
   assert.match(appScreen, /HomeScreen/);
-  assert.match(appScreen, /PracticePickerStrip/);
+  assert.match(appScreen, /CompactLibrarySelector/);
   assert.match(stateFactory, /buildPracticePicker/);
-  assert.match(stateFactory, /Keyboard Preview/);
-  assert.match(stateFactory, /Pause Practice|Resume Practice|Start Practice/);
+  assert.match(appScreen, /PlaybackDisplaySection/);
   assert.match(strings, /习乐/);
-});
-
-test('repo includes codex control launcher for next autonomous iteration', () => {
-  const packageJson = readFileSync('package.json', 'utf8');
-  const script = readFileSync('scripts/codex-next-iteration.ps1', 'utf8');
-
-  assert.match(packageJson, /codex:next/);
-  assert.match(script, /codex\s+exec/);
-  assert.match(script, /--cd/);
-  assert.match(script, /D:\\Project\\Xiyue/);
-  assert.match(script, /Iterations/);
 });

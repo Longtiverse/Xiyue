@@ -56,12 +56,14 @@ fun PulsingLoadingIndicator(
 ```
 
 **Animation Details:**
+
 - Scale: 0.8f → 1.2f (oscillates)
 - Alpha: 0.5f → 1.0f (oscillates)
 - Duration: 500ms per cycle
 - Easing: FastOutSlowInEasing
 
 **Usage Example:**
+
 ```kotlin
 Box(
     modifier = Modifier.fillMaxSize(),
@@ -93,12 +95,14 @@ fun DotsLoadingIndicator(
 ```
 
 **Animation Details:**
+
 - Scale: 0.5f → 1.0f (per dot)
 - Delay: 100ms between each dot
 - Duration: 300ms per dot
 - Easing: FastOutSlowInEasing
 
 **Usage Example:**
+
 ```kotlin
 DotsLoadingIndicator(
     dotCount = 5,
@@ -125,12 +129,14 @@ fun WaveLoadingIndicator(
 ```
 
 **Animation Details:**
+
 - Rotation: 0° → 360° continuous
 - Duration: 1600ms per rotation
 - Easing: LinearEasing
 - 3 dots at 120° intervals
 
 **Usage Example:**
+
 ```kotlin
 WaveLoadingIndicator(
     size = 56.dp,
@@ -155,6 +161,7 @@ fun LoadingWithText(
 ```
 
 **Usage Example:**
+
 ```kotlin
 LoadingWithText(
     text = "Loading library...",
@@ -178,11 +185,13 @@ fun SkeletonLoadingBox(
 ```
 
 **Animation Details:**
+
 - Alpha: 0.3f → 0.7f (oscillates)
 - Duration: 500ms per cycle
 - Default height: 48dp
 
 **Usage Example:**
+
 ```kotlin
 Column {
     repeat(3) {
@@ -220,17 +229,18 @@ object TransitionSpecs {
 
 **Available Transitions:**
 
-| Transition | Enter | Exit | Duration |
-|------------|-------|------|----------|
-| Fade | Fade in | Fade out | 300ms |
-| Slide Up | Slide from bottom | Slide to top | 300ms |
-| Slide Down | Slide from top | Slide to bottom | 300ms |
-| Slide Left | Slide from right | Slide to left | 300ms |
-| Slide Right | Slide from left | Slide to right | 300ms |
-| Scale | Scale in (0.8→1) | Scale out (1→0.8) | 300ms |
-| Expand | Expand vertically | Shrink vertically | 300ms |
+| Transition  | Enter             | Exit              | Duration |
+| ----------- | ----------------- | ----------------- | -------- |
+| Fade        | Fade in           | Fade out          | 300ms    |
+| Slide Up    | Slide from bottom | Slide to top      | 300ms    |
+| Slide Down  | Slide from top    | Slide to bottom   | 300ms    |
+| Slide Left  | Slide from right  | Slide to left     | 300ms    |
+| Slide Right | Slide from left   | Slide to right    | 300ms    |
+| Scale       | Scale in (0.8→1)  | Scale out (1→0.8) | 300ms    |
+| Expand      | Expand vertically | Shrink vertically | 300ms    |
 
 **Usage Example with AnimatedContent:**
+
 ```kotlin
 AnimatedContent(
     targetState = currentScreen,
@@ -262,10 +272,12 @@ fun FadeInOut(
 ```
 
 **Animation Details:**
+
 - Enter: Fade in over 300ms
 - Exit: Fade out over 300ms
 
 **Usage Example:**
+
 ```kotlin
 FadeInOut(visible = showMessage) {
     Text("This message fades in and out")
@@ -290,6 +302,7 @@ fun SlideUpIn(
 ```
 
 **Usage Example:**
+
 ```kotlin
 SlideUpIn(visible = showBottomSheet) {
     BottomSheetContent()
@@ -314,11 +327,13 @@ fun ScaleInOut(
 ```
 
 **Animation Details:**
+
 - Enter: Scale from 0.8 to 1.0 with spring physics
 - Exit: Scale to 0.8 with fade
 - Spring: Medium bounce, medium stiffness
 
 **Usage Example:**
+
 ```kotlin
 ScaleInOut(visible = showDialog) {
     AlertDialog(...)
@@ -343,6 +358,7 @@ fun ExpandInOut(
 ```
 
 **Usage Example:**
+
 ```kotlin
 ExpandInOut(visible = expanded) {
     AdditionalContent()
@@ -369,12 +385,14 @@ fun SuccessAnimation(
 ```
 
 **Animation Details:**
+
 - Scale: Spring animation from 0.8 to 1.0
 - Damping ratio: Medium bounce
 - Stiffness: Low (smooth)
 - Alpha: Fade in over 300ms
 
 **Usage Example:**
+
 ```kotlin
 SuccessAnimation(
     message = "Practice saved!",
@@ -400,12 +418,14 @@ fun ErrorAnimation(
 ```
 
 **Animation Details:**
+
 - Shake: -5dp to +5dp horizontal oscillation
 - Duration: 100ms per oscillation
 - Repeat: Continuous until dismissed
 - Easing: LinearEasing
 
 **Usage Example:**
+
 ```kotlin
 ErrorAnimation(
     message = "Failed to load audio",
@@ -431,11 +451,13 @@ fun WarningAnimation(
 ```
 
 **Animation Details:**
+
 - Scale: 0.95 to 1.05 oscillation
 - Duration: 500ms per cycle
 - Easing: FastOutSlowInEasing
 
 **Usage Example:**
+
 ```kotlin
 WarningAnimation(
     message = "Low volume detected",
@@ -463,6 +485,7 @@ fun StatusAnimation(
 ```
 
 **Usage Example:**
+
 ```kotlin
 StatusAnimation(
     icon = Icons.Default.Info,
@@ -489,12 +512,14 @@ fun AnimatedCheckmark(
 ```
 
 **Animation Details:**
+
 - Stroke animation: Draws from start to end
 - Duration: 500ms
 - Easing: FastOutSlowInEasing
 - Path: Checkmark shape
 
 **Usage Example:**
+
 ```kotlin
 AnimatedCheckmark(
     size = 64.dp,
@@ -523,12 +548,14 @@ fun WaveformVisualizer(
 ```
 
 **Animation Details:**
+
 - Individual bar animation using spring physics
 - Damping ratio: Medium bounce
 - Stiffness: Medium
 - Each bar animates independently
 
 **Usage Example:**
+
 ```kotlin
 // Real-time audio visualization
 val amplitudes by viewModel.audioAmplitudes.collectAsState()
@@ -561,6 +588,7 @@ fun CircularWaveformVisualizer(
 ```
 
 **Usage Example:**
+
 ```kotlin
 CircularWaveformVisualizer(
     amplitudes = audioData,
@@ -588,12 +616,14 @@ fun ParticleEffect(
 ```
 
 **Animation Details:**
+
 - Particles move in random directions
 - Continuous animation loop
 - Duration: 10 seconds per cycle
 - Alpha varies per particle
 
 **Usage Example:**
+
 ```kotlin
 ParticleEffect(
     isActive = isPlaying,
@@ -620,12 +650,14 @@ fun AnimatedGradientBackground(
 ```
 
 **Animation Details:**
+
 - Gradient position: 0 to 1 and back
 - Duration: Configurable (default 3000ms)
 - Easing: LinearEasing
 - Repeat: Reverse
 
 **Usage Example:**
+
 ```kotlin
 AnimatedGradientBackground(
     colors = listOf(
@@ -654,6 +686,7 @@ fun AnimatedRadialGradientBackground(
 ```
 
 **Animation Details:**
+
 - Radius: 0.3 to 0.8 and back
 - Duration: 1600ms
 - Easing: FastOutSlowInEasing
@@ -677,11 +710,13 @@ fun GlowEffect(
 ```
 
 **Animation Details:**
+
 - Alpha: 0.3 to 0.8 oscillation
 - Duration: 500ms
 - Blend mode: Screen
 
 **Usage Example:**
+
 ```kotlin
 GlowEffect(
     isGlowing = isPlaying,
@@ -707,12 +742,14 @@ fun ShimmerEffect(
 ```
 
 **Animation Details:**
+
 - Offset: -1 to 1 across width
 - Duration: 800ms
 - Gradient: Light gray colors
 - Repeat: Restart
 
 **Usage Example:**
+
 ```kotlin
 Box(modifier = Modifier.fillMaxSize()) {
     ShimmerEffect()
@@ -737,12 +774,14 @@ fun RippleEffect(
 ```
 
 **Animation Details:**
+
 - Scale: 0 to 1 expansion
 - Alpha: 0.8 to 0 fade
 - Duration: 800ms
 - Multiple ripples with staggered delay
 
 **Usage Example:**
+
 ```kotlin
 RippleEffect(
     isActive = isRecording,
@@ -756,12 +795,12 @@ RippleEffect(
 
 ### Duration Guidelines
 
-| Duration | Use Case | Token |
-|----------|----------|-------|
-| 150ms | Quick feedback, micro-interactions | `DesignTokens.Duration.fast` |
-| 300ms | Standard transitions, visibility changes | `DesignTokens.Duration.normal` |
-| 500ms | Complex animations, loading states | `DesignTokens.Duration.slow` |
-| 800ms | Dramatic effects, page transitions | `DesignTokens.Duration.extraSlow` |
+| Duration | Use Case                                 | Token                             |
+| -------- | ---------------------------------------- | --------------------------------- |
+| 150ms    | Quick feedback, micro-interactions       | `DesignTokens.Duration.fast`      |
+| 300ms    | Standard transitions, visibility changes | `DesignTokens.Duration.normal`    |
+| 500ms    | Complex animations, loading states       | `DesignTokens.Duration.slow`      |
+| 800ms    | Dramatic effects, page transitions       | `DesignTokens.Duration.extraSlow` |
 
 ### Spring Physics
 
@@ -789,11 +828,11 @@ spring(
 
 ### Easing Functions
 
-| Easing | Use Case |
-|--------|----------|
-| `LinearEasing` | Continuous animations, rotations |
-| `FastOutSlowInEasing` | UI transitions, scaling |
-| `Spring` | Interactive elements, buttons |
+| Easing                | Use Case                         |
+| --------------------- | -------------------------------- |
+| `LinearEasing`        | Continuous animations, rotations |
+| `FastOutSlowInEasing` | UI transitions, scaling          |
+| `Spring`              | Interactive elements, buttons    |
 
 ---
 
@@ -898,7 +937,7 @@ fun LoadingScreen() {
                 size = 64.dp,
                 color = MaterialTheme.colorScheme.primary
             )
-            
+
             LoadingWithText(
                 text = "Preparing your practice..."
             )
@@ -934,7 +973,7 @@ fun ContentSwitcher(currentContent: Content) {
 @Composable
 fun SaveButton(onSave: () -> Unit) {
     var showSuccess by remember { mutableStateOf(false) }
-    
+
     Box {
         Button(
             onClick = {
@@ -944,13 +983,13 @@ fun SaveButton(onSave: () -> Unit) {
         ) {
             Text("Save")
         }
-        
+
         ScaleInOut(visible = showSuccess) {
             SuccessAnimation(
                 message = "Saved!",
                 iconSize = 48.dp
             )
-            
+
             LaunchedEffect(Unit) {
                 delay(2000)
                 showSuccess = false
@@ -962,4 +1001,4 @@ fun SaveButton(onSave: () -> Unit) {
 
 ---
 
-*Last updated: 2026-04-08*
+_Last updated: 2026-04-08_

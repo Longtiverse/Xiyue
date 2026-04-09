@@ -3,13 +3,31 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 test('android includes practice domain placeholders for future shared-core integration', () => {
-  assert.equal(existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeModels.kt'), true);
-  assert.equal(existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeLibraryRepository.kt'), true);
-  assert.equal(existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeSessionFactory.kt'), true);
+  assert.equal(
+    existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeModels.kt'),
+    true
+  );
+  assert.equal(
+    existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeLibraryRepository.kt'),
+    true
+  );
+  assert.equal(
+    existsSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeSessionFactory.kt'),
+    true
+  );
 
-  const models = readFileSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeModels.kt', 'utf8');
-  const repository = readFileSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeLibraryRepository.kt', 'utf8');
-  const sessionFactory = readFileSync('apps/android/app/src/main/java/com/xiyue/app/domain/PracticeSessionFactory.kt', 'utf8');
+  const models = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/domain/PracticeModels.kt',
+    'utf8'
+  );
+  const repository = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/domain/PracticeLibraryRepository.kt',
+    'utf8'
+  );
+  const sessionFactory = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/domain/PracticeSessionFactory.kt',
+    'utf8'
+  );
 
   assert.match(models, /enum class PracticeKind/);
   assert.match(models, /data class PracticeLibraryItem/);

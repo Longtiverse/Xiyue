@@ -36,22 +36,30 @@ export function generateScaleAscendingEvents(rootNoteName, scaleType, octave = 4
 }
 
 export function generateChordBlockEvents(rootNoteName, chordType, octave = 4, bpm = 120) {
-  return createNoteEvents(generateChordPitches(rootNoteName, chordType, octave), bpm, 'simultaneous');
+  return createNoteEvents(
+    generateChordPitches(rootNoteName, chordType, octave),
+    bpm,
+    'simultaneous'
+  );
 }
 
 export function generateChordArpeggioUpEvents(rootNoteName, chordType, octave = 4, bpm = 120) {
-  return createNoteEvents(generateChordArpeggioUpPitches(rootNoteName, chordType, octave), bpm, 'sequential');
+  return createNoteEvents(
+    generateChordArpeggioUpPitches(rootNoteName, chordType, octave),
+    bpm,
+    'sequential'
+  );
 }
 
 export function createPlaybackItem(kind, root, type, octave = 4) {
   if (typeof kind !== 'string') {
     throw new TypeError(`kind must be a string, got ${typeof kind}`);
   }
-  
+
   if (typeof root !== 'string') {
     throw new TypeError(`root must be a string, got ${typeof root}`);
   }
-  
+
   if (typeof type !== 'string') {
     throw new TypeError(`type must be a string, got ${typeof type}`);
   }
@@ -89,20 +97,20 @@ const PLAYBACK_STRATEGIES = {
     generate: generateScaleAscendingEvents,
     supports: ['scale'],
     label: 'Ascending',
-    description: 'Play scale notes in ascending order'
+    description: 'Play scale notes in ascending order',
   },
   chordBlock: {
     generate: generateChordBlockEvents,
     supports: ['chord'],
     label: 'Block',
-    description: 'Play all chord notes simultaneously'
+    description: 'Play all chord notes simultaneously',
   },
   chordArpeggioUp: {
     generate: generateChordArpeggioUpEvents,
     supports: ['chord'],
     label: 'Arpeggio Up',
-    description: 'Play chord notes in ascending arpeggio'
-  }
+    description: 'Play chord notes in ascending arpeggio',
+  },
 };
 
 /**
@@ -114,14 +122,14 @@ export function getSupportedPlaybackModes(item) {
   if (!item || typeof item !== 'object') {
     throw new TypeError('item must be an object');
   }
-  
+
   if (!item.kind) {
     throw new Error('item must have a kind property');
   }
 
   return Object.entries(PLAYBACK_STRATEGIES)
-    .filter(([_, strategy]) => strategy.supports.includes(item.kind))
-    .map(([mode, _]) => mode);
+    .filter(([, strategy]) => strategy.supports.includes(item.kind))
+    .map(([mode]) => mode);
 }
 
 /**
@@ -150,13 +158,17 @@ export function generatePlaybackEvents(item, mode = getDefaultPlaybackMode(item)
   }
 
   const strategy = PLAYBACK_STRATEGIES[mode];
-  
+
   if (!strategy) {
-    throw new Error(`Unknown playback mode: "${mode}". Valid modes: ${Object.keys(PLAYBACK_STRATEGIES).join(', ')}`);
+    throw new Error(
+      `Unknown playback mode: "${mode}". Valid modes: ${Object.keys(PLAYBACK_STRATEGIES).join(', ')}`
+    );
   }
-  
+
   if (!strategy.supports.includes(item.kind)) {
-    throw new Error(`Playback mode "${mode}" does not support item kind "${item.kind}". Supported kinds: ${strategy.supports.join(', ')}`);
+    throw new Error(
+      `Playback mode "${mode}" does not support item kind "${item.kind}". Supported kinds: ${strategy.supports.join(', ')}`
+    );
   }
 
   return strategy.generate(item.root, item.type, item.octave, bpm);
@@ -170,7 +182,7 @@ export function getPlaybackModeInfo() {
   return Object.fromEntries(
     Object.entries(PLAYBACK_STRATEGIES).map(([mode, config]) => [
       mode,
-      { label: config.label, description: config.description, supports: config.supports }
+      { label: config.label, description: config.description, supports: config.supports },
     ])
   );
 }
@@ -187,11 +199,11 @@ export function registerPlaybackMode(mode, generator, supports, label, descripti
   if (typeof mode !== 'string' || !mode) {
     throw new TypeError('mode must be a non-empty string');
   }
-  
+
   if (typeof generator !== 'function') {
     throw new TypeError('generator must be a function');
   }
-  
+
   if (!Array.isArray(supports) || supports.length === 0) {
     throw new TypeError('supports must be a non-empty array');
   }
@@ -200,6 +212,6 @@ export function registerPlaybackMode(mode, generator, supports, label, descripti
     generate: generator,
     supports,
     label: label || mode,
-    description
+    description,
   };
 }

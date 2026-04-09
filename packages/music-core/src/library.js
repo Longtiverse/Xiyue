@@ -30,10 +30,10 @@ function buildSearchIndex(items) {
 
   for (const item of items) {
     itemMap.set(item.id, item);
-    
+
     // 从searchText中提取词元
     const normalized = normalizeSearchText(item.searchText);
-    
+
     // 为所有可能的子字符串建立索引
     for (let i = 0; i < normalized.length; i++) {
       for (let j = i + 1; j <= normalized.length; j++) {
@@ -82,7 +82,7 @@ export function clearLibraryCache() {
 
 /**
  * 使用倒排索引优化搜索库项目
- * 
+ *
  * 优化策略：
  * 1. 使用完整子字符串索引直接获取匹配的项目
  * 2. 无需在运行时进行全量扫描
@@ -92,18 +92,18 @@ export function searchLibraryItems(query = '', { kind = 'all' } = {}) {
 
   // 获取所有符合条件的项目（使用索引或全量）
   let results;
-  
+
   if (normalizedQuery) {
     // 使用倒排索引直接查找匹配的项目
     const { index, itemMap } = getSearchIndex();
     const candidateIds = index.get(normalizedQuery);
-    
+
     if (!candidateIds || candidateIds.size === 0) {
       return [];
     }
-    
+
     // 将候选ID转换为项目对象
-    results = Array.from(candidateIds).map(id => itemMap.get(id));
+    results = Array.from(candidateIds).map((id) => itemMap.get(id));
   } else {
     results = listLibraryItems();
   }

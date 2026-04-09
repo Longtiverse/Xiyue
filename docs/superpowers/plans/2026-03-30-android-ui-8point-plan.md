@@ -19,7 +19,7 @@
 - `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeReducer.kt`
   - Keep transitions predictable for hot switching, overlay visibility, and compact controls.
 - `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeStateFactory.kt`
-  - Derive the new compact UI slices and align ¡°current playback¡± vs ¡°queued next¡± labels.
+  - Derive the new compact UI slices and align ï¿½ï¿½current playbackï¿½ï¿½ vs ï¿½ï¿½queued nextï¿½ï¿½ labels.
 - `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeScreen.kt`
   - Host the true fixed three-zone layout.
 - `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\PlaybackDisplaySection.kt`
@@ -50,7 +50,7 @@
 - Full browsing is possible from a light overlay, not a settings-heavy subpage.
 - Bottom controls feel like transport controls, not a second settings panel.
 - Playing content can be switched without a stop/restart feel.
-- UI clearly distinguishes ¡°currently sounding¡± and ¡°queued next¡±.
+- UI clearly distinguishes ï¿½ï¿½currently soundingï¿½ï¿½ and ï¿½ï¿½queued nextï¿½ï¿½.
 - Full Node test suite passes and a fresh debug APK is archived with timestamp metadata.
 
 ---
@@ -58,6 +58,7 @@
 ### Task 1: Lock the new UI contract in tests first
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\test\home-components.test.js`
 - Modify: `D:\Project\Xiyue\apps\android\test\home-feature.test.js`
 - Modify: `D:\Project\Xiyue\apps\android\test\home-state-machine.test.js`
@@ -93,6 +94,7 @@ git commit -m "test: lock 8-point home ui contract"
 ### Task 2: Simplify the home state model
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeUiState.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeAction.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeReducer.kt`
@@ -109,7 +111,7 @@ Run: `npm run test:android -- home-state-machine.test.js home-feature.test.js`
 Expected: FAIL because state/action names no longer match current implementation.
 
 - [ ] **Step 3: Implement the minimal state contract changes**
-  - Add a dedicated picker strip model containing current filter, visible shortcuts, and a ¡°more¡± affordance.
+  - Add a dedicated picker strip model containing current filter, visible shortcuts, and a ï¿½ï¿½moreï¿½ï¿½ affordance.
   - Reduce `PlaybackControlUiState` to transport-only data.
   - Keep `PlaybackDisplayUiState` focused on hero presentation data.
 
@@ -128,6 +130,7 @@ git commit -m "refactor: simplify home ui state for fixed layout"
 ### Task 3: Rebuild derived state in `HomeStateFactory`
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeStateFactory.kt`
 - Test: `D:\Project\Xiyue\apps\android\test\home-feature.test.js`
 
@@ -161,6 +164,7 @@ git commit -m "refactor: derive hero and picker ui state"
 ### Task 4: Finish the fixed home layout
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\HomeScreen.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\PlaybackDisplaySection.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\features\home\PlaybackControlsSection.kt`
@@ -208,6 +212,7 @@ git commit -m "feat: finish fixed minimalist home layout"
 ### Task 5: Make seamless switching state-consistent
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\PlaybackSnapshot.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\playback\PracticePlaybackService.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\ui\XiyueApp.kt`
@@ -246,6 +251,7 @@ git commit -m "fix: align hot switching playback state"
 ### Task 6: Final dark-theme cleanup
 
 **Files:**
+
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\ui\theme\Color.kt`
 - Modify: `D:\Project\Xiyue\apps\android\app\src\main\java\com\xiyue\app\ui\theme\Theme.kt`
 - Test: `D:\Project\Xiyue\apps\android\test\theme-and-icon.test.js`
@@ -272,6 +278,7 @@ git commit -m "style: finalize dark monochrome theme"
 ### Task 7: Full verification and APK archive
 
 **Files:**
+
 - Verify only; no planned source changes unless failures appear.
 
 - [ ] **Step 1: Run Android tests**
@@ -307,13 +314,13 @@ git commit -m "chore: ship 8-point android ui sprint"
 
 Use parallel agents only on disjoint write scopes:
 
-1. **Worker A ¨C UI contracts + state model**
+1. **Worker A ï¿½C UI contracts + state model**
    - Owns: `HomeUiState.kt`, `HomeAction.kt`, `HomeReducer.kt`, `home-state-machine.test.js`, part of `home-feature.test.js`
 
-2. **Worker B ¨C Hero/picker/overlay Compose UI**
+2. **Worker B ï¿½C Hero/picker/overlay Compose UI**
    - Owns: `HomeScreen.kt`, `PlaybackDisplaySection.kt`, `PlaybackControlsSection.kt`, `PracticeLibrarySection.kt`, `home-components.test.js`
 
-3. **Worker C ¨C Playback switch consistency**
+3. **Worker C ï¿½C Playback switch consistency**
    - Owns: `PlaybackSnapshot.kt`, `PracticePlaybackService.kt`, `XiyueApp.kt`, `playback-service.test.js`
 
 Critical path rule: land Task 1 first, then Tasks 2-5 can overlap with careful file ownership, then Task 7 runs after integration.
@@ -321,10 +328,11 @@ Critical path rule: land Task 1 first, then Tasks 2-5 can overlap with careful f
 ## 8/10 Self-Review Checklist
 
 Before calling the sprint done, manually judge:
+
 - Can I switch to a common scale/chord from the main screen in one tap?
-- Does switching while playing avoid a ¡°stop then restart¡± feeling?
+- Does switching while playing avoid a ï¿½ï¿½stop then restartï¿½ï¿½ feeling?
 - Is the largest thing on the screen always the playback content?
 - Does the bottom zone feel like transport, not settings overload?
-- Does the overlay feel like ¡°more choices¡±, not ¡°another page¡±? 
+- Does the overlay feel like ï¿½ï¿½more choicesï¿½ï¿½, not ï¿½ï¿½another pageï¿½ï¿½?
 - Is the screen mostly dark grayscale and visually calm?
-- Would I personally score this at least 8/10 against the user¡¯s brief?
+- Would I personally score this at least 8/10 against the userï¿½ï¿½s brief?

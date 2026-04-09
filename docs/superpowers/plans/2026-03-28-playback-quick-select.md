@@ -13,6 +13,7 @@
 ### Task 1: Lock the slice with failing Android contract tests
 
 **Files:**
+
 - Modify: `apps/android/test/home-components.test.js`
 - Modify: `apps/android/test/home-feature.test.js`
 
@@ -22,6 +23,7 @@
 ### Task 2: Add quick-select state plumbing
 
 **Files:**
+
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeUiState.kt`
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt`
 
@@ -32,6 +34,7 @@
 ### Task 3: Render quick-select chips in playback controls
 
 **Files:**
+
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/PlaybackControlsSection.kt`
 
 - [ ] Render the quick-select chips above the play button.
@@ -40,6 +43,7 @@
 ### Task 4: Verify the Android iteration
 
 **Files:**
+
 - No code changes expected.
 
 - [ ] Run `npm run test:android`.

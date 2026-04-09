@@ -55,11 +55,11 @@ function validateNoteName(noteName) {
   if (typeof noteName !== 'string') {
     throw new TypeError(`noteName must be a string, got ${typeof noteName}`);
   }
-  
+
   if (!NOTE_NAMES.includes(noteName)) {
     throw new Error(`Unknown note name: ${noteName}. Valid notes: ${NOTE_NAMES.join(', ')}`);
   }
-  
+
   return noteName;
 }
 
@@ -74,11 +74,11 @@ function validateOctave(octave) {
   if (typeof octave !== 'number' || !Number.isInteger(octave)) {
     throw new TypeError(`octave must be an integer, got ${typeof octave}: ${octave}`);
   }
-  
+
   if (octave < -1 || octave > 9) {
     throw new RangeError(`octave must be between -1 and 9, got ${octave}`);
   }
-  
+
   return octave;
 }
 
@@ -89,15 +89,15 @@ function validateOctave(octave) {
  * @throws {TypeError} If bpm is not a valid number
  * @throws {RangeError} If bpm is not positive
  */
-function validateBpm(bpm) {
+export function validateBpm(bpm) {
   if (typeof bpm !== 'number' || !Number.isFinite(bpm)) {
     throw new TypeError(`bpm must be a number, got ${typeof bpm}: ${bpm}`);
   }
-  
+
   if (bpm <= 0) {
     throw new RangeError(`BPM must be positive: ${bpm}`);
   }
-  
+
   return bpm;
 }
 
@@ -120,7 +120,7 @@ export function noteNameToIndex(noteName) {
 export function createPitch(noteName, octave) {
   validateNoteName(noteName);
   validateOctave(octave);
-  
+
   const midiNumber = (octave + 1) * 12 + noteNameToIndex(noteName);
   const frequencyHz = 440 * 2 ** ((midiNumber - 69) / 12);
 
@@ -153,11 +153,11 @@ export function createPitchFromMidiNumber(midiNumber) {
   if (typeof midiNumber !== 'number' || !Number.isInteger(midiNumber)) {
     throw new TypeError(`midiNumber must be an integer, got ${typeof midiNumber}: ${midiNumber}`);
   }
-  
+
   if (midiNumber < 0 || midiNumber > 127) {
     throw new RangeError(`midiNumber must be between 0 and 127, got ${midiNumber}`);
   }
-  
+
   const octave = Math.floor(midiNumber / 12) - 1;
   const noteName = NOTE_NAMES[midiNumber % 12];
   return createPitch(noteName, octave);

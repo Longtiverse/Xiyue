@@ -13,6 +13,7 @@
 ### Task 1: Lock the desired behavior in tests
 
 **Files:**
+
 - Modify: `apps/android/test/playback-service.test.js`
 - Modify: `apps/android/test/home-feature.test.js`
 - Modify: `apps/android/test/home-components.test.js`
@@ -23,6 +24,7 @@
 ### Task 2: Implement pause/resume transport state
 
 **Files:**
+
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/playback/PlaybackSnapshot.kt`
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/playback/PracticePlaybackService.kt`
 
@@ -33,6 +35,7 @@
 ### Task 3: Surface the transport state in the home UI
 
 **Files:**
+
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeUiState.kt`
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt`
 - Modify: `apps/android/app/src/main/java/com/xiyue/app/features/home/HomeAction.kt`
@@ -47,6 +50,7 @@
 ### Task 4: Verify the full Android iteration
 
 **Files:**
+
 - Verify only
 
 - [ ] Run `npm run test:android`.

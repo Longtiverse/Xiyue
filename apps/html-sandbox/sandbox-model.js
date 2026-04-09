@@ -43,7 +43,11 @@ function createKeyboardKeys(previewPitches, activePitches) {
   const activeMidiNumbers = new Set(activePitches.map((pitch) => pitch.midiNumber));
   const keys = [];
 
-  for (let midiNumber = KEYBOARD_RANGE.startMidi; midiNumber <= KEYBOARD_RANGE.endMidi; midiNumber += 1) {
+  for (
+    let midiNumber = KEYBOARD_RANGE.startMidi;
+    midiNumber <= KEYBOARD_RANGE.endMidi;
+    midiNumber += 1
+  ) {
     const pitch = createPitchFromMidiNumber(midiNumber);
 
     keys.push({
@@ -94,7 +98,8 @@ export function deriveSandboxViewModel(state) {
     : getDefaultPlaybackMode(playbackItem);
   const events = generatePlaybackEvents(playbackItem, playbackMode, state.bpm);
   const highlightEvents = generateHighlightEvents(events);
-  const activePitches = state.activeTimeMs == null ? [] : getActivePitchesAtTime(highlightEvents, state.activeTimeMs);
+  const activePitches =
+    state.activeTimeMs == null ? [] : getActivePitchesAtTime(highlightEvents, state.activeTimeMs);
   const previewPitches = activePitches.length > 0 ? activePitches : playbackItem.pitches;
 
   return {

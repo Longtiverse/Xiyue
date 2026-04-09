@@ -33,7 +33,9 @@ test('serves html sandbox entry and module files over http', async () => {
     assert.equal(coreResponse.status, 200);
     assert.match(coreResponse.headers.get('content-type') ?? '', /javascript/);
   } finally {
-    await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+    await new Promise((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve()))
+    );
   }
 });
 

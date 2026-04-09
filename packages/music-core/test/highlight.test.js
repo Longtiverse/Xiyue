@@ -25,13 +25,18 @@ test('creates highlight event with default active type', () => {
       startMs: 0,
       durationMs: 500,
       highlightType: 'active',
-    },
+    }
   );
 });
 
 test('generates highlight events from note events for sequential and block playback', () => {
-  const scaleHighlights = generateHighlightEvents(generateScaleAscendingEvents('C', 'Major', 4, 120));
-  const chordHighlights = generateHighlightEvents(generateChordBlockEvents('G', 'Dom7', 4, 120), 'preview');
+  const scaleHighlights = generateHighlightEvents(
+    generateScaleAscendingEvents('C', 'Major', 4, 120)
+  );
+  const chordHighlights = generateHighlightEvents(
+    generateChordBlockEvents('G', 'Dom7', 4, 120),
+    'preview'
+  );
 
   assert.deepEqual(
     scaleHighlights.slice(0, 2).map((event) => ({
@@ -43,7 +48,7 @@ test('generates highlight events from note events for sequential and block playb
     [
       { pitch: 'C4', startMs: 0, durationMs: 500, highlightType: 'active' },
       { pitch: 'D4', startMs: 500, durationMs: 500, highlightType: 'active' },
-    ],
+    ]
   );
   assert.deepEqual(
     chordHighlights.map((event) => ({
@@ -57,6 +62,6 @@ test('generates highlight events from note events for sequential and block playb
       { pitch: 'B4', startMs: 0, durationMs: 500, highlightType: 'preview' },
       { pitch: 'D5', startMs: 0, durationMs: 500, highlightType: 'preview' },
       { pitch: 'F5', startMs: 0, durationMs: 500, highlightType: 'preview' },
-    ],
+    ]
   );
 });

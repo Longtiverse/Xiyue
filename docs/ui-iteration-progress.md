@@ -11,9 +11,11 @@
 ### 已完成任务 (7/7)
 
 #### 1. DesignTokens.kt - 设计令牌系统 ✅
+
 **位置**: `ui/theme/DesignTokens.kt`
 
 **内容**:
+
 - Spacing 系统 (xs: 4dp → xxl: 48dp)
 - CornerRadius 系统 (sm: 4dp → full: 9999dp)
 - Elevation 系统 (none: 0dp → xl: 16dp)
@@ -26,9 +28,11 @@
 ---
 
 #### 2. ColorPalette.kt - 扩展颜色系统 ✅
+
 **位置**: `ui/theme/ColorPalette.kt`
 
 **内容**:
+
 - Light 主题完整颜色定义
 - Dark 主题完整颜色定义
 - 语义化颜色 (success, warning, info)
@@ -41,9 +45,11 @@
 ---
 
 #### 3. Typography.kt - 字体系统 ✅
+
 **位置**: `ui/theme/Typography.kt`
 
 **内容**:
+
 - Material Design 3 完整字体规范
 - Display 样式 (Large, Medium, Small)
 - Headline 样式 (Large, Medium, Small)
@@ -57,9 +63,11 @@
 ---
 
 #### 4. Theme.kt - 深色模式支持 ✅
+
 **位置**: `ui/theme/Theme.kt`
 
 **内容**:
+
 - 深色主题配置 (保留现有 Xiyue 颜色)
 - 浅色主题配置 (新增)
 - Material You 动态颜色支持 (Android 12+)
@@ -70,14 +78,17 @@
 ---
 
 #### 5. AnimatedIcon.kt - 动画图标组件 ✅
+
 **位置**: `ui/components/AnimatedIcon.kt`
 
 **组件**:
+
 - `AnimatedPlayPauseIcon`: 播放/暂停切换动画
 - `AnimatedIcon`: 通用图标缩放动画
 - `PulsingIcon`: 脉冲动画效果
 
 **特性**:
+
 - 旋转动画 (0° → 90°)
 - 缩放动画 (1.0x → 1.2x)
 - Spring 弹性动画
@@ -88,14 +99,17 @@
 ---
 
 #### 6. XiyueCard.kt - 统一卡片组件 ✅
+
 **位置**: `ui/components/XiyueCard.kt`
 
 **组件**:
+
 - `XiyueCard`: 标准卡片，支持点击和动画
 - `SelectableCard`: 可选择卡片，带选中状态动画
 - `CompactCard`: 紧凑卡片，用于列表项
 
 **特性**:
+
 - 自动内容大小动画
 - 选中状态缩放 (1.0x → 1.02x)
 - 阴影深度动画
@@ -106,14 +120,17 @@
 ---
 
 #### 7. SectionHeader.kt - 区块标题组件 ✅
+
 **位置**: `ui/components/SectionHeader.kt`
 
 **组件**:
+
 - `SectionHeader`: 标准区块标题，支持副标题和操作按钮
 - `CompactSectionHeader`: 紧凑标题
 - `SectionDivider`: 区块分隔线，支持标签
 
 **特性**:
+
 - 标题 + 副标题布局
 - 右侧操作区域
 - 自适应间距
@@ -125,6 +142,7 @@
 ## 📊 成果统计
 
 ### 新增文件
+
 - `DesignTokens.kt` (150 行)
 - `ColorPalette.kt` (180 行)
 - `Typography.kt` (160 行)
@@ -136,6 +154,7 @@
 **总计**: 7 个文件, ~955 行代码
 
 ### 设计系统覆盖
+
 - ✅ 间距系统 (6 个级别)
 - ✅ 圆角系统 (5 个级别)
 - ✅ 阴影系统 (5 个级别)
@@ -153,12 +172,14 @@
 ### 第 2 周：交互体验增强
 
 **任务 2.1: 动画和过渡效果** (3 天)
+
 - [ ] 优化列表项动画
 - [ ] 增强播放按钮动画
 - [ ] 改进键盘预览动画
 - [ ] 添加页面切换过渡
 
 **任务 2.2: 手势交互优化** (2 天)
+
 - [ ] BPM 滑块增强
 - [ ] 根音选择器滑动
 - [ ] 列表滑动刷新
@@ -169,6 +190,7 @@
 ## 💡 使用示例
 
 ### 使用新的设计令牌
+
 ```kotlin
 // 间距
 padding(DesignTokens.Spacing.md)
@@ -184,6 +206,7 @@ animationSpec = tween(durationMillis = DesignTokens.Duration.normal)
 ```
 
 ### 使用新的卡片组件
+
 ```kotlin
 SelectableCard(
     selected = isSelected,
@@ -194,6 +217,7 @@ SelectableCard(
 ```
 
 ### 使用动画图标
+
 ```kotlin
 AnimatedPlayPauseIcon(
     isPlaying = state.isPlaying,
@@ -203,6 +227,7 @@ AnimatedPlayPauseIcon(
 ```
 
 ### 使用区块标题
+
 ```kotlin
 SectionHeader(
     title = "Practice Library",

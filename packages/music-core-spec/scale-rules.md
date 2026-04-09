@@ -9,4 +9,3 @@
 - PentatonicMajor: `0, 2, 4, 7, 9, 12`
 - PentatonicMinor: `0, 3, 5, 7, 10, 12`
 - Blues: `0, 3, 5, 6, 7, 10, 12`
-

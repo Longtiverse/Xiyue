@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Longtiverse/Xiyue/actions/workflows/ci.yml/badge.svg)](https://github.com/Longtiverse/Xiyue/actions/workflows/ci.yml)
 [![Android](https://img.shields.io/badge/platform-android-brightgreen.svg)](https://github.com/Longtiverse/Xiyue)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.1.0-blue.svg)](https://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0.21-blue.svg)](https://kotlinlang.org/)
 
 **习乐（Xiyue）** 是一个面向音乐学习者的智能练习工具，专注于音阶和和弦练习。当前以 **Android App** 为主，辅以 **HTML Sandbox** 做内部自测与共享逻辑验证。
 
@@ -13,6 +13,7 @@
 ## 📱 功能特性
 
 ### 核心功能
+
 - 🎹 **13种音阶** - Major, Minor, Pentatonic, Blues, Modes等
 - 🎸 **12种和弦** - Triads, 7th chords, Sus chords等
 - ⚡ **实时键盘预览** - 播放时同步高亮对应琴键
@@ -21,12 +22,14 @@
 - 📱 **通知栏控制** - 查看和控制播放状态
 
 ### 播放控制
+
 - 🎚️ **BPM调节** - 支持 40-240 BPM
 - 🔄 **循环播放** - 自动重复练习
 - 🎼 **多种播放模式** - 上行、下行、上下行、和弦齐奏、琶音
 - 🎹 **12个根音** - C, C#, D, D#, E, F, F#, G, G#, A, A#, B
 
 ### 用户体验
+
 - ✨ **流畅动画** - 27种精心设计的动画效果
 - 🎨 **精美UI** - 基于Material Design 3的设计系统
 - 🌙 **深色/浅色主题** - 自动适配系统主题
@@ -74,14 +77,14 @@
 
 ### 技术栈
 
-| 层级 | 技术 | 说明 |
-|------|------|------|
-| **UI** | Jetpack Compose | 声明式UI框架 |
-| **状态** | MVI Pattern | 单向数据流 |
-| **异步** | Kotlin Coroutines | 协程异步处理 |
-| **音频** | AudioTrack + PCM | 低延迟音频合成 |
-| **构建** | Gradle + Kotlin DSL | 构建系统 |
-| **测试** | JUnit + Compose Test | 测试框架 |
+| 层级     | 技术                 | 说明           |
+| -------- | -------------------- | -------------- |
+| **UI**   | Jetpack Compose      | 声明式UI框架   |
+| **状态** | MVI Pattern          | 单向数据流     |
+| **异步** | Kotlin Coroutines    | 协程异步处理   |
+| **音频** | AudioTrack + PCM     | 低延迟音频合成 |
+| **构建** | Gradle + Kotlin DSL  | 构建系统       |
+| **测试** | JUnit + Compose Test | 测试框架       |
 
 ---
 
@@ -90,23 +93,27 @@
 Xiyue包含丰富的可复用UI组件：
 
 ### 卡片组件
+
 - `XiyueCard` - 标准卡片容器
 - `SelectableCard` - 可选中卡片
 - `CompactCard` - 紧凑型卡片
 
 ### 交互组件
+
 - `AnimatedPlayButton` - 动画播放按钮
 - `SwipeableRootNoteSelector` - 滑动根音选择器
 - `EnhancedBpmSlider` - 增强型BPM滑块
 - `AnimatedLibraryItem` - 动画库项目
 
 ### 动画组件
+
 - `AnimatedIcon` - 动画图标
 - `AnimatedKeyboardKey` - 动画琴键
 - `SuccessAnimation` - 成功动画
 - `ErrorAnimation` - 错误动画
 
 ### 视觉效果
+
 - `WaveformVisualizer` - 波形可视化
 - `ParticleEffect` - 粒子效果
 - `GlowEffect` - 发光效果
@@ -119,6 +126,7 @@ Xiyue包含丰富的可复用UI组件：
 ## 🚀 快速开始
 
 ### 环境要求
+
 - Android Studio Hedgehog (2023.1.1) 或更高
 - JDK 17
 - Android SDK 36
@@ -134,11 +142,13 @@ cd Xiyue
 ### 配置环境
 
 1. 复制环境配置模板：
+
 ```bash
 copy .env.example .env
 ```
 
 2. 编辑 `.env` 文件：
+
 ```bash
 JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.18.8-hotspot
 ANDROID_SDK_ROOT=C:\Users\YourName\AppData\Local\Android\Sdk
@@ -167,11 +177,13 @@ npm run test:coverage
 ### 构建APK
 
 **Windows:**
+
 ```bash
 npm run build:android
 ```
 
 **Linux/macOS:**
+
 ```bash
 chmod +x scripts/build-android.sh
 bash scripts/build-android.sh
@@ -183,13 +195,13 @@ bash scripts/build-android.sh
 
 ## 📖 文档
 
-| 文档 | 说明 |
-|------|------|
-| [COMPONENT_GUIDE.md](./COMPONENT_GUIDE.md) | UI组件使用指南 |
-| [ANIMATION_GUIDE.md](./ANIMATION_GUIDE.md) | 动画系统文档 |
-| [docs/architecture.md](./docs/architecture.md) | 架构设计文档 |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | 贡献指南 |
-| [PROJECT-SUMMARY.md](./PROJECT-SUMMARY.md) | 项目摘要 |
+| 文档                                           | 说明           |
+| ---------------------------------------------- | -------------- |
+| [COMPONENT_GUIDE.md](./COMPONENT_GUIDE.md)     | UI组件使用指南 |
+| [ANIMATION_GUIDE.md](./ANIMATION_GUIDE.md)     | 动画系统文档   |
+| [docs/architecture.md](./docs/architecture.md) | 架构设计文档   |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)           | 贡献指南       |
+| [PROJECT-SUMMARY.md](./PROJECT-SUMMARY.md)     | 项目摘要       |
 
 ---
 
@@ -253,6 +265,7 @@ Xiyue/
 5. 创建 Pull Request
 
 **要求**:
+
 - 运行 `npm run lint` 检查代码风格
 - 运行 `npm test` 确保测试通过
 - 添加必要的文档
@@ -269,7 +282,7 @@ Xiyue/
 ## 📞 联系方式
 
 - GitHub Issues: [问题反馈](https://github.com/Longtiverse/Xiyue/issues)
-- Email: [your-email@example.com](mailto:your-email@example.com)
+- Email: xiyue@example.com
 
 ---
 
@@ -279,7 +292,7 @@ Xiyue/
 
 ---
 
-*Made with ❤️ for music learners*
+_Made with ❤️ for music learners_
 
 ---
 
@@ -320,7 +333,6 @@ npm run build:android
 ---
 
 **Repository**: https://github.com/Longtiverse/Xiyue
-
 
 ## 联系方式
 
