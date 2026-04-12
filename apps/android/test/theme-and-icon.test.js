@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-test('android theme palette aligns with icon direction', () => {
+test('android theme palette aligns with the design spec accent and gold tokens', () => {
   const colors = readFileSync(
     'apps/android/app/src/main/java/com/xiyue/app/ui/theme/Color.kt',
     'utf8'
@@ -12,11 +12,14 @@ test('android theme palette aligns with icon direction', () => {
     'utf8'
   );
 
-  assert.match(colors, /XiyueMint|XiyueTeal/);
+  assert.match(colors, /XiyueAccent/);
+  assert.match(colors, /XiyueAccentStrong/);
+  assert.match(colors, /XiyueGold/);
+  assert.match(colors, /XiyueGoldStrong/);
   assert.match(colors, /XiyueBackground/);
   assert.match(theme, /darkColorScheme/);
-  assert.match(theme, /primary =/);
-  assert.match(theme, /surface =/);
+  assert.match(theme, /primary = XiyueAccent/);
+  assert.match(theme, /tertiary = XiyueGold|secondary = XiyueGold/);
 });
 
 test('android adaptive icon resources define foreground and background layers', () => {

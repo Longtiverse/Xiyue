@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xiyue — 全功能页面参考图 V2.2</title>
+    <link rel="stylesheet" href="./xiyue-screen-reference.css" />
+  </head>
+  <body>
+    <div class="page-aura page-aura-left"></div>
+    <div class="page-aura page-aura-right"></div>
+
+    <main class="ref-shell">
+      <header class="ref-header">
+        <div>
+          <p class="eyebrow">Xiyue · 习乐 设计参考 V2.2</p>
+          <h1>全功能页面一览</h1>
+          <p class="intro">
+            所有页面与核心组件均以编号标注，方便逐项反馈修改意见。<br>
+            点击编号标签可高亮对应区域。
+          </p>
+        </div>
+        <nav class="jump-nav surface surface-soft">
+          <p class="nav-label">快速跳转</p>
+          <a href="#screen-1">S1 练习主页</a>
+          <a href="#screen-2">S2 收藏列表</a>
+          <a href="#screen-3">S3 设置</a>
+          <a href="#screen-4">S4 自由组合</a>
+          <a href="#nav-bar">N1 底部导航</a>
+        </nav>
+      </header>
+
+      <!-- ════════════════════════════════════════
+           S1 — Practice / Home (主练习页)
+           ════════════════════════════════════════ -->
+      <section class="screen-section" id="screen-1">
+        <div class="section-header">
+          <span class="section-number">S1</span>
+          <div>
+            <h2>练习主页 · Practice Home</h2>
+            <p class="section-desc">应用核心页面，包含播放展示、曲库选择、根音选取、播放控制、播放选项等所有主要交互区域。选中和弦项时额外显示和弦模式选项（琶音/齐奏/琶音+齐奏）。</p>
+          </div>
+        </div>
+
+        <div class="phone-grid">
+          <!-- ──── S1-A Ready 状态 ──── -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S1-A</span> Ready 初始状态</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 1.1 Playback Display — Note Focus mode -->
+                <div class="comp-zone" data-id="1.1">
+                  <span class="zone-tag">1.1</span>
+                  <div class="mock-playback-display">
+                    <div class="mock-waveform">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <p class="mock-mode-chip">Note focus</p>
+                    <p class="mock-note-small">当前音</p>
+                    <p class="mock-note-big">G</p>
+                    <p class="mock-hint">点击展开更多信息</p>
+                  </div>
+                </div>
+
+                <!-- 1.2 Library Selector (Tab filter + horizontal scroll cards) -->
+                <div class="comp-zone" data-id="1.2">
+                  <span class="zone-tag">1.2</span>
+                  <div class="mock-library-selector">
+                    <div class="mock-filters centered">
+                      <span class="chip-active">全部</span><span>音阶</span><span>和弦</span><span>收藏</span>
+                    </div>
+                    <div class="mock-chip-row">
+                      <span class="item-selected">G Dorian Flow</span>
+                      <span>D Melodic Minor</span>
+                      <span>B♭maj7 Open</span>
+                      <span>Pentatonic Return</span>
+                      <span>C Harmonic Minor</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.3 Root Note Selector -->
+                <div class="comp-zone" data-id="1.3">
+                  <span class="zone-tag">1.3</span>
+                  <div class="mock-root-selector">
+                    <div class="mock-row-head"><p class="mock-eyebrow">根音</p><span class="mock-meta">滑动或点击</span></div>
+                    <div class="mock-root-chips">
+                      <span>E</span><span>F</span><span class="root-near">F♯</span><span class="root-selected">G</span><span class="root-near">A♭</span><span>A</span><span>B♭</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.4 Play Button (single button) -->
+                <div class="comp-zone" data-id="1.4">
+                  <span class="zone-tag">1.4</span>
+                  <div class="mock-playback-controls">
+                    <div class="mock-btn-row centered">
+                      <button class="mock-play-btn">▶ 开始练习</button>
+                    </div>
+                    <p class="mock-btn-hint">长按或双击可停止并重置</p>
+                  </div>
+                </div>
+
+                <!-- 1.5 Playback Option Chips -->
+                <div class="comp-zone" data-id="1.5">
+                  <span class="zone-tag">1.5</span>
+                  <div class="mock-option-chips">
+                    <div class="mock-option-row centered">
+                      <div class="option-group">
+                        <span class="option-label">方向</span>
+                        <span class="option-chip is-on">上行 ↑</span>
+                        <span class="option-chip">下行 ↓</span>
+                        <span class="option-chip">上下行 ↕</span>
+                      </div>
+                      <div class="option-group">
+                        <span class="option-label">循环</span>
+                        <span class="option-chip is-on">开</span>
+                        <span class="option-chip">关</span>
+                      </div>
+                    </div>
+                    <div class="mock-option-row centered">
+                      <div class="option-group">
+                        <span class="option-label">音色</span>
+                        <span class="option-chip is-on">Piano</span>
+                        <span class="option-chip">Sawtooth</span>
+                        <span class="option-chip">Sine</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.6 BPM Control (swipeable selector) -->
+                <div class="comp-zone" data-id="1.6">
+                  <span class="zone-tag">1.6</span>
+                  <div class="mock-bpm-selector">
+                    <div class="mock-row-head"><p class="mock-eyebrow">BPM</p><span class="mock-meta">滑动或点击</span></div>
+                    <div class="mock-bpm-chips">
+                      <span>60</span><span>72</span><span class="bpm-near">80</span><span class="bpm-selected">92</span><span class="bpm-near">100</span><span>120</span><span>140</span>
+                    </div>
+                    <p class="mock-bpm-tempo-label centered-text">Andante</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ──── S1-C 和弦项 Ready 状态 ──── -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S1-C</span> 和弦项 Ready 状态</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 1.1 Playback Display — chord selected -->
+                <div class="comp-zone" data-id="1.1">
+                  <span class="zone-tag">1.1</span>
+                  <div class="mock-playback-display">
+                    <div class="mock-waveform">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <p class="mock-mode-chip">Note focus</p>
+                    <p class="mock-note-small">当前和弦</p>
+                    <p class="mock-note-big">B♭maj7</p>
+                    <p class="mock-hint">点击展开更多信息</p>
+                  </div>
+                </div>
+
+                <!-- 1.2 Library Selector — chord tab active -->
+                <div class="comp-zone" data-id="1.2">
+                  <span class="zone-tag">1.2</span>
+                  <div class="mock-library-selector">
+                    <div class="mock-filters centered">
+                      <span>全部</span><span>音阶</span><span class="chip-active">和弦</span><span>收藏</span>
+                    </div>
+                    <div class="mock-chip-row">
+                      <span class="item-selected">B♭maj7 Open</span>
+                      <span>A7 Shell</span>
+                      <span>Cmaj7</span>
+                      <span>Dm7</span>
+                      <span>G7 Dom</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.3 Root Note Selector -->
+                <div class="comp-zone" data-id="1.3">
+                  <span class="zone-tag">1.3</span>
+                  <div class="mock-root-selector">
+                    <div class="mock-row-head"><p class="mock-eyebrow">根音</p><span class="mock-meta">滑动或点击</span></div>
+                    <div class="mock-root-chips">
+                      <span>G</span><span>A♭</span><span class="root-near">A</span><span class="root-selected">B♭</span><span class="root-near">B</span><span>C</span><span>D♭</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.4 Play Button -->
+                <div class="comp-zone" data-id="1.4">
+                  <span class="zone-tag">1.4</span>
+                  <div class="mock-playback-controls">
+                    <div class="mock-btn-row centered">
+                      <button class="mock-play-btn">▶ 开始练习</button>
+                    </div>
+                    <p class="mock-btn-hint">长按或双击可停止并重置</p>
+                  </div>
+                </div>
+
+                <!-- 1.5 Playback Option Chips — chord mode visible -->
+                <div class="comp-zone" data-id="1.5">
+                  <span class="zone-tag">1.5</span>
+                  <div class="mock-option-chips">
+                    <div class="mock-option-row centered">
+                      <div class="option-group">
+                        <span class="option-label">方向</span>
+                        <span class="option-chip is-on">上行 ↑</span>
+                        <span class="option-chip">下行 ↓</span>
+                        <span class="option-chip">上下行 ↕</span>
+                      </div>
+                      <div class="option-group">
+                        <span class="option-label">循环</span>
+                        <span class="option-chip is-on">开</span>
+                        <span class="option-chip">关</span>
+                      </div>
+                    </div>
+                    <div class="mock-option-row centered">
+                      <div class="option-group">
+                        <span class="option-label">和弦模式</span>
+                        <span class="option-chip is-on">琶音</span>
+                        <span class="option-chip">齐奏</span>
+                        <span class="option-chip">琶音+齐奏</span>
+                      </div>
+                    </div>
+                    <p class="mock-option-note">琶音+齐奏：先播放琶音，再齐奏两次。琶音方向受上方方向选项控制。</p>
+                    <div class="mock-option-row centered">
+                      <div class="option-group">
+                        <span class="option-label">音色</span>
+                        <span class="option-chip is-on">Piano</span>
+                        <span class="option-chip">Sawtooth</span>
+                        <span class="option-chip">Sine</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.6 BPM Control (swipeable selector) -->
+                <div class="comp-zone" data-id="1.6">
+                  <span class="zone-tag">1.6</span>
+                  <div class="mock-bpm-selector">
+                    <div class="mock-row-head"><p class="mock-eyebrow">BPM</p><span class="mock-meta">滑动或点击</span></div>
+                    <div class="mock-bpm-chips">
+                      <span>52</span><span>60</span><span class="bpm-near">72</span><span class="bpm-selected">80</span><span class="bpm-near">92</span><span>100</span><span>120</span>
+                    </div>
+                    <p class="mock-bpm-tempo-label centered-text">Andante</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ──── S1-B Playing 状态 ──── -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S1-B</span> Playing 播放中状态</div>
+            <div class="phone-frame is-playing">
+              <div class="phone-notch"></div>
+              <div class="phone-screen playing-bg">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 1.1b Playback Display — Sequence mode -->
+                <div class="comp-zone" data-id="1.1b">
+                  <span class="zone-tag">1.1b</span>
+                  <div class="mock-playback-display is-live">
+                    <div class="playback-glow"></div>
+                    <div class="mock-waveform is-active">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="mock-seq-header">
+                      <p class="mock-practice-name">G Dorian Flow</p>
+                      <span class="mock-live-pill"><span class="mock-live-dot"></span>Playing</span>
+                    </div>
+                    <p class="mock-step-count">3 / 7</p>
+                    <p class="mock-note-big gold">B♭</p>
+                    <div class="mock-sequence-row centered">
+                      <span>G</span><span>A</span><span class="seq-active">B♭</span><span class="seq-next">C</span><span>D</span><span>E♭</span><span>F</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.7 Keyboard Preview (Playing, scale notes highlighted) -->
+                <div class="comp-zone" data-id="1.7">
+                  <span class="zone-tag">1.7</span>
+                  <div class="mock-keyboard">
+                    <p class="mock-eyebrow centered-text">键盘预览 · <span class="gold-text">Live</span></p>
+                    <div class="piano-wrapper">
+                      <div class="piano-white-keys">
+                        <div class="wk key-in-scale"><span>C</span></div>
+                        <div class="wk key-in-scale"><span>D</span></div>
+                        <div class="wk"><span>E</span></div>
+                        <div class="wk key-in-scale"><span>F</span></div>
+                        <div class="wk key-in-scale"><span>G</span></div>
+                        <div class="wk key-in-scale"><span>A</span></div>
+                        <div class="wk"><span>B</span></div>
+                        <div class="wk"><span>C</span></div>
+                      </div>
+                      <div class="piano-black-keys">
+                        <div class="bk" style="left: calc(12.5% * 1 - 4%)"><span>C♯</span></div>
+                        <div class="bk bk-in-scale" style="left: calc(12.5% * 2 - 4%)"><span>E♭</span></div>
+                        <div class="bk" style="left: calc(12.5% * 4 - 4%)"><span>F♯</span></div>
+                        <div class="bk" style="left: calc(12.5% * 5 - 4%)"><span>A♭</span></div>
+                        <div class="bk key-active-black" style="left: calc(12.5% * 6 - 4%)"><span>B♭</span></div>
+                      </div>
+                    </div>
+                    <div class="keyboard-legend">
+                      <span class="kleg-item"><span class="kleg-swatch kleg-active"></span>当前音</span>
+                      <span class="kleg-item"><span class="kleg-swatch kleg-scale"></span>音阶内</span>
+                      <span class="kleg-item"><span class="kleg-swatch kleg-off"></span>音阶外</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 1.4 Play Button — Playing state -->
+                <div class="comp-zone" data-id="1.4">
+                  <span class="zone-tag">1.4</span>
+                  <div class="mock-playback-controls">
+                    <div class="mock-btn-row centered">
+                      <button class="mock-play-btn is-playing">❚❚ 暂停</button>
+                    </div>
+                    <p class="mock-btn-hint">长按或双击可停止并重置</p>
+                  </div>
+                </div>
+
+                <!-- 1.5 (Playing): read-only status labels -->
+                <div class="comp-zone" data-id="1.5">
+                  <span class="zone-tag">1.5</span>
+                  <div class="mock-status-pills centered">
+                    <span class="status-pill">上行 ↑</span>
+                    <span class="status-pill">循环</span>
+                    <span class="status-pill">Piano</span>
+                    <span class="status-pill">92 BPM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component Legend for S1 -->
+        <div class="comp-legend surface surface-soft">
+          <p class="legend-title">S1 组件编号索引</p>
+          <div class="legend-grid">
+            <div><strong>1.1</strong> 播放展示 — 音符焦点模式 (Note Focus)</div>
+            <div><strong>1.1b</strong> 播放展示 — 序列详情模式 (Sequence Detail)</div>
+            <div><strong>1.2</strong> 曲库选择器 (Tab筛选 + 横滑卡片)</div>
+            <div><strong>1.3</strong> 根音选择器 (Root Note Selector)</div>
+            <div><strong>1.4</strong> 播放按钮 (单一按钮: 开始/暂停，长按停止)</div>
+            <div><strong>1.5</strong> 播放选项 chips (方向/循环/音色；和弦项额外显示和弦模式)</div>
+            <div><strong>1.6</strong> BPM 选择器 (横向滑动选择，同根音选择器风格)</div>
+            <div><strong>1.7</strong> 键盘预览 (含黑键 · 音阶指法图 · 仅 Playing 态显示)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════
+           S2 — Favorites (收藏列表)
+           ════════════════════════════════════════ -->
+      <section class="screen-section" id="screen-2">
+        <div class="section-header">
+          <span class="section-number">S2</span>
+          <div>
+            <h2>收藏列表 · Favorites</h2>
+            <p class="section-desc">展示用户已收藏的音阶/和弦。点击条目跳回练习页并选中该项。左滑可取消收藏。</p>
+          </div>
+        </div>
+
+        <div class="phone-grid">
+          <!-- S2-A 有内容 -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S2-A</span> 有收藏内容</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 2.1 Favorites List -->
+                <div class="comp-zone" data-id="2.1">
+                  <span class="zone-tag">2.1</span>
+                  <div class="mock-fav-list">
+                    <p class="fav-count centered-text">4 项收藏</p>
+                    <div class="mock-fav-item">
+                      <div><p class="fav-name">G Dorian Flow</p><p class="fav-type">音阶 · 中级</p></div>
+                      <span class="fav-heart">♥</span>
+                    </div>
+                    <div class="mock-fav-item">
+                      <div><p class="fav-name">C Harmonic Minor</p><p class="fav-type">音阶 · 中级</p></div>
+                      <span class="fav-heart">♥</span>
+                    </div>
+                    <div class="mock-fav-item is-swiped">
+                      <div><p class="fav-name">A7 Shell Voicings</p><p class="fav-type">和弦 · 高级</p></div>
+                      <span class="fav-swipe-hint">← 左滑取消收藏</span>
+                    </div>
+                    <div class="mock-fav-item">
+                      <div><p class="fav-name">B♭maj7 Open Tones</p><p class="fav-type">和弦 · 初级</p></div>
+                      <span class="fav-heart">♥</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- S2-B 空状态 -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S2-B</span> 空状态 (Empty)</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 2.2 Empty State -->
+                <div class="comp-zone" data-id="2.2">
+                  <span class="zone-tag">2.2</span>
+                  <div class="mock-empty-state">
+                    <div class="empty-icon">♡</div>
+                    <p class="empty-title">暂无收藏</p>
+                    <p class="empty-sub">在练习界面点击收藏按钮来添加</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comp-legend surface surface-soft">
+          <p class="legend-title">S2 组件编号索引</p>
+          <div class="legend-grid">
+            <div><strong>2.1</strong> 收藏列表 (Favorites List · 含数量统计 + 左滑删除)</div>
+            <div><strong>2.2</strong> 空状态组件 (EmptyState)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════
+           S3 — Settings (设置)
+           ════════════════════════════════════════ -->
+      <section class="screen-section" id="screen-3">
+        <div class="section-header">
+          <span class="section-number">S3</span>
+          <div>
+            <h2>设置 · Settings</h2>
+            <p class="section-desc">应用级配置：主题切换、提示词开关、关于信息。BPM 仅在练习主页控制。</p>
+          </div>
+        </div>
+
+        <div class="phone-grid">
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S3-A</span> 设置页面</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 3.1 Theme Selector -->
+                <div class="comp-zone" data-id="3.1">
+                  <span class="zone-tag">3.1</span>
+                  <div class="mock-settings-group">
+                    <p class="settings-group-title centered-text">主题</p>
+                    <div class="mock-radio-item"><span class="radio">○</span> 浅色</div>
+                    <div class="mock-radio-item is-selected"><span class="radio">●</span> 深色</div>
+                    <div class="mock-radio-item"><span class="radio">○</span> 跟随系统</div>
+                  </div>
+                </div>
+
+                <!-- 3.2 Hints Toggle -->
+                <div class="comp-zone" data-id="3.2">
+                  <span class="zone-tag">3.2</span>
+                  <div class="mock-settings-group">
+                    <p class="settings-group-title centered-text">操作提示</p>
+                    <div class="mock-toggle-item">
+                      <span class="toggle-text">显示操作提示词</span>
+                      <span class="mock-toggle is-on"><span class="toggle-thumb"></span></span>
+                    </div>
+                    <p class="toggle-desc centered-text">如"长按可停止"等辅助文案</p>
+                  </div>
+                </div>
+
+                <!-- 3.3 About -->
+                <div class="comp-zone" data-id="3.3">
+                  <span class="zone-tag">3.3</span>
+                  <div class="mock-settings-group">
+                    <p class="settings-group-title centered-text">关于习乐</p>
+                    <p class="about-text centered-text">版本 0.1.0</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comp-legend surface surface-soft">
+          <p class="legend-title">S3 组件编号索引</p>
+          <div class="legend-grid">
+            <div><strong>3.1</strong> 主题选择器 (ThemeModeSelector)</div>
+            <div><strong>3.2</strong> 操作提示开关 (Hints Toggle)</div>
+            <div><strong>3.3</strong> 关于信息 (About)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════
+           S4 — Custom Combo (自由组合)
+           ════════════════════════════════════════ -->
+      <section class="screen-section" id="screen-4">
+        <div class="section-header">
+          <span class="section-number">S4</span>
+          <div>
+            <h2>自由组合 · Custom Combo</h2>
+            <p class="section-desc">用户可自选任意音符组合，或构建和弦进行。选好后可播放该自定义序列，共用相同的播放控制。</p>
+          </div>
+        </div>
+
+        <div class="phone-grid">
+          <!-- ──── S4-A 自选音符模式 ──── -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S4-A</span> 自选音符模式</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 4.1 Mode Switch Tab -->
+                <div class="comp-zone" data-id="4.1">
+                  <span class="zone-tag">4.1</span>
+                  <div class="mock-mode-tabs">
+                    <span class="mode-tab is-active">音符选择</span>
+                    <span class="mode-tab">和弦进行</span>
+                  </div>
+                </div>
+
+                <!-- 4.2 12-Tone Selection Grid -->
+                <div class="comp-zone" data-id="4.2">
+                  <span class="zone-tag">4.2</span>
+                  <div class="mock-tone-grid">
+                    <p class="mock-eyebrow centered-text">点击选择音符</p>
+                    <div class="tone-grid">
+                      <span class="tone-cell is-selected">C</span>
+                      <span class="tone-cell">C♯</span>
+                      <span class="tone-cell is-selected">D</span>
+                      <span class="tone-cell">E♭</span>
+                      <span class="tone-cell is-selected">E</span>
+                      <span class="tone-cell">F</span>
+                      <span class="tone-cell">F♯</span>
+                      <span class="tone-cell is-selected">G</span>
+                      <span class="tone-cell">A♭</span>
+                      <span class="tone-cell">A</span>
+                      <span class="tone-cell">B♭</span>
+                      <span class="tone-cell">B</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4.3 Selected Content Preview -->
+                <div class="comp-zone" data-id="4.3">
+                  <span class="zone-tag">4.3</span>
+                  <div class="mock-selected-preview">
+                    <p class="mock-eyebrow centered-text">已选音符</p>
+                    <div class="mock-preview-row centered">
+                      <span class="preview-note">C</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note">D</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note">E</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note">G</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4.4 Playback Controls (reuses 1.4 + 1.5 style) -->
+                <div class="comp-zone" data-id="4.4">
+                  <span class="zone-tag">4.4</span>
+                  <div class="mock-playback-controls">
+                    <div class="mock-btn-row centered">
+                      <button class="mock-play-btn">▶ 播放序列</button>
+                    </div>
+                    <p class="mock-btn-hint">长按或双击可停止并重置</p>
+                    <div class="mock-option-chips compact">
+                      <div class="mock-option-row centered">
+                        <div class="option-group">
+                          <span class="option-chip is-on">上行 ↑</span>
+                          <span class="option-chip">下行 ↓</span>
+                          <span class="option-chip">上下行 ↕</span>
+                        </div>
+                        <div class="option-group">
+                          <span class="option-chip is-on">循环</span>
+                        </div>
+                        <div class="option-group">
+                          <span class="option-chip is-on">Piano</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ──── S4-B 和弦进行模式 ──── -->
+          <div class="phone-card">
+            <div class="phone-label"><span class="label-num">S4-B</span> 和弦进行模式</div>
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>5G · 87%</span></div>
+
+                <!-- 4.1 Mode Switch Tab -->
+                <div class="comp-zone" data-id="4.1">
+                  <span class="zone-tag">4.1</span>
+                  <div class="mock-mode-tabs">
+                    <span class="mode-tab">音符选择</span>
+                    <span class="mode-tab is-active">和弦进行</span>
+                  </div>
+                </div>
+
+                <!-- 4.5 Chord Constructor -->
+                <div class="comp-zone" data-id="4.5">
+                  <span class="zone-tag">4.5</span>
+                  <div class="mock-chord-constructor">
+                    <p class="mock-eyebrow centered-text">构建和弦</p>
+                    <!-- Root note row -->
+                    <div class="chord-builder-section">
+                      <span class="builder-label">根音</span>
+                      <div class="builder-chips centered">
+                        <span class="builder-chip is-on">C</span>
+                        <span class="builder-chip">C♯</span>
+                        <span class="builder-chip">D</span>
+                        <span class="builder-chip">E♭</span>
+                        <span class="builder-chip">E</span>
+                        <span class="builder-chip">F</span>
+                        <span class="builder-chip">F♯</span>
+                        <span class="builder-chip">G</span>
+                        <span class="builder-chip">A♭</span>
+                        <span class="builder-chip">A</span>
+                        <span class="builder-chip">B♭</span>
+                        <span class="builder-chip">B</span>
+                      </div>
+                    </div>
+                    <!-- Chord type row -->
+                    <div class="chord-builder-section">
+                      <span class="builder-label">类型</span>
+                      <div class="builder-chips-scroll">
+                        <span class="builder-chip">maj</span>
+                        <span class="builder-chip">min</span>
+                        <span class="builder-chip">7</span>
+                        <span class="builder-chip is-on">maj7</span>
+                        <span class="builder-chip">min7</span>
+                        <span class="builder-chip">dim</span>
+                        <span class="builder-chip">aug</span>
+                        <span class="builder-chip">sus2</span>
+                        <span class="builder-chip">sus4</span>
+                        <span class="builder-chip">9</span>
+                      </div>
+                    </div>
+                    <!-- Add button -->
+                    <div class="builder-add centered">
+                      <span class="builder-result">Cmaj7</span>
+                      <span class="chord-add-btn">+ 添加到进行</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4.3 Chord Progression Preview -->
+                <div class="comp-zone" data-id="4.3">
+                  <span class="zone-tag">4.3</span>
+                  <div class="mock-selected-preview">
+                    <p class="mock-eyebrow centered-text">和弦进行</p>
+                    <div class="mock-preview-row centered">
+                      <span class="preview-note chord">Cmaj7</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note chord">Am7</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note chord">Dm7</span>
+                      <span class="preview-arrow">→</span>
+                      <span class="preview-note chord">G7</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Common progressions -->
+                <div class="comp-zone" data-id="4.6">
+                  <span class="zone-tag">4.6</span>
+                  <div class="chord-presets">
+                    <p class="mock-eyebrow centered-text">常用进行 · 快捷填入</p>
+                    <div class="chord-preset-row centered">
+                      <span class="chord-preset">ii – V – I</span>
+                      <span class="chord-preset">I – vi – IV – V</span>
+                      <span class="chord-preset">I – IV – V – I</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4.4 Playback Controls (chord mode) -->
+                <div class="comp-zone" data-id="4.4">
+                  <span class="zone-tag">4.4</span>
+                  <div class="mock-playback-controls">
+                    <div class="mock-btn-row centered">
+                      <button class="mock-play-btn">▶ 播放进行</button>
+                    </div>
+                    <p class="mock-btn-hint">长按或双击可停止并重置</p>
+                    <div class="mock-option-chips compact">
+                      <div class="mock-option-row centered">
+                        <div class="option-group">
+                          <span class="option-chip is-on">上行 ↑</span>
+                          <span class="option-chip">下行 ↓</span>
+                          <span class="option-chip">上下行 ↕</span>
+                        </div>
+                        <div class="option-group">
+                          <span class="option-chip is-on">循环</span>
+                        </div>
+                      </div>
+                      <div class="mock-option-row centered">
+                        <div class="option-group">
+                          <span class="option-label">和弦模式</span>
+                          <span class="option-chip is-on">琶音</span>
+                          <span class="option-chip">齐奏</span>
+                          <span class="option-chip">琶音+齐奏</span>
+                        </div>
+                      </div>
+                      <div class="mock-option-row centered">
+                        <div class="option-group">
+                          <span class="option-chip is-on">Piano</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comp-legend surface surface-soft">
+          <p class="legend-title">S4 组件编号索引</p>
+          <div class="legend-grid">
+            <div><strong>4.1</strong> 模式切换 tab (音符选择 / 和弦进行)</div>
+            <div><strong>4.2</strong> 12音选择网格 (Tone Selection Grid)</div>
+            <div><strong>4.3</strong> 已选内容预览 (Selected Content Preview)</div>
+            <div><strong>4.4</strong> 播放控制 (复用 1.4 + 1.5 样式)</div>
+            <div><strong>4.5</strong> 和弦构造器 (根音 × 类型，零输入选择)</div>
+            <div><strong>4.6</strong> 常用和弦进行 (快捷预设)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════
+           N1 — Bottom Navigation (底部导航)
+           ════════════════════════════════════════ -->
+      <section class="screen-section" id="nav-bar">
+        <div class="section-header">
+          <span class="section-number">N1</span>
+          <div>
+            <h2>底部导航 · Bottom Navigation</h2>
+            <p class="section-desc">Material3 NavigationBar，四个 Tab 切换应用主要区域。选中态带指示条高亮。</p>
+          </div>
+        </div>
+
+        <div class="navbar-showcase">
+          <!-- N1 各 tab 选中态展示 -->
+          <div class="comp-zone" data-id="N1.1">
+            <span class="zone-tag">N1.1</span>
+            <div class="mock-navbar-v2">
+              <div class="nav-tab is-active">
+                <div class="nav-tab-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                </div>
+                <span class="nav-tab-label">练习</span>
+                <span class="nav-tab-indicator"></span>
+              </div>
+              <div class="nav-tab">
+                <div class="nav-tab-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="12" x2="6" y2="20"/><line x1="10" y1="12" x2="10" y2="20"/><line x1="14" y1="12" x2="14" y2="20"/><line x1="18" y1="12" x2="18" y2="20"/></svg>
+                </div>
+                <span class="nav-tab-label">组合</span>
+              </div>
+              <div class="nav-tab">
+                <div class="nav-tab-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </div>
+                <span class="nav-tab-label">收藏</span>
+              </div>
+              <div class="nav-tab">
+                <div class="nav-tab-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <span class="nav-tab-label">设置</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comp-legend surface surface-soft">
+          <p class="legend-title">N1 组件编号索引</p>
+          <div class="legend-grid">
+            <div><strong>N1.1</strong> 底部导航栏 — 练习 / 组合 / 收藏 / 设置 (SVG 图标 + 选中指示条)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════
+           Master Index
+           ════════════════════════════════════════ -->
+      <section class="master-index surface surface-soft">
+        <h2>完整编号索引</h2>
+        <p class="index-intro">以下为所有可标注的组件编号，供审阅时引用。</p>
+        <div class="index-columns">
+          <div class="index-group">
+            <h3>S1 · 练习主页</h3>
+            <ul>
+              <li><strong>1.1</strong> 播放展示 — 音符焦点模式</li>
+              <li><strong>1.1b</strong> 播放展示 — 序列详情模式</li>
+              <li><strong>1.2</strong> 曲库选择器 (Tab筛选+横滑卡片)</li>
+              <li><strong>1.3</strong> 根音选择器</li>
+              <li><strong>1.4</strong> 播放按钮 (单一按钮)</li>
+              <li><strong>1.5</strong> 播放选项 (chips / 和弦模式 / 只读标签)</li>
+              <li><strong>1.6</strong> BPM 选择器 (横向滑动)</li>
+              <li><strong>1.7</strong> 键盘预览 (含黑键 · 音阶指法图)</li>
+            </ul>
+          </div>
+          <div class="index-group">
+            <h3>S2 · 收藏列表</h3>
+            <ul>
+              <li><strong>2.1</strong> 收藏列表 (含数量 + 左滑)</li>
+              <li><strong>2.2</strong> 空状态</li>
+            </ul>
+            <h3>S3 · 设置</h3>
+            <ul>
+              <li><strong>3.1</strong> 主题选择器</li>
+              <li><strong>3.2</strong> 操作提示开关</li>
+              <li><strong>3.3</strong> 关于信息</li>
+            </ul>
+          </div>
+          <div class="index-group">
+            <h3>S4 · 自由组合</h3>
+            <ul>
+              <li><strong>4.1</strong> 模式切换 tab</li>
+              <li><strong>4.2</strong> 12音选择网格</li>
+              <li><strong>4.3</strong> 已选内容预览</li>
+              <li><strong>4.4</strong> 播放控制</li>
+              <li><strong>4.5</strong> 和弦构造器</li>
+              <li><strong>4.6</strong> 常用和弦进行预设</li>
+            </ul>
+            <h3>N1 · 底部导航</h3>
+            <ul>
+              <li><strong>N1.1</strong> 底部导航栏 (4 tabs)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <footer class="ref-footer">
+        <p>Xiyue 设计参考 V2.2 · 基于 Android 实际代码结构生成 · 仅供审阅使用</p>
+      </footer>
+    </main>
+
+    <script>
+      document.addEventListener('click', function(e) {
+        var tag = e.target.closest('.zone-tag');
+        if (!tag) return;
+        var zone = tag.closest('.comp-zone');
+        if (!zone) return;
+        document.querySelectorAll('.comp-zone.is-highlighted').forEach(function(z) {
+          z.classList.remove('is-highlighted');
+        });
+        zone.classList.add('is-highlighted');
+        setTimeout(function() { zone.classList.remove('is-highlighted'); }, 2000);
+      });
+    </script>
+  </body>
+</html>

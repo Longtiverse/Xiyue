@@ -2,11 +2,10 @@ package com.xiyue.app.features.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,13 +14,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,9 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.xiyue.app.ui.components.WaveformVisualizer
 import com.xiyue.app.ui.theme.DesignTokens
-
-
+import com.xiyue.app.ui.theme.XiyueAccent
+import com.xiyue.app.ui.theme.XiyueGold
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -47,177 +43,57 @@ fun PlaybackDisplaySection(
     keyboardState: KeyboardPreviewUiState,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
+    isPlaying: Boolean = false,
+    bpm: Int = 92,
 ) {
+    val accent = XiyueAccent
+    val gold = XiyueGold
+    val showNoteFocus = !isPlaying && state.displayMode == PlaybackDisplayMode.NOTE_FOCUS
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onAction(HomeAction.TogglePlaybackDisplayMode) },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.88f),
+            containerColor = if (isPlaying) {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.98f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.84f)
+            },
         ),
         shape = MaterialTheme.shapes.extraLarge,
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.md)
-                .animateContentSize(),
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md, Alignment.CenterVertically),
+                .fillMaxWidth()
+                .padding(DesignTokens.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // 极简模式：只显示当前音符
-            if (state.displayMode == PlaybackDisplayMode.NOTE_FOCUS) {
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // 当前音符（超大显示）
-                AnimatedContent(
-                    targetState = state.currentNoteLabel,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(180)) togetherWith
-                            fadeOut(animationSpec = tween(120))
-                    },
-                    label = "current-note",
-                ) { currentNoteLabel ->
-                    Text(
-                        text = currentNoteLabel,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            fontSize = MaterialTheme.typography.displayLarge.fontSize * 1.5f,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = DesignTokens.Spacing.xxl),
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center,
+            WaveformVisualizer(
+                isPlaying = isPlaying,
+                bpm = bpm,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            AnimatedContent(
+                targetState = showNoteFocus,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(220)) togetherWith fadeOut(animationSpec = tween(160))
+                },
+                label = "playback-display-mode",
+            ) { inNoteFocus ->
+                if (inNoteFocus) {
+                    ReadyPlaybackDisplay(
+                        state = state,
+                        accent = accent,
                     )
-                }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // 提示文字
-                Text(
-                    text = "Tap for more",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                    textAlign = TextAlign.Center,
-                )
-            } else {
-                // 详细模式：显示所有信息
-                Text(
-                    text = state.practiceLabel,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    Text(
-                        text = if (state.stepCount > 0) {
-                            "${state.stepIndex} / ${state.stepCount}"
-                        } else {
-                            state.toneLabel
-                        },
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        text = state.statusLabel,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.background,
-                    shape = MaterialTheme.shapes.large,
-                ) {
-                    AnimatedContent(
-                        targetState = state.currentNoteLabel,
-                        transitionSpec = {
-                            fadeIn(animationSpec = tween(180)) togetherWith
-                                fadeOut(animationSpec = tween(120))
-                        },
-                        label = "current-note",
-                    ) { currentNoteLabel ->
-                        Text(
-                            text = currentNoteLabel,
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = MaterialTheme.typography.displayLarge.fontSize * 1.2f,
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = DesignTokens.Spacing.lg, vertical = DesignTokens.Spacing.lg),
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-
-                AnimatedContent(
-                    targetState = state.sequenceNotes,
-                    transitionSpec = {
-                        fadeIn(animationSpec = tween(160)) togetherWith
-                            fadeOut(animationSpec = tween(110))
-                    },
-                    label = "sequence-notes",
-                ) { sequenceNotes ->
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm, Alignment.CenterHorizontally),
-                        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-                    ) {
-                        sequenceNotes.forEach { note ->
-                            Surface(
-                                color = if (note.active) {
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                                } else {
-                                    MaterialTheme.colorScheme.surface
-                                },
-                                shape = MaterialTheme.shapes.small,
-                            ) {
-                                Text(
-                                    text = note.label,
-                                    modifier = Modifier.padding(horizontal = DesignTokens.Spacing.sm, vertical = DesignTokens.Spacing.sm),
-                                    color = if (note.active) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                    fontWeight = if (note.active) FontWeight.Bold else FontWeight.Normal,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                PianoKeyboardDisplay(
-                    keyboardState = keyboardState,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                val footerLabel = state.queuedLabel?.takeIf { it.isNotBlank() }?.let { queuedLabel ->
-                    "Next · $queuedLabel"
-                } ?: state.hintLabel.takeIf { it.isNotBlank() }
-                    ?.let { hint ->
-                        val modeHint = if (state.displayMode == PlaybackDisplayMode.NOTE_AND_SEQUENCE) {
-                            "Tap to focus"
-                        } else {
-                            "Tap to show sequence"
-                        }
-                        hint
-                    }
-
-                footerLabel?.let { label ->
-                    Text(
-                        text = label,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
+                } else {
+                    SequencePlaybackDisplay(
+                        state = state,
+                        keyboardState = keyboardState,
+                        gold = gold,
+                        accent = accent,
                     )
                 }
             }
@@ -226,101 +102,229 @@ fun PlaybackDisplaySection(
 }
 
 @Composable
+private fun ReadyPlaybackDisplay(
+    state: PlaybackDisplayUiState,
+    accent: Color,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+    ) {
+        Surface(
+            color = accent.copy(alpha = 0.16f),
+            shape = RoundedCornerShape(DesignTokens.CornerRadius.full),
+        ) {
+            Text(
+                text = "NOTE FOCUS",
+                modifier = Modifier.padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.xs),
+                color = accent,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+
+        Text(
+            text = "Current note",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        AnimatedContent(
+            targetState = state.currentNoteLabel,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(180)) togetherWith fadeOut(animationSpec = tween(120))
+            },
+            label = "ready-current-note",
+        ) { currentNoteLabel ->
+            Text(
+                text = currentNoteLabel,
+                color = accent,
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        Text(
+            text = "Tap to show sequence detail",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SequencePlaybackDisplay(
+    state: PlaybackDisplayUiState,
+    keyboardState: KeyboardPreviewUiState,
+    gold: Color,
+    accent: Color,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column {
+                Text(
+                    text = state.practiceLabel,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = state.statusLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Surface(
+                color = gold.copy(alpha = 0.16f),
+                shape = RoundedCornerShape(DesignTokens.CornerRadius.full),
+            ) {
+                Text(
+                    text = "Playing",
+                    modifier = Modifier.padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.xs),
+                    color = gold,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
+
+        Text(
+            text = if (state.stepCount > 0) "${state.stepIndex} / ${state.stepCount}" else state.toneLabel,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        AnimatedContent(
+            targetState = state.currentNoteLabel,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(180)) togetherWith fadeOut(animationSpec = tween(120))
+            },
+            label = "sequence-current-note",
+        ) { currentNoteLabel ->
+            Text(
+                text = currentNoteLabel,
+                color = gold,
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+        ) {
+            state.sequenceNotes.forEach { note ->
+                val chipColor by animateColorAsState(
+                    targetValue = when {
+                        note.active -> gold.copy(alpha = 0.22f)
+                        note.upcoming -> accent.copy(alpha = 0.18f)
+                        else -> MaterialTheme.colorScheme.surface
+                    },
+                    label = "sequence-chip-color",
+                )
+
+                Box(
+                    modifier = Modifier
+                        .background(chipColor, RoundedCornerShape(DesignTokens.CornerRadius.md))
+                        .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.sm),
+                ) {
+                    Text(
+                        text = note.label,
+                        color = when {
+                            note.active -> gold
+                            note.upcoming -> accent
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        fontWeight = if (note.active) FontWeight.Bold else FontWeight.Normal,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+        }
+
+        PianoKeyboardDisplay(
+            keyboardState = keyboardState,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Text(
+            text = state.queuedLabel?.takeIf { it.isNotBlank() } ?: state.hintLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
 private fun PianoKeyboardDisplay(
     keyboardState: KeyboardPreviewUiState,
     modifier: Modifier = Modifier,
 ) {
-    val whiteKeys = keyboardState.keys.filter { !it.sharp }
-    val allKeys = keyboardState.keys
-
-    val whiteKeyWidth = 28
-    val whiteKeyHeight = 60
-    val blackKeyWidth = 18
-    val blackKeyHeight = 38
-    val totalWidth = whiteKeys.size * (whiteKeyWidth + 1) - 1
-
-    Box(
-        modifier = modifier
-            .height((whiteKeyHeight + 4).dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
-        Box(
-            modifier = Modifier.width(totalWidth.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            // 先绘制白键
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(1.dp),
-            ) {
-                whiteKeys.forEach { key ->
-                    val keyColor by animateColorAsState(
-                        targetValue = if (key.active) {
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                        } else {
-                            Color.White
-                        },
-                        label = "white-key-color",
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(whiteKeyWidth.dp)
-                            .height(whiteKeyHeight.dp)
-                            .background(
-                                color = keyColor,
-                                shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
-                            ),
-                        contentAlignment = Alignment.BottomCenter,
-                    ) {
-                        Text(
-                            text = key.label,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = if (key.active) FontWeight.Bold else FontWeight.Normal,
-                            color = if (key.active) Color.White else Color(0xFF888888),
-                            modifier = Modifier.padding(bottom = DesignTokens.Spacing.xs),
-                        )
-                    }
-                }
-            }
-
-            // 再绘制黑键（覆盖在白键上方）
-            // 黑键位置映射：C# 在 C-D 之间，D# 在 D-E 之间，F# 在 F-G 之间，G# 在 G-A 之间，A# 在 A-B 之间
-            val blackKeyPositions = mapOf(
-                "C#" to 0,  // 在第 0 个白键（C）右侧
-                "D#" to 1,  // 在第 1 个白键（D）右侧
-                "F#" to 3,  // 在第 3 个白键（F）右侧
-                "G#" to 4,  // 在第 4 个白键（G）右侧
-                "A#" to 5   // 在第 5 个白键（A）右侧
+            Text(
+                text = keyboardState.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
             )
-            
-            allKeys.filter { it.sharp }.forEach { key ->
-                val whiteKeyIndex = blackKeyPositions[key.label] ?: 0
-                val offsetX = (whiteKeyIndex * (whiteKeyWidth + 1) + whiteKeyWidth - blackKeyWidth / 2).dp
-                
+            Text(
+                text = keyboardState.liveLabel,
+                style = MaterialTheme.typography.labelMedium,
+                color = XiyueGold,
+            )
+        }
+
+        Text(
+            text = keyboardState.activeKeysLabel,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(96.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            keyboardState.keys.filterNot { it.sharp }.forEach { key ->
                 val keyColor by animateColorAsState(
-                    targetValue = if (key.active) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
-                    } else {
-                        Color.Black
+                    targetValue = when {
+                        key.isCurrent -> XiyueGold
+                        key.inScale -> XiyueAccent
+                        else -> Color(0xFFF0F0F0)
                     },
-                    label = "black-key-color",
+                    label = "keyboard-white-key",
                 )
                 Box(
                     modifier = Modifier
-                        .padding(start = offsetX)
-                        .width(blackKeyWidth.dp)
-                        .height(blackKeyHeight.dp)
-                        .background(
-                            color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
-                        ),
+                        .weight(1f)
+                        .height(96.dp)
+                        .background(keyColor, RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp)),
                     contentAlignment = Alignment.BottomCenter,
                 ) {
                     Text(
                         text = key.label,
+                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = if (key.active) FontWeight.Bold else FontWeight.Normal,
-                        color = if (key.active) Color.White else Color(0xFFAAAAAA),
-                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.xs),
+                        color = if (key.isCurrent || key.inScale) Color.Black else Color(0xFF666666),
                     )
                 }
             }

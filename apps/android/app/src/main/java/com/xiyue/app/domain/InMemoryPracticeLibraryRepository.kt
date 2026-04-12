@@ -39,6 +39,7 @@ class InMemoryPracticeLibraryRepository(
             for (index in 0 until array.length()) {
                 val obj = array.getJSONObject(index)
                 val id = obj.getString("id")
+                val difficultyLabel = obj.optString("difficulty", "初级")
                 add(
                     PracticeLibraryItem(
                         id = "$prefix:$id",
@@ -47,6 +48,8 @@ class InMemoryPracticeLibraryRepository(
                         label = obj.getString("label"),
                         intervals = obj.getJSONArray("intervals").toIntList(),
                         aliases = obj.optJSONArray("aliases")?.toStringList().orEmpty(),
+                        difficulty = DifficultyLevel.fromLabel(difficultyLabel),
+                        description = obj.optString("description", ""),
                     )
                 )
             }
@@ -72,6 +75,8 @@ class InMemoryPracticeLibraryRepository(
             label = "Major",
             intervals = listOf(0, 2, 4, 5, 7, 9, 11, 12),
             aliases = listOf("ionian", "major scale", "maj"),
+            difficulty = DifficultyLevel.BEGINNER,
+            description = "最基础的音阶，适合初学者入门",
         ),
         PracticeLibraryItem(
             id = "scale:NaturalMinor",
@@ -80,6 +85,8 @@ class InMemoryPracticeLibraryRepository(
             label = "Natural Minor",
             intervals = listOf(0, 2, 3, 5, 7, 8, 10, 12),
             aliases = listOf("aeolian", "minor scale", "nat minor"),
+            difficulty = DifficultyLevel.BEGINNER,
+            description = "自然小调，大调的关系小调",
         ),
         PracticeLibraryItem(
             id = "chord:MajorTriad",
@@ -88,6 +95,8 @@ class InMemoryPracticeLibraryRepository(
             label = "Major Triad",
             intervals = listOf(0, 4, 7),
             aliases = listOf("maj triad", "major", "M"),
+            difficulty = DifficultyLevel.BEGINNER,
+            description = "大三和弦，明亮稳定的色彩",
         ),
         PracticeLibraryItem(
             id = "chord:MinorTriad",
@@ -96,6 +105,8 @@ class InMemoryPracticeLibraryRepository(
             label = "Minor Triad",
             intervals = listOf(0, 3, 7),
             aliases = listOf("min triad", "minor", "m"),
+            difficulty = DifficultyLevel.BEGINNER,
+            description = "小三和弦，忧伤内敛的色彩",
         )
     )
 }

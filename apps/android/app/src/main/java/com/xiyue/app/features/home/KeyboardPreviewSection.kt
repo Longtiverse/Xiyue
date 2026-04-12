@@ -3,16 +3,15 @@ package com.xiyue.app.features.home
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.xiyue.app.ui.theme.DesignTokens
+import com.xiyue.app.ui.theme.XiyueAccent
+import com.xiyue.app.ui.theme.XiyueGold
 
 @Composable
 fun KeyboardPreviewSection(
@@ -32,101 +33,66 @@ fun KeyboardPreviewSection(
             modifier = Modifier.padding(DesignTokens.Spacing.md),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
-            Text(text = state.title, style = MaterialTheme.typography.titleMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = state.title, style = MaterialTheme.typography.titleMedium)
+                Text(text = state.liveLabel.ifBlank { "Live" }, color = XiyueGold, style = MaterialTheme.typography.labelMedium)
+            }
+
             Text(
                 text = state.description,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(text = state.activeKeysLabel, style = MaterialTheme.typography.bodySmall)
-            PianoKeyboard(
-                keys = state.keys,
-                modifier = Modifier.fillMaxWidth(),
+
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(DesignTokens.CornerRadius.lg),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(DesignTokens.Spacing.sm)
+                        .height(72.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    state.keys.filterNot { it.sharp }.forEach { key ->
+                        val keyColor by animateColorAsState(
+                            targetValue = when {
+                                key.isCurrent -> XiyueGold
+                                key.inScale -> XiyueAccent
+                                else -> Color(0xFFF4F4F4)
+                            },
+                            label = "keyboard-preview-key",
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(72.dp)
+                                .background(keyColor, RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.Bottom,
+                        ) {
+                            Text(
+                                text = key.label,
+                                modifier = Modifier.padding(bottom = DesignTokens.Spacing.xs),
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        }
+                    }
+                }
+            }
+
+            Text(
+                text = "Current / In scale / Outside scale",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        }
-    }
-}
-
-@Composable
-private fun PianoKeyboard(
-    keys: List<KeyboardKeyUiState>,
-    modifier: Modifier = Modifier,
-) {
-    val whiteKeys = keys.filter { !it.sharp }
-
-    val whiteKeyWidth = 40
-    val whiteKeyHeight = 100
-    val blackKeyWidth = 26
-    val blackKeyHeight = 64
-
-    Box(
-        modifier = modifier.height((whiteKeyHeight + 4).dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(1.dp),
-        ) {
-            whiteKeys.forEach { key ->
-                val keyColor by animateColorAsState(
-                    targetValue = if (key.active) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
-                    } else {
-                        Color(0xFFF5F5F5)
-                    },
-                    label = "white-key-color",
-                )
-                Box(
-                    modifier = Modifier
-                        .width(whiteKeyWidth.dp)
-                        .height(whiteKeyHeight.dp)
-                        .background(
-                            color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
-                        ),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text(
-                        text = key.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF666666),
-                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
-                    )
-                }
-            }
-        }
-
-        var whiteIndex = 0
-        keys.forEach { key ->
-            if (key.sharp) {
-                val offsetX = (whiteIndex * (whiteKeyWidth + 1) - blackKeyWidth / 2 + whiteKeyWidth - 1).dp
-                val keyColor by animateColorAsState(
-                    targetValue = if (key.active) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    } else {
-                        Color(0xFF1A1A1A)
-                    },
-                    label = "black-key-color",
-                )
-                Box(
-                    modifier = Modifier
-                        .padding(start = offsetX)
-                        .width(blackKeyWidth.dp)
-                        .height(blackKeyHeight.dp)
-                        .background(
-                            color = keyColor,
-                            shape = RoundedCornerShape(bottomStart = DesignTokens.CornerRadius.sm, bottomEnd = DesignTokens.CornerRadius.sm),
-                        ),
-                    contentAlignment = Alignment.BottomCenter,
-                ) {
-                    Text(
-                        text = key.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFFCCCCCC),
-                        modifier = Modifier.padding(bottom = DesignTokens.Spacing.sm),
-                    )
-                }
-            } else {
-                whiteIndex++
-            }
         }
     }
 }

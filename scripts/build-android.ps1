@@ -328,9 +328,23 @@ else {
 }
 
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmm'
-$apkSource = Join-Path $androidRoot 'app\build\outputs\apk\debug\app-debug.apk'
-if (-not (Test-Path $apkSource)) {
-    throw "APK not found at $apkSource"
+$apkOutputDir = Join-Path $androidRoot 'app\build\outputs\apk\debug'
+$apkMetadataPath = Join-Path $apkOutputDir 'output-metadata.json'
+$apkSource = $null
+if (Test-Path $apkMetadataPath) {
+    $apkMetadata = Get-Content -Path $apkMetadataPath -Raw | ConvertFrom-Json
+    $metadataOutputFile = $apkMetadata.elements | Select-Object -First 1 -ExpandProperty outputFile
+    if ($metadataOutputFile) {
+        $apkSource = Join-Path $apkOutputDir $metadataOutputFile
+    }
+}
+if (-not $apkSource -or -not (Test-Path $apkSource)) {
+    $apkSource = Get-ChildItem -Path $apkOutputDir -Filter '*.apk' -File |
+        Sort-Object LastWriteTime -Descending |
+        Select-Object -First 1 -ExpandProperty FullName
+}
+if (-not $apkSource -or -not (Test-Path $apkSource)) {
+    throw "APK not found under $apkOutputDir"
 }
 
 $archiveDir = Join-Path $repoRoot 'builds\android\archive'

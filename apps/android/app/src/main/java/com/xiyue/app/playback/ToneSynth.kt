@@ -99,6 +99,49 @@ class ToneSynth {
         }
     }
 
+    /**
+     * Play a single tone with given frequency and duration
+     * Used for countdown beep and reference tones
+     */
+    suspend fun playTone(frequency: Double, durationMs: Int) {
+        val profile = TonePresets.warmPractice()
+        val pcm = synthesisEngine.createToneSamples(
+            frequency = frequency,
+            durationMs = durationMs,
+            profile = profile,
+            volumeFactor = 1.0f,
+        )
+
+        val audioTrack = AudioTrack.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build(),
+            )
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setSampleRate(SAMPLE_RATE)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                    .build(),
+            )
+            .setTransferMode(AudioTrack.MODE_STATIC)
+            .setBufferSizeInBytes(pcm.size * BYTES_PER_SAMPLE)
+            .build()
+
+        withContext(Dispatchers.IO) {
+            synchronized(lock) {
+                playingTracks += audioTrack
+            }
+            audioTrack.write(pcm, 0, pcm.size)
+            audioTrack.play()
+            scheduleRelease(audioTrack, durationMs + RELEASE_MARGIN_MS)
+        }
+
+        delay(durationMs.toLong())
+    }
+
     fun stop() {
         synchronized(lock) {
             playingTracks.forEach { track ->

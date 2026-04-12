@@ -114,6 +114,46 @@ internal class ToneSynthesisEngine(private val sampleRate: Int) {
         return samples
     }
 
+    /**
+     * Create a simple tone sample for countdown beep and reference tones
+     */
+    fun createToneSamples(
+        frequency: Double,
+        durationMs: Int,
+        profile: ToneProfile,
+        volumeFactor: Float,
+    ): ShortArray {
+        val totalFrames = ((durationMs / 1000f) * sampleRate).toInt().coerceAtLeast(1)
+        val samples = ShortArray(totalFrames * 2)
+        val safeVolume = volumeFactor.coerceIn(0.12f, 1f)
+        val baseAmplitude = profile.baseAmplitude
+
+        // Simple envelope: attack -> sustain -> release
+        val attackFrames = (sampleRate * 0.01).toInt().coerceAtLeast(1) // 10ms attack
+        val releaseFrames = (sampleRate * 0.05).toInt().coerceAtLeast(1) // 50ms release
+
+        for (frame in 0 until totalFrames) {
+            val timeSeconds = frame.toDouble() / sampleRate
+            val envelope = when {
+                frame < attackFrames -> frame.toDouble() / attackFrames
+                frame >= totalFrames - releaseFrames -> (totalFrames - frame).toDouble() / releaseFrames
+                else -> 1.0
+            }
+
+            // Simple sine wave with slight harmonics
+            val fundamental = ToneAudioMath.sinWave(frequency, timeSeconds)
+            val harmonic2 = ToneAudioMath.sinWave(frequency * 2.0, timeSeconds) * profile.secondHarmonic
+            val tone = fundamental + harmonic2
+
+            val sample = ToneAudioMath.softClip(tone * baseAmplitude * envelope * safeVolume)
+            val pcmValue = ToneAudioMath.toPcm16(sample)
+            samples[frame * 2] = pcmValue
+            samples[frame * 2 + 1] = pcmValue // Mono to stereo
+        }
+
+        return samples
+    }
+
     private fun harmonicTone(
         frequency: Double, timeSeconds: Double, noteIndex: Int, noteCount: Int,
         onsetLagSeconds: Double, profile: ToneProfile

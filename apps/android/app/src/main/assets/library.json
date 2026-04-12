@@ -6,7 +6,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 5, 7, 9, 11, 12],
       "aliases": ["ionian", "major scale", "maj"],
-      "category": "diatonic"
+      "category": "diatonic",
+      "difficulty": "初级",
+      "description": "最基础的音阶，适合初学者入门"
     },
     {
       "id": "NaturalMinor",
@@ -14,7 +16,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 8, 10, 12],
       "aliases": ["aeolian", "minor scale", "nat minor"],
-      "category": "diatonic"
+      "category": "diatonic",
+      "difficulty": "初级",
+      "description": "自然小调，大调的关系小调"
     },
     {
       "id": "HarmonicMinor",
@@ -22,7 +26,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 8, 11, 12],
       "aliases": ["harmonic minor scale", "harm minor"],
-      "category": "diatonic"
+      "category": "diatonic",
+      "difficulty": "中级",
+      "description": "和声小调，升高第七级，常用于古典音乐"
     },
     {
       "id": "MelodicMinor",
@@ -30,7 +36,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 9, 11, 12],
       "aliases": ["melodic minor scale", "mel minor"],
-      "category": "diatonic"
+      "category": "diatonic",
+      "difficulty": "中级",
+      "description": "旋律小调（上行形式），升高六七级，爵士乐中常用"
     },
     {
       "id": "PentatonicMajor",
@@ -38,7 +46,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 7, 9, 12],
       "aliases": ["major pentatonic", "pentatonic", "penta major"],
-      "category": "pentatonic"
+      "category": "pentatonic",
+      "difficulty": "初级",
+      "description": "大调五声音阶，简单悦耳，广泛用于流行音乐"
     },
     {
       "id": "PentatonicMinor",
@@ -46,31 +56,29 @@
       "kind": "SCALE",
       "intervals": [0, 3, 5, 7, 10, 12],
       "aliases": ["minor pentatonic", "penta minor"],
-      "category": "pentatonic"
-    },
-    {
-      "id": "Blues",
-      "label": "Blues",
-      "kind": "SCALE",
-      "intervals": [0, 3, 5, 6, 7, 10, 12],
-      "aliases": ["blues scale", "major blues", "minor blues"],
-      "category": "blues"
+      "category": "pentatonic",
+      "difficulty": "初级",
+      "description": "小调五声音阶，摇滚和蓝调的基础"
     },
     {
       "id": "MajorBlues",
       "label": "Major Blues",
       "kind": "SCALE",
       "intervals": [0, 2, 3, 4, 7, 9, 12],
-      "aliases": ["blues major", "major blues scale"],
-      "category": "blues"
+      "aliases": ["blues major", "major blues scale", "major blues"],
+      "category": "blues",
+      "difficulty": "初级",
+      "description": "大调布鲁斯，明亮欢快的蓝调色彩"
     },
     {
       "id": "MinorBlues",
       "label": "Minor Blues",
       "kind": "SCALE",
       "intervals": [0, 3, 5, 6, 7, 10, 12],
-      "aliases": ["blues minor", "minor blues scale"],
-      "category": "blues"
+      "aliases": ["blues scale", "blues minor", "minor blues scale", "minor blues", "blues"],
+      "category": "blues",
+      "difficulty": "初级",
+      "description": "小调布鲁斯，经典的蓝调音阶（即通常所说的"布鲁斯音阶"）"
     },
     {
       "id": "Dorian",
@@ -78,7 +86,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 7, 9, 10, 12],
       "aliases": ["dorian mode"],
-      "category": "jazz"
+      "category": "jazz",
+      "difficulty": "中级",
+      "description": "多利亚调式，小调色彩但升高的六级带来特殊风味"
     },
     {
       "id": "Mixolydian",
@@ -86,7 +96,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 5, 7, 9, 10, 12],
       "aliases": ["mixolydian mode", "dominant scale"],
-      "category": "jazz"
+      "category": "jazz",
+      "difficulty": "中级",
+      "description": "混合利底亚调式，大调色彩但降七级，常用于爵士"
     },
     {
       "id": "Lydian",
@@ -94,7 +106,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 7, 9, 11, 12],
       "aliases": ["lydian mode"],
-      "category": "jazz"
+      "category": "jazz",
+      "difficulty": "高级",
+      "description": "利底亚调式，升高的四级带来梦幻般的明亮感"
     },
     {
       "id": "LydianDominant",
@@ -102,7 +116,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 7, 9, 10, 12],
       "aliases": ["lydian dominant mode", "lydian b7"],
-      "category": "jazz"
+      "category": "jazz",
+      "difficulty": "高级",
+      "description": "利底亚属音阶，融合了利底亚和属音的特征"
     },
     {
       "id": "Phrygian",
@@ -110,7 +126,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 3, 5, 7, 8, 10, 12],
       "aliases": ["phrygian mode"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "弗里吉亚调式，降二级带来西班牙风情"
     },
     {
       "id": "PhrygianDominant",
@@ -118,7 +136,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 4, 5, 7, 8, 10, 12],
       "aliases": ["spanish phrygian", "phrygian major", "freygish"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "弗里吉亚属音阶，弗拉门戈和犹太音乐常用"
     },
     {
       "id": "Locrian",
@@ -126,7 +146,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 3, 5, 6, 8, 10, 12],
       "aliases": ["locrian mode"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "洛克里亚调式，减五度带来不稳定感，较少单独使用"
     },
     {
       "id": "WholeTone",
@@ -134,7 +156,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 8, 10, 12],
       "aliases": ["whole tone scale"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "全音阶，全部由全音组成，德彪西常用"
     },
     {
       "id": "Chromatic",
@@ -142,7 +166,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       "aliases": ["chromatic scale", "twelve tone"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "半音阶，包含所有十二个半音，用于练习和过渡"
     },
     {
       "id": "HungarianMinor",
@@ -150,7 +176,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 6, 7, 8, 11, 12],
       "aliases": ["hungarian minor scale", "gypsy minor"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "匈牙利小调，增四度和增二度带来浓郁的东欧色彩"
     },
     {
       "id": "Byzantine",
@@ -158,7 +186,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 4, 5, 7, 8, 11, 12],
       "aliases": ["byzantine scale", "arabic", "double harmonic major"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "拜占庭音阶/双调和声大调，充满东方神秘色彩"
     },
     {
       "id": "Octatonic",
@@ -166,7 +196,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 3, 5, 6, 8, 9, 11, 12],
       "aliases": ["diminished scale", "whole-half", "octatonic diminished"],
-      "category": "jazz"
+      "category": "jazz",
+      "difficulty": "高级",
+      "description": "八声音阶/减音阶，半音全音交替，爵士乐常用"
     },
     {
       "id": "Prometheus",
@@ -174,7 +206,9 @@
       "kind": "SCALE",
       "intervals": [0, 2, 4, 6, 9, 10, 12],
       "aliases": ["prometheus scale"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "普罗米修斯音阶，现代音乐中使用的对称音阶"
     },
     {
       "id": "Enigmatic",
@@ -182,7 +216,9 @@
       "kind": "SCALE",
       "intervals": [0, 1, 4, 6, 8, 10, 11, 12],
       "aliases": ["enigmatic scale", "verdi's scale"],
-      "category": "exotic"
+      "category": "exotic",
+      "difficulty": "高级",
+      "description": "谜之音阶，由威尔第发明，神秘的现代音阶"
     }
   ],
   "chords": [
@@ -192,7 +228,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7],
       "aliases": ["maj triad", "major", "M"],
-      "category": "triad"
+      "category": "triad",
+      "difficulty": "初级",
+      "description": "大三和弦，明亮稳定的色彩"
     },
     {
       "id": "MinorTriad",
@@ -200,7 +238,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7],
       "aliases": ["min triad", "minor", "m"],
-      "category": "triad"
+      "category": "triad",
+      "difficulty": "初级",
+      "description": "小三和弦，忧伤内敛的色彩"
     },
     {
       "id": "DiminishedTriad",
@@ -208,7 +248,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 6],
       "aliases": ["dim", "diminished triad", "diminished"],
-      "category": "triad"
+      "category": "triad",
+      "difficulty": "初级",
+      "description": "减三和弦，紧张的减五度带来不稳定性"
     },
     {
       "id": "AugmentedTriad",
@@ -216,7 +258,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 8],
       "aliases": ["aug", "augmented triad", "augmented"],
-      "category": "triad"
+      "category": "triad",
+      "difficulty": "初级",
+      "description": "增三和弦，紧张的增五度，漂浮不定的感觉"
     },
     {
       "id": "Sus2",
@@ -224,7 +268,9 @@
       "kind": "CHORD",
       "intervals": [0, 2, 7],
       "aliases": ["suspended 2", "sus2"],
-      "category": "suspended"
+      "category": "suspended",
+      "difficulty": "初级",
+      "description": "挂二和弦，用二度代替三度，开放悬浮"
     },
     {
       "id": "Sus4",
@@ -232,7 +278,9 @@
       "kind": "CHORD",
       "intervals": [0, 5, 7],
       "aliases": ["suspended 4", "sus4"],
-      "category": "suspended"
+      "category": "suspended",
+      "difficulty": "初级",
+      "description": "挂四和弦，用四度代替三度，期待解决"
     },
     {
       "id": "Sus2Add9",
@@ -240,7 +288,9 @@
       "kind": "CHORD",
       "intervals": [0, 2, 7, 14],
       "aliases": ["sus2 add9", "suspended 2 add 9"],
-      "category": "suspended"
+      "category": "suspended",
+      "difficulty": "高级",
+      "description": "挂二加九和弦，双层二度音，空灵梦幻"
     },
     {
       "id": "Sus4Add9",
@@ -248,7 +298,9 @@
       "kind": "CHORD",
       "intervals": [0, 5, 7, 14],
       "aliases": ["sus4 add9", "suspended 4 add 9"],
-      "category": "suspended"
+      "category": "suspended",
+      "difficulty": "高级",
+      "description": "挂四加九和弦，现代流行音乐常用"
     },
     {
       "id": "Maj7",
@@ -256,7 +308,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 11],
       "aliases": ["major 7", "maj 7", "M7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "大七和弦，明亮优雅的大调色彩"
     },
     {
       "id": "Min7",
@@ -264,7 +318,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 10],
       "aliases": ["minor 7", "min 7", "m7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "小七和弦，柔和的爵士和声基础"
     },
     {
       "id": "Dom7",
@@ -272,7 +328,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10],
       "aliases": ["7", "dominant 7", "dom 7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "属七和弦，强烈的解决倾向，蓝调和爵士的核心"
     },
     {
       "id": "MinMaj7",
@@ -280,7 +338,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 11],
       "aliases": ["mM7", "minor major 7", "min maj 7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "高级",
+      "description": "小大七和弦，小三和弦加大七度，神秘色彩"
     },
     {
       "id": "Min7b5",
@@ -288,7 +348,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 6, 10],
       "aliases": ["half diminished", "m7b5", "half-dim", "HalfDim7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "半减七和弦，常用于ii-V-I进行中的ii级"
     },
     {
       "id": "Dim7",
@@ -296,7 +358,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 6, 9],
       "aliases": ["diminished 7", "dim7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "减七和弦，完全对称，可自由转位"
     },
     {
       "id": "Aug7",
@@ -304,7 +368,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 8, 10],
       "aliases": ["aug7", "augmented 7", "+7"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "高级",
+      "description": "增七和弦，大三和弦加小七度，色彩丰富"
     },
     {
       "id": "Maj6",
@@ -312,7 +378,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 9],
       "aliases": ["6", "major 6th", "M6"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "大六和弦，明亮欢快，常用于爵士"
     },
     {
       "id": "Min6",
@@ -320,7 +388,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 9],
       "aliases": ["m6", "minor 6th", "min 6"],
-      "category": "seventh"
+      "category": "seventh",
+      "difficulty": "中级",
+      "description": "小六和弦，小调和声中常用"
     },
     {
       "id": "Add9",
@@ -328,7 +398,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 14],
       "aliases": ["add 9", "add9"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "中级",
+      "description": "加九和弦，增添九度音的扩展色彩"
     },
     {
       "id": "Maj9",
@@ -336,7 +408,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 11, 14],
       "aliases": ["maj9", "major 9th", "M9"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "大九和弦，五音和弦，华丽丰满"
     },
     {
       "id": "Min9",
@@ -344,7 +418,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 10, 14],
       "aliases": ["m9", "minor 9th", "min 9"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "小九和弦，忧郁而丰富的爵士色彩"
     },
     {
       "id": "Dom9",
@@ -352,7 +428,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10, 14],
       "aliases": ["9", "dominant 9th", "dom 9"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "属九和弦，Funk和爵士的灵魂"
     },
     {
       "id": "Maj11",
@@ -360,7 +438,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 11, 14, 17],
       "aliases": ["maj11", "major 11th", "M11"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "大十一和弦，六音和弦，现代感十足"
     },
     {
       "id": "Min11",
@@ -368,7 +448,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 10, 14, 17],
       "aliases": ["m11", "minor 11th", "min 11"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "小十一和弦，深情的现代爵士和声"
     },
     {
       "id": "Dom11",
@@ -376,7 +458,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10, 14, 17],
       "aliases": ["11", "dominant 11th", "dom 11"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "属十一和弦，复杂而丰富的属功能和声"
     },
     {
       "id": "Maj13",
@@ -384,7 +468,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 11, 14, 17, 21],
       "aliases": ["maj13", "major 13th", "M13"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "大十三和弦，七音和弦，最丰富的大调和声"
     },
     {
       "id": "Min13",
@@ -392,7 +478,9 @@
       "kind": "CHORD",
       "intervals": [0, 3, 7, 10, 14, 17, 21],
       "aliases": ["m13", "minor 13th", "min 13"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "小十三和弦，复杂的小调和声"
     },
     {
       "id": "Dom13",
@@ -400,7 +488,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10, 14, 17, 21],
       "aliases": ["13", "dominant 13th", "dom 13"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "属十三和弦，爵士乐中最复杂的属和弦"
     },
     {
       "id": "Dom7b9",
@@ -408,7 +498,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10, 13],
       "aliases": ["7b9", "dominant 7 flat 9", "dom 7 b9"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "属七降九和弦，神秘诡异，常用于电影配乐"
     },
     {
       "id": "Dom7Sharp9",
@@ -416,7 +508,9 @@
       "kind": "CHORD",
       "intervals": [0, 4, 7, 10, 15],
       "aliases": ["7#9", "dominant 7 sharp 9", "hendrix chord"],
-      "category": "extended"
+      "category": "extended",
+      "difficulty": "高级",
+      "description": "属七升九和弦/亨德里克斯和弦，摇滚和蓝调的经典"
     }
   ]
 }

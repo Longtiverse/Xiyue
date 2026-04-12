@@ -10,7 +10,6 @@ import com.xiyue.app.playback.PlaybackSoundMode
 import com.xiyue.app.playback.TonePreset
 
 internal class HomeUiStateBuilder {
-    
     fun buildPlaybackDisplay(
         currentPracticeLabel: String,
         effectiveTonePreset: TonePreset,
@@ -30,9 +29,9 @@ internal class HomeUiStateBuilder {
         currentNoteLabel = currentActiveNote,
         queuedLabel = playbackSnapshot.queuedTitle,
         hintLabel = when {
-            playbackSnapshot.queuedTitle != null -> "Next: ${playbackSnapshot.queuedTitle}"
-            playbackSnapshot.isPaused -> "Resume from the transport bar or notification"
-            else -> "Tap to switch note focus / sequence"
+            playbackSnapshot.isPaused -> "Tap play to continue or long press to reset"
+            playbackSnapshot.isPlaying -> "Tap to collapse back to note focus"
+            else -> "Tap to show sequence detail"
         },
         displayMode = displayMode,
         sequenceNotes = sequenceNotes,
@@ -51,73 +50,102 @@ internal class HomeUiStateBuilder {
         resolvedPlaybackMode: PlaybackMode,
         effectivePlaying: Boolean,
         effectivePaused: Boolean,
-        isBpmInputVisible: Boolean,
-    ): PlaybackControlUiState = PlaybackControlUiState(
-        bpm = clampedBpm,
-        loopEnabled = loopEnabled,
-        loopDurationMs = loopDurationMs,
-        loopDurationLabel = formatLoopDuration(loopDurationMs),
-        chordBlockEnabled = chordBlockEnabled,
-        chordArpeggioEnabled = chordArpeggioEnabled,
-        isChord = resolvedSelectedItem?.kind == PracticeKind.CHORD,
-        soundMode = soundMode,
-        toneOptions = TonePreset.entries.map { preset ->
-            TonePresetUiItem(
-                preset = preset,
-                label = preset.label,
-                shortLabel = preset.shortLabel,
-                selected = preset == selectedTonePreset,
-            )
-        },
-        toneButtonLabel = selectedTonePreset.shortLabel,
-        modeOptions = supportedModes.map { mode ->
-            PlaybackModeUiItem(
-                mode = mode,
-                label = mode.label,
-                selected = mode == resolvedPlaybackMode,
-            )
-        },
-        tempoPresets = TEMPO_PRESETS.map { preset ->
-            TempoPresetUiItem(
-                bpm = preset,
-                label = preset.toString(),
-                selected = preset == clampedBpm,
-            )
-        },
-        playButtonLabel = when {
-            effectivePlaying -> "Pause Practice"
-            effectivePaused -> "Resume Practice"
-            else -> "Start Practice"
-        },
-        showStopButton = effectivePlaying || effectivePaused,
-        stopButtonLabel = "Stop Playback",
-        isBpmInputVisible = isBpmInputVisible,
-    )
+        showHints: Boolean,
+    ): PlaybackControlUiState {
+        val selectedChordPlaybackMode = chordPlaybackMode(
+            chordBlockEnabled = chordBlockEnabled,
+            chordArpeggioEnabled = chordArpeggioEnabled,
+        )
+
+        return PlaybackControlUiState(
+            bpm = clampedBpm,
+            loopEnabled = loopEnabled,
+            loopDurationMs = loopDurationMs,
+            loopDurationLabel = formatLoopDuration(loopDurationMs),
+            selectedChordPlaybackMode = selectedChordPlaybackMode,
+            isChord = resolvedSelectedItem?.kind == PracticeKind.CHORD,
+            soundMode = soundMode,
+            toneOptions = TonePreset.entries.map { preset ->
+                TonePresetUiItem(
+                    preset = preset,
+                    label = preset.label,
+                    shortLabel = preset.shortLabel,
+                    selected = preset == selectedTonePreset,
+                )
+            },
+            toneButtonLabel = selectedTonePreset.shortLabel,
+            modeOptions = supportedModes.map { mode ->
+                PlaybackModeUiItem(
+                    mode = mode,
+                    label = mode.label,
+                    selected = mode == resolvedPlaybackMode,
+                )
+            },
+            chordModeOptions = ChordPlaybackMode.entries.map { mode ->
+                ChordPlaybackModeUiItem(
+                    mode = mode,
+                    label = mode.label,
+                    selected = mode == selectedChordPlaybackMode,
+                )
+            },
+            tempoPresets = TEMPO_PRESETS.map { preset ->
+                TempoPresetUiItem(
+                    bpm = preset,
+                    label = preset.toString(),
+                    selected = preset == clampedBpm,
+                )
+            },
+            playButtonLabel = when {
+                effectivePlaying -> "Pause"
+                effectivePaused -> "Resume Practice"
+                else -> "Start Practice"
+            },
+            optionSummaryPills = buildList {
+                add(resolvedPlaybackMode.label)
+                if (loopEnabled) add("Loop")
+                add(selectedTonePreset.shortLabel)
+                add("${clampedBpm} BPM")
+                if (resolvedSelectedItem?.kind == PracticeKind.CHORD) {
+                    add(selectedChordPlaybackMode.label)
+                }
+            },
+            hintLabel = "Long press or double tap to stop and reset",
+            showHints = showHints,
+        )
+    }
 
     fun buildKeyboardPreview(
         effectivePlaying: Boolean,
         effectivePaused: Boolean,
         previewPitchClasses: Set<PitchClass>,
-    ): KeyboardPreviewUiState = KeyboardPreviewUiState(
-        title = "Keyboard Preview",
-        description = when {
-            effectivePlaying -> "Highlighted keys follow the live playback notes."
-            effectivePaused -> "Paused notes stay visible so you can restart from a relaxed state."
-            else -> "Start playback to light up the active notes here."
-        },
-        activeKeysLabel = if (previewPitchClasses.isEmpty()) {
-            "Active notes: not started"
-        } else {
-            "Active notes: ${previewPitchClasses.joinToString(" · ") { it.label }}"
-        },
-        keys = PitchClass.entries.map { note ->
-            KeyboardKeyUiState(
-                label = note.label,
-                active = note in previewPitchClasses,
-                sharp = note.label.contains("#"),
-            )
-        },
-    )
+        currentActiveNote: String,
+    ): KeyboardPreviewUiState {
+        val currentPitchClass = pitchClassFromActiveNote(currentActiveNote)
+
+        return KeyboardPreviewUiState(
+            title = "Keyboard Preview",
+            description = when {
+                effectivePlaying -> "Live preview shows the current note and scale tones."
+                effectivePaused -> "Paused notes stay highlighted for quick restart."
+                else -> "Starts showing live keys when playback begins."
+            },
+            activeKeysLabel = if (previewPitchClasses.isEmpty()) {
+                "Current: waiting to start"
+            } else {
+                "In scale: ${previewPitchClasses.joinToString(" · ") { it.label }}"
+            },
+            liveLabel = if (effectivePlaying) "Live" else "Ready",
+            keys = PitchClass.entries.map { note ->
+                KeyboardKeyUiState(
+                    label = note.label,
+                    active = note == currentPitchClass,
+                    sharp = note.semitone in BLACK_KEY_SEMITONES,
+                    inScale = note in previewPitchClasses,
+                    isCurrent = note == currentPitchClass,
+                )
+            },
+        )
+    }
 
     fun buildPracticePicker(
         selectedItem: PracticeLibraryItem?,
@@ -145,7 +173,7 @@ internal class HomeUiStateBuilder {
             }
 
         val summaryLabel = buildString {
-            append(selectedItem?.label ?: "Choose practice")
+            append(selectedItem?.label ?: "Choose Practice")
             append(" · ")
             append(bpm)
             append(" BPM")
@@ -165,33 +193,12 @@ internal class HomeUiStateBuilder {
         items: List<PracticeLibraryItem>,
         selectedId: String?,
         favoriteIds: Set<String>,
-        searchQuery: String,
     ): List<LibraryGroupUiState> {
         if (items.isEmpty()) return emptyList()
 
-        if (searchQuery.isNotBlank()) {
-            return listOf(
-                LibraryGroupUiState(
-                    title = "Results",
-                    description = "${items.size} matches",
-                    items = items.map { item ->
-                        item.toUiItem(
-                            selectedId = selectedId,
-                            favoriteIds = favoriteIds,
-                        )
-                    },
-                ),
-            )
-        }
-
         val groups = linkedMapOf(
-            "Core Scales" to linkedSetOf("scale:Major", "scale:NaturalMinor", "scale:PentatonicMajor", "scale:PentatonicMinor"),
-            "Modal Colors" to linkedSetOf("scale:Dorian", "scale:Mixolydian", "scale:Lydian", "scale:Phrygian", "scale:Locrian"),
-            "Minor Colors" to linkedSetOf("scale:HarmonicMinor", "scale:MelodicMinor"),
-            "Special Colors" to linkedSetOf("scale:WholeTone", "scale:MajorBlues"),
-            "Triads" to linkedSetOf("chord:MajorTriad", "chord:MinorTriad", "chord:DiminishedTriad", "chord:AugmentedTriad"),
-            "Seventh Chords" to linkedSetOf("chord:Maj7", "chord:Min7", "chord:Dom7", "chord:Min7b5", "chord:Dim7"),
-            "Color Chords" to linkedSetOf("chord:Add9", "chord:Sus2", "chord:Sus4"),
+            "Scales" to linkedSetOf("scale:Major", "scale:NaturalMinor", "scale:PentatonicMajor", "scale:PentatonicMinor", "scale:Dorian"),
+            "Chords" to linkedSetOf("chord:MajorTriad", "chord:MinorTriad", "chord:Maj7", "chord:Min7", "chord:Dom7"),
         )
 
         return groups.mapNotNull { (title, ids) ->
@@ -203,6 +210,7 @@ internal class HomeUiStateBuilder {
                         favoriteIds = favoriteIds,
                     )
                 }
+
             groupItems.takeIf { it.isNotEmpty() }?.let { uiItems ->
                 LibraryGroupUiState(
                     title = title,
@@ -217,31 +225,32 @@ internal class HomeUiStateBuilder {
         previewPlan: PracticePlaybackPlan?,
         playbackSnapshot: PlaybackSnapshot,
         currentActiveNote: String,
-    ): List<SequenceNoteUiItem> = previewPlan?.steps
-        ?.map { step -> step.activeNoteLabels.joinToString("/") }
-        ?.map { label ->
+    ): List<SequenceNoteUiItem> {
+        val labels = previewPlan?.steps
+            ?.map { step -> step.activeNoteLabels.joinToString("/") }
+            .orEmpty()
+
+        val activeIndex = when {
+            playbackSnapshot.stepIndex > 0 -> playbackSnapshot.stepIndex - 1
+            else -> labels.indexOfFirst { it in playbackSnapshot.activeNoteLabels || it == currentActiveNote }
+        }
+
+        return labels.mapIndexed { index, label ->
             SequenceNoteUiItem(
                 label = label,
-                active = label in playbackSnapshot.activeNoteLabels ||
-                    (playbackSnapshot.activeNoteLabels.isEmpty() && label == currentActiveNote),
+                active = index == activeIndex,
+                upcoming = index == activeIndex + 1,
             )
         }
-        .orEmpty()
+    }
 
     fun toLibraryUiItem(
         item: PracticeLibraryItem,
         selectedId: String?,
         favoriteIds: Set<String>,
-    ): LibraryUiItem = LibraryUiItem(
-        id = item.id,
-        label = item.label,
-        kindLabel = when (item.kind) {
-            PracticeKind.SCALE -> "Scale"
-            PracticeKind.CHORD -> "Chord"
-        },
-        supportingText = "${item.type} · ${item.intervals.size} notes",
-        favorite = item.id in favoriteIds,
-        selected = item.id == selectedId,
+    ): LibraryUiItem = item.toUiItem(
+        selectedId = selectedId,
+        favoriteIds = favoriteIds,
     )
 
     private fun PracticeLibraryItem.toUiItem(
@@ -254,19 +263,35 @@ internal class HomeUiStateBuilder {
             PracticeKind.SCALE -> "Scale"
             PracticeKind.CHORD -> "Chord"
         },
-        supportingText = "$type · ${intervals.size} notes",
+        supportingText = "${type} · ${intervals.size} notes",
         favorite = id in favoriteIds,
         selected = id == selectedId,
     )
+
+    private fun chordPlaybackMode(
+        chordBlockEnabled: Boolean,
+        chordArpeggioEnabled: Boolean,
+    ): ChordPlaybackMode = when {
+        chordBlockEnabled && chordArpeggioEnabled -> ChordPlaybackMode.ARPEGGIO_THEN_BLOCK
+        chordBlockEnabled -> ChordPlaybackMode.BLOCK
+        else -> ChordPlaybackMode.ARPEGGIO
+    }
+
+    private fun pitchClassFromActiveNote(label: String): PitchClass? {
+        val normalized = label.takeWhile { it.isLetter() || it == '#' }
+        return normalized.takeIf { it.isNotBlank() }?.let(PitchClass::fromLabel)
+    }
 
     companion object {
         const val MAX_FAVORITE_ITEMS = 6
         const val MAX_RECENT_ITEMS = 6
         const val MAX_VISIBLE_SHORTCUTS = 6
-        val TEMPO_PRESETS = listOf(72, 96, 120, 144)
-        
+        val TEMPO_PRESETS = listOf(60, 72, 80, 92, 100, 120, 140)
+        /** Semitones that correspond to black keys on a piano keyboard. */
+        val BLACK_KEY_SEMITONES = setOf(1, 3, 6, 8, 10)
+
         fun formatLoopDuration(durationMs: Long): String = when {
-            durationMs <= 0 -> "∞"
+            durationMs <= 0 -> "Off"
             durationMs < 60_000 -> "${durationMs / 1000}s"
             durationMs < 3_600_000 -> "${durationMs / 60_000}m"
             else -> "${durationMs / 3_600_000}h"

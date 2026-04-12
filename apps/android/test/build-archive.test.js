@@ -18,4 +18,6 @@ test('android build script keeps latest apk versioned and records it in metadata
   assert.match(script, /\.lock/);
   assert.match(script, /caches/);
   assert.match(script, /wrapper/);
+  assert.match(script, /output-metadata\.json/);
+  assert.match(script, /Get-ChildItem[\s\S]*\.apk/);
 });

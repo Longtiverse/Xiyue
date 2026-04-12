@@ -9,6 +9,7 @@ enum class LibraryFilter {
     ALL,
     SCALE,
     CHORD,
+    FAVORITES,
 }
 
 enum class PlaybackDisplayMode {
@@ -16,24 +17,32 @@ enum class PlaybackDisplayMode {
     NOTE_AND_SEQUENCE,
 }
 
+enum class ChordPlaybackMode(
+    val label: String,
+) {
+    ARPEGGIO("Arpeggio"),
+    BLOCK("Block"),
+    ARPEGGIO_THEN_BLOCK("Arpeggio + Block"),
+}
+
 data class HomeUiState(
-    val searchQuery: String,
     val libraryFilter: LibraryFilter,
     val selectedLibraryItemId: String?,
     val selectedRoot: PitchClass,
     val selectedPlaybackMode: PlaybackMode,
+    val selectedChordPlaybackMode: ChordPlaybackMode,
     val chordBlockEnabled: Boolean,
     val chordArpeggioEnabled: Boolean,
     val selectedTonePreset: TonePreset,
     val soundMode: PlaybackSoundMode,
     val bpm: Int,
-    val isBpmInputVisible: Boolean,
     val loopEnabled: Boolean,
     val loopDurationMs: Long,
     val isPlaying: Boolean,
     val isPaused: Boolean,
     val isLibraryOverlayVisible: Boolean,
     val displayMode: PlaybackDisplayMode,
+    val showHints: Boolean,
     val libraryItems: List<LibraryUiItem>,
     val groupedLibraryItems: List<LibraryGroupUiState>,
     val favoriteLibraryItems: List<LibraryUiItem>,
@@ -42,6 +51,8 @@ data class HomeUiState(
     val playbackDisplay: PlaybackDisplayUiState,
     val playbackControl: PlaybackControlUiState,
     val keyboardPreview: KeyboardPreviewUiState,
+    val isCountdownVisible: Boolean = false,
+    val enableCountdown: Boolean = true,
 )
 
 data class PracticePickerUiState(
@@ -99,6 +110,7 @@ data class PlaybackDisplayUiState(
 data class SequenceNoteUiItem(
     val label: String,
     val active: Boolean,
+    val upcoming: Boolean = false,
 )
 
 data class PlaybackControlUiState(
@@ -106,18 +118,18 @@ data class PlaybackControlUiState(
     val loopEnabled: Boolean,
     val loopDurationMs: Long,
     val loopDurationLabel: String,
-    val chordBlockEnabled: Boolean,
-    val chordArpeggioEnabled: Boolean,
+    val selectedChordPlaybackMode: ChordPlaybackMode,
     val isChord: Boolean,
     val soundMode: PlaybackSoundMode,
     val toneOptions: List<TonePresetUiItem>,
     val toneButtonLabel: String,
     val modeOptions: List<PlaybackModeUiItem>,
+    val chordModeOptions: List<ChordPlaybackModeUiItem>,
     val tempoPresets: List<TempoPresetUiItem>,
     val playButtonLabel: String,
-    val showStopButton: Boolean,
-    val stopButtonLabel: String,
-    val isBpmInputVisible: Boolean = false,
+    val optionSummaryPills: List<String>,
+    val hintLabel: String,
+    val showHints: Boolean,
 )
 
 data class TempoPresetUiItem(
@@ -133,10 +145,17 @@ data class TonePresetUiItem(
     val selected: Boolean,
 )
 
+data class ChordPlaybackModeUiItem(
+    val mode: ChordPlaybackMode,
+    val label: String,
+    val selected: Boolean,
+)
+
 data class KeyboardPreviewUiState(
     val title: String,
     val description: String,
     val activeKeysLabel: String,
+    val liveLabel: String,
     val keys: List<KeyboardKeyUiState>,
 )
 
@@ -144,5 +163,7 @@ data class KeyboardKeyUiState(
     val label: String,
     val active: Boolean,
     val sharp: Boolean,
+    val inScale: Boolean,
+    val isCurrent: Boolean,
     val midiNumber: Int = 0,
 )

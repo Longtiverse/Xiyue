@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xiyue — Mobile Home Flow Showcase</title>
+    <link rel="stylesheet" href="./xiyue-aesthetic-proposal.css" />
+  </head>
+  <body data-stage="ready">
+    <div class="page-aura page-aura-left"></div>
+    <div class="page-aura page-aura-right"></div>
+
+    <main class="showcase-shell">
+      <header class="showcase-header">
+        <div class="heading-block">
+          <p class="eyebrow">Xiyue mobile review artifact</p>
+          <h1>Phone-first home flow showcase.</h1>
+          <p class="intro">
+            A closer preview of the intended Android experience: start quickly, adjust locally,
+            enter playback, and reveal detail only when the practice moment asks for it.
+          </p>
+        </div>
+
+        <div class="header-meta surface surface-soft">
+          <div>
+            <p class="meta-label">Direction</p>
+            <p class="meta-value">Quiet practice studio evolved into a final-feeling handset walkthrough.</p>
+          </div>
+          <div>
+            <p class="meta-label">Grounded in</p>
+            <p class="meta-value">HomeScreen, PlaybackDisplaySection, controls, root selector, keyboard, waveform.</p>
+          </div>
+        </div>
+      </header>
+
+      <section class="showcase-stage">
+        <aside class="story-rail surface surface-soft">
+          <div class="rail-top">
+            <p class="section-label">Storyboard</p>
+            <h2>Main home journey</h2>
+            <p class="rail-copy">
+              Auto-plays through the core states while keeping the phone UI primary.
+            </p>
+          </div>
+
+          <ol class="stage-list">
+            <li class="stage-item is-active" data-stage-target="ready">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">01 · Ready</p>
+                <p class="stage-summary">Fast launch card, recent return paths, library kept soft.</p>
+              </div>
+            </li>
+            <li class="stage-item" data-stage-target="select-root">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">02 · Select root</p>
+                <p class="stage-summary">Horizontal note chips shift emphasis without leaving home.</p>
+              </div>
+            </li>
+            <li class="stage-item" data-stage-target="select-practice">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">03 · Select practice</p>
+                <p class="stage-summary">Current card swaps locally and stays singular.</p>
+              </div>
+            </li>
+            <li class="stage-item" data-stage-target="playback-focus">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">04 · Playback focus</p>
+                <p class="stage-summary">One strong play state, active note, keyboard motion, live waveform.</p>
+              </div>
+            </li>
+            <li class="stage-item" data-stage-target="playback-detail">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">05 · Playback detail</p>
+                <p class="stage-summary">Tap-to-expand reveals sequence, progress, loop and BPM context.</p>
+              </div>
+            </li>
+            <li class="stage-item" data-stage-target="browse-library">
+              <span class="stage-dot"></span>
+              <div>
+                <p class="stage-name">06 · Browse library</p>
+                <p class="stage-summary">Full browsing arrives as a sheet instead of crowding the home view.</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="rail-controls">
+            <button class="rail-button" type="button" data-action="toggle-play">Pause storyboard</button>
+            <button class="rail-button rail-button-secondary" type="button" data-action="restart">Replay</button>
+          </div>
+        </aside>
+
+        <section class="phone-showcase">
+          <div class="callout callout-left surface" id="callout-card">
+            <p class="callout-kicker">State intent</p>
+            <h3 id="callout-title">Home / Ready</h3>
+            <p id="callout-copy">
+              The first view stays calm and legible: playback card first, recent items nearby, and the fuller library held back.
+            </p>
+          </div>
+
+          <div class="phone-frame surface" aria-label="Xiyue mobile storyboard prototype">
+            <div class="phone-hardware"></div>
+            <div class="phone-screen">
+              <div class="safe-top"></div>
+
+              <div class="phone-statusbar">
+                <span>9:41</span>
+                <div class="status-icons">
+                  <span>5G</span>
+                  <span>87%</span>
+                </div>
+              </div>
+
+              <header class="app-header">
+                <div>
+                  <p class="section-label">习乐 · Xiyue</p>
+                  <h2>Practice now</h2>
+                </div>
+                <div class="app-actions">
+                  <span class="icon-chip">⌕</span>
+                  <span class="icon-chip">☰</span>
+                </div>
+              </header>
+
+              <section class="hero-card surface hero-card-mobile">
+                <div class="hero-topline">
+                  <div>
+                    <p class="section-label">Current practice</p>
+                    <h3 class="hero-practice-title"><span data-stage-text="practice-title">G Dorian Flow</span></h3>
+                  </div>
+                  <div class="live-pill hero-live-pill">
+                    <span class="live-dot"></span>
+                    <span data-stage-text="hero-live">Ready</span>
+                  </div>
+                </div>
+
+                <p class="hero-subtitle" data-stage-text="practice-subtitle">
+                  Rooted in G for a low-distraction warm start with space to listen.
+                </p>
+
+                <div class="playback-display">
+                  <div class="wave-panel">
+                    <div class="waveform" aria-hidden="true">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="wave-grid"></div>
+                  </div>
+
+                  <div class="note-focus-card">
+                    <p class="display-mode-tag">
+                      <span class="mode-chip mode-chip-focus">Note focus</span>
+                      <span class="mode-chip mode-chip-detail">Detail open</span>
+                    </p>
+                    <p class="now-playing-label">Current note</p>
+                    <div class="current-note-line">
+                      <span class="current-note">B♭</span>
+                      <span class="note-ghost">C</span>
+                    </div>
+                    <p class="focus-hint">Tap the display to reveal sequence, timing, and loop detail.</p>
+                  </div>
+
+                  <div class="detail-panel">
+                    <div class="detail-header">
+                      <span class="detail-title">Phrase detail</span>
+                      <span class="detail-progress">3 / 8</span>
+                    </div>
+                    <div class="sequence-row">
+                      <span>G</span>
+                      <span>A</span>
+                      <span class="is-active">B♭</span>
+                      <span class="is-next">C</span>
+                      <span>D</span>
+                      <span>F</span>
+                    </div>
+                    <div class="progress-track"><span class="progress-fill"></span></div>
+                    <div class="detail-meta">
+                      <span>92 BPM</span>
+                      <span>Loop · 8 bars</span>
+                      <span>Ascending</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="root-selector-block">
+                  <div class="selector-head">
+                    <p class="section-label">Root note</p>
+                    <span class="selector-meta">Swipe or tap</span>
+                  </div>
+                  <div class="root-chip-row">
+                    <span class="root-chip">F</span>
+                    <span class="root-chip is-near">G</span>
+                    <span class="root-chip is-selected">A</span>
+                    <span class="root-chip is-near">B♭</span>
+                    <span class="root-chip">C</span>
+                  </div>
+                </div>
+
+                <div class="control-cluster">
+                  <button class="play-button" type="button">
+                    <span class="play-icon">▶</span>
+                    <span class="pause-icon">❚❚</span>
+                    <span class="play-label" data-stage-text="play-label">Start practice</span>
+                  </button>
+                  <button class="stop-button" type="button">Stop</button>
+                </div>
+
+                <div class="secondary-chips">
+                  <span class="assist-chip">Loop on</span>
+                  <span class="assist-chip">Tone · Piano</span>
+                  <span class="assist-chip">Pitch mode</span>
+                </div>
+              </section>
+
+              <section class="recent-strip">
+                <div class="section-row">
+                  <div>
+                    <p class="section-label">Recent & favorites</p>
+                    <h3>Return paths</h3>
+                  </div>
+                </div>
+                <div class="recent-cards">
+                  <article class="recent-card is-current">
+                    <p class="recent-title">G Dorian Flow</p>
+                    <p class="recent-meta">Current · 92 BPM</p>
+                  </article>
+                  <article class="recent-card is-target">
+                    <p class="recent-title">A7 Shell Voicings</p>
+                    <p class="recent-meta">Recent · chord focus</p>
+                  </article>
+                  <article class="recent-card">
+                    <p class="recent-title">C Harmonic Minor</p>
+                    <p class="recent-meta">Favorite · warm-up</p>
+                  </article>
+                </div>
+              </section>
+
+              <section class="library-peek surface-soft">
+                <div class="section-row section-row-tight">
+                  <div>
+                    <p class="section-label">Library</p>
+                    <h3>Collapsed browse access</h3>
+                  </div>
+                  <span class="peek-pill">Slide up</span>
+                </div>
+                <div class="peek-row">
+                  <span class="filter-chip is-active">All</span>
+                  <span class="filter-chip">Scales</span>
+                  <span class="filter-chip">Chords</span>
+                  <span class="filter-chip">Favorites</span>
+                </div>
+              </section>
+
+              <section class="keyboard-panel surface-soft">
+                <div class="section-row section-row-tight">
+                  <div>
+                    <p class="section-label">Keyboard preview</p>
+                    <h3>Active note response</h3>
+                  </div>
+                  <span class="keyboard-status">Live</span>
+                </div>
+
+                <div class="keyboard-frame-inner">
+                  <div class="keyboard-white-keys">
+                    <div class="white-key"><span>C</span></div>
+                    <div class="white-key"><span>D</span></div>
+                    <div class="white-key is-active"><span>E</span></div>
+                    <div class="white-key"><span>F</span></div>
+                    <div class="white-key is-preview"><span>G</span></div>
+                    <div class="white-key"><span>A</span></div>
+                    <div class="white-key is-ghost"><span>B♭</span></div>
+                    <div class="white-key"><span>C</span></div>
+                  </div>
+                  <div class="keyboard-black-keys" aria-hidden="true">
+                    <span class="black-key black-1"></span>
+                    <span class="black-key black-2 is-active"></span>
+                    <span class="black-key black-4"></span>
+                    <span class="black-key black-5"></span>
+                    <span class="black-key black-6"></span>
+                  </div>
+                </div>
+              </section>
+
+              <div class="library-sheet surface">
+                <div class="sheet-handle"></div>
+                <div class="sheet-head">
+                  <div>
+                    <p class="section-label">Browse library</p>
+                    <h3>Scales, chords, phrases</h3>
+                  </div>
+                  <span class="sheet-state">Bottom sheet</span>
+                </div>
+                <div class="sheet-search">Search scales or chords</div>
+                <div class="sheet-filters">
+                  <span class="filter-chip is-active">Recent</span>
+                  <span class="filter-chip">Scales</span>
+                  <span class="filter-chip">Chords</span>
+                  <span class="filter-chip">Saved</span>
+                </div>
+                <div class="sheet-list">
+                  <article class="sheet-item is-selected">
+                    <div>
+                      <p class="sheet-title">A7 Shell Voicings</p>
+                      <p class="sheet-copy">Compact chord study for right-hand timing.</p>
+                    </div>
+                    <span class="sheet-tag">Selected</span>
+                  </article>
+                  <article class="sheet-item">
+                    <div>
+                      <p class="sheet-title">D Melodic Minor</p>
+                      <p class="sheet-copy">Upper-register line clarity and even pacing.</p>
+                    </div>
+                    <span class="sheet-tag">Scale</span>
+                  </article>
+                  <article class="sheet-item">
+                    <div>
+                      <p class="sheet-title">Pentatonic Return</p>
+                      <p class="sheet-copy">Phrase loop for left-hand stability.</p>
+                    </div>
+                    <span class="sheet-tag">Phrase</span>
+                  </article>
+                </div>
+              </div>
+
+              <div class="bottom-spacer"></div>
+            </div>
+          </div>
+
+          <div class="callout callout-right surface">
+            <p class="callout-kicker">Behavior note</p>
+            <h3 id="behavior-title">Quick-start-first hierarchy</h3>
+            <p id="behavior-copy">
+              The home view preserves the Android structure: playback display first, compact selection nearby, controls reachable below.
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <section class="summary-strip surface surface-soft">
+        <div>
+          <p class="section-label">Current state</p>
+          <h2 id="summary-state">Home / Ready</h2>
+        </div>
+        <div>
+          <p class="section-label">Motion behavior</p>
+          <p id="summary-motion">Soft fades and restrained scale feedback around a 150–300ms feel.</p>
+        </div>
+        <div>
+          <p class="section-label">Android inspiration</p>
+          <p id="summary-source">HomeScreen + compact library selector + quick-start-first redesign guidance.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./xiyue-aesthetic-proposal.js"></script>
+  </body>
+</html>

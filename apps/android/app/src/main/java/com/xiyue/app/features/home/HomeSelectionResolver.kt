@@ -10,7 +10,6 @@ import com.xiyue.app.playback.PlaybackSnapshot
 
 internal data class HomeSelectionResolution(
     val filterKind: PracticeKind?,
-    val allItems: List<PracticeLibraryItem>,
     val filteredItems: List<PracticeLibraryItem>,
     val resolvedSelectedItem: PracticeLibraryItem?,
     val resolvedSelectedId: String?,
@@ -25,25 +24,25 @@ internal class HomeSelectionResolver(
     private val sessionFactory: com.xiyue.app.domain.PracticeSessionFactory,
 ) {
     fun resolve(
-        searchQuery: String,
         libraryFilter: LibraryFilter,
         selectedLibraryItemId: String?,
         selectedRoot: PitchClass,
         selectedPlaybackMode: PlaybackMode?,
         loopEnabled: Boolean,
         bpm: Int,
+        chordBlockEnabled: Boolean,
+        chordArpeggioEnabled: Boolean,
     ): HomeSelectionResolution {
         val filterKind = when (libraryFilter) {
-            LibraryFilter.ALL -> null
+            LibraryFilter.ALL, LibraryFilter.FAVORITES -> null
             LibraryFilter.SCALE -> PracticeKind.SCALE
             LibraryFilter.CHORD -> PracticeKind.CHORD
         }
 
-        val allItems = repository.getLibraryItems()
-        val filteredItems = repository.searchLibraryItems(searchQuery, filterKind)
+        val filteredItems = repository.searchLibraryItems("", filterKind)
         val resolvedSelectedItem = repository.findLibraryItem(selectedLibraryItemId ?: filteredItems.firstOrNull()?.id.orEmpty())
             ?: filteredItems.firstOrNull()
-            ?: allItems.firstOrNull()
+            ?: repository.getLibraryItems().firstOrNull()
         val resolvedSelectedId = resolvedSelectedItem?.id
 
         val supportedModes = resolvedSelectedItem
@@ -63,13 +62,14 @@ internal class HomeSelectionResolver(
                     bpm = clampedBpm,
                     loopEnabled = loopEnabled,
                     playbackMode = resolvedPlaybackMode,
+                    chordBlockEnabled = chordBlockEnabled,
+                    chordArpeggioEnabled = chordArpeggioEnabled,
                 ),
             )
         }
 
         return HomeSelectionResolution(
             filterKind = filterKind,
-            allItems = allItems,
             filteredItems = filteredItems,
             resolvedSelectedItem = resolvedSelectedItem,
             resolvedSelectedId = resolvedSelectedId,
@@ -117,7 +117,7 @@ internal class HomeSelectionResolver(
         PitchClass.entries.map { note ->
             RootNoteUiItem(
                 note = note,
-                label = note.label,
+                label = PitchClass.rootDisplayLabel(note),
                 selected = note == selectedRoot,
             )
         }

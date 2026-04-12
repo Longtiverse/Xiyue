@@ -18,41 +18,38 @@ class HomeStateFactory(
     private val selectionResolver = HomeSelectionResolver(this.repository, this.sessionFactory)
     private val playbackStateComputer = HomePlaybackStateComputer()
 
-    // background playback state is surfaced through PracticePlaybackService snapshots and compact home UI slices.
     fun create(
-        searchQuery: String = "",
         libraryFilter: LibraryFilter = LibraryFilter.ALL,
         selectedLibraryItemId: String? = null,
         favoriteLibraryItemIds: List<String> = emptyList(),
         recentLibraryItemIds: List<String> = emptyList(),
         selectedRoot: PitchClass = PitchClass.C,
         selectedPlaybackMode: PlaybackMode? = null,
-        chordBlockEnabled: Boolean = true,
-        chordArpeggioEnabled: Boolean = false,
-        selectedTonePreset: TonePreset = TonePreset.WARM_PRACTICE,
+        chordBlockEnabled: Boolean = false,
+        chordArpeggioEnabled: Boolean = true,
+        selectedTonePreset: TonePreset = TonePreset.SOFT_PIANO,
         soundMode: PlaybackSoundMode = PlaybackSoundMode.PITCH,
         loopEnabled: Boolean = true,
         loopDurationMs: Long = 0L,
         isPlaying: Boolean = false,
         isPaused: Boolean = false,
-        bpm: Int = 96,
-        isBpmInputVisible: Boolean = false,
+        bpm: Int = 92,
         isLibraryOverlayVisible: Boolean = false,
         displayMode: PlaybackDisplayMode = PlaybackDisplayMode.NOTE_FOCUS,
+        showHints: Boolean = true,
         playbackSnapshot: PlaybackSnapshot = PlaybackSnapshot(),
     ): HomeUiState {
         val resolution = selectionResolver.resolve(
-            searchQuery = searchQuery,
             libraryFilter = libraryFilter,
             selectedLibraryItemId = selectedLibraryItemId,
             selectedRoot = selectedRoot,
             selectedPlaybackMode = selectedPlaybackMode,
             loopEnabled = loopEnabled,
             bpm = bpm,
+            chordBlockEnabled = chordBlockEnabled,
+            chordArpeggioEnabled = chordArpeggioEnabled,
         )
         val filterKind = resolution.filterKind
-        val allItems = resolution.allItems
-        val filteredItems = resolution.filteredItems
         val resolvedSelectedItem = resolution.resolvedSelectedItem
         val resolvedSelectedId = resolution.resolvedSelectedId
         val supportedModes = resolution.supportedModes
@@ -118,34 +115,42 @@ class HomeStateFactory(
         )
         val effectiveFavoriteIdSet = favoriteLibraryItems.map { it.id }.toSet()
 
+        val rawItems = when (libraryFilter) {
+            LibraryFilter.FAVORITES -> favoriteLibraryItems
+            else -> resolution.filteredItems
+        }
+
         val groupedLibraryItems = uiStateBuilder.buildLibraryGroups(
-            items = filteredItems,
+            items = rawItems,
             selectedId = resolvedSelectedId,
             favoriteIds = effectiveFavoriteIdSet,
-            searchQuery = searchQuery,
         )
 
         val rootNotes = selectionResolver.buildRootNotes(selectedRoot)
 
         return HomeUiState(
-            searchQuery = searchQuery,
             libraryFilter = libraryFilter,
             selectedLibraryItemId = resolvedSelectedId,
             selectedRoot = selectedRoot,
             selectedPlaybackMode = resolvedPlaybackMode,
+            selectedChordPlaybackMode = when {
+                chordBlockEnabled && chordArpeggioEnabled -> ChordPlaybackMode.ARPEGGIO_THEN_BLOCK
+                chordBlockEnabled -> ChordPlaybackMode.BLOCK
+                else -> ChordPlaybackMode.ARPEGGIO
+            },
             chordBlockEnabled = chordBlockEnabled,
             chordArpeggioEnabled = chordArpeggioEnabled,
             selectedTonePreset = selectedTonePreset,
             soundMode = soundMode,
             bpm = clampedBpm,
-            isBpmInputVisible = isBpmInputVisible,
             loopEnabled = loopEnabled,
             loopDurationMs = loopDurationMs,
             isPlaying = effectivePlaying,
             isPaused = effectivePaused,
             isLibraryOverlayVisible = isLibraryOverlayVisible,
             displayMode = displayMode,
-            libraryItems = filteredItems.map { item ->
+            showHints = showHints,
+            libraryItems = rawItems.map { item ->
                 uiStateBuilder.toLibraryUiItem(
                     item = item,
                     selectedId = resolvedSelectedId,
@@ -200,12 +205,13 @@ class HomeStateFactory(
                 resolvedPlaybackMode = resolvedPlaybackMode,
                 effectivePlaying = effectivePlaying,
                 effectivePaused = effectivePaused,
-                isBpmInputVisible = isBpmInputVisible,
+                showHints = showHints,
             ),
             keyboardPreview = uiStateBuilder.buildKeyboardPreview(
                 effectivePlaying = effectivePlaying,
                 effectivePaused = effectivePaused,
                 previewPitchClasses = previewPitchClasses,
+                currentActiveNote = currentActiveNote,
             ),
         )
     }

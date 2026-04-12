@@ -1,4 +1,4 @@
-﻿package com.xiyue.app.features.home
+package com.xiyue.app.features.home
 
 class HomeReducer(
     private val stateFactory: HomeStateFactory = HomeStateFactory(),
@@ -8,7 +8,6 @@ class HomeReducer(
         val recentLibraryItemIds = state.recentLibraryItems.map { it.id }
 
         fun nextState(
-            searchQuery: String = state.searchQuery,
             libraryFilter: LibraryFilter = state.libraryFilter,
             selectedLibraryItemId: String? = state.selectedLibraryItemId,
             selectedRoot: com.xiyue.app.domain.PitchClass = state.selectedRoot,
@@ -22,12 +21,11 @@ class HomeReducer(
             isPlaying: Boolean = state.isPlaying,
             isPaused: Boolean = state.isPaused,
             bpm: Int = state.bpm,
-            isBpmInputVisible: Boolean = state.isBpmInputVisible,
             isLibraryOverlayVisible: Boolean = state.isLibraryOverlayVisible,
             displayMode: PlaybackDisplayMode = state.displayMode,
+            showHints: Boolean = state.showHints,
             playbackSnapshot: com.xiyue.app.playback.PlaybackSnapshot = com.xiyue.app.playback.PlaybackSnapshot(),
         ) = stateFactory.create(
-            searchQuery = searchQuery,
             libraryFilter = libraryFilter,
             selectedLibraryItemId = selectedLibraryItemId,
             favoriteLibraryItemIds = favoriteLibraryItemIds,
@@ -43,9 +41,9 @@ class HomeReducer(
             isPlaying = isPlaying,
             isPaused = isPaused,
             bpm = bpm,
-            isBpmInputVisible = isBpmInputVisible,
             isLibraryOverlayVisible = isLibraryOverlayVisible,
             displayMode = displayMode,
+            showHints = showHints,
             playbackSnapshot = playbackSnapshot,
         )
 
@@ -64,8 +62,11 @@ class HomeReducer(
                 }
 
                 stateFactory.create(
-                    searchQuery = state.searchQuery,
-                    libraryFilter = state.libraryFilter,
+                    libraryFilter = if (state.libraryFilter == LibraryFilter.FAVORITES && nextFavoriteIds.isEmpty()) {
+                        LibraryFilter.ALL
+                    } else {
+                        state.libraryFilter
+                    },
                     selectedLibraryItemId = state.selectedLibraryItemId,
                     favoriteLibraryItemIds = nextFavoriteIds,
                     recentLibraryItemIds = recentLibraryItemIds,
@@ -82,11 +83,10 @@ class HomeReducer(
                     bpm = state.bpm,
                     isLibraryOverlayVisible = state.isLibraryOverlayVisible,
                     displayMode = state.displayMode,
+                    showHints = state.showHints,
                 )
             }
 
-            is HomeAction.UpdateSearchQuery -> nextState(searchQuery = action.query)
-            HomeAction.ClearSearchQuery -> nextState(searchQuery = "")
             is HomeAction.UpdateLibraryFilter -> nextState(libraryFilter = action.filter)
             is HomeAction.SelectRoot -> nextState(
                 selectedRoot = action.root,
@@ -97,6 +97,17 @@ class HomeReducer(
                 selectedPlaybackMode = action.mode,
                 isPaused = state.isPaused,
             )
+
+            is HomeAction.UpdateChordPlaybackMode -> {
+                val nextChordBlockEnabled = action.mode != ChordPlaybackMode.ARPEGGIO
+                val nextChordArpeggioEnabled = action.mode != ChordPlaybackMode.BLOCK
+
+                nextState(
+                    chordBlockEnabled = nextChordBlockEnabled,
+                    chordArpeggioEnabled = nextChordArpeggioEnabled,
+                    isPaused = state.isPaused,
+                )
+            }
 
             is HomeAction.UpdateSoundMode -> nextState(
                 soundMode = action.mode,
@@ -111,15 +122,6 @@ class HomeReducer(
             is HomeAction.UpdateBpm -> nextState(
                 bpm = action.bpm,
                 isPaused = state.isPaused,
-                isBpmInputVisible = false,
-            )
-
-            HomeAction.OpenBpmInput -> nextState(isBpmInputVisible = true)
-            HomeAction.CloseBpmInput -> nextState(isBpmInputVisible = false)
-            is HomeAction.SubmitBpmInput -> nextState(
-                bpm = action.bpm,
-                isPaused = state.isPaused,
-                isBpmInputVisible = false,
             )
 
             is HomeAction.UpdateLoopDuration -> nextState(
@@ -127,21 +129,15 @@ class HomeReducer(
                 isPaused = state.isPaused,
             )
 
-            HomeAction.ToggleChordBlock -> nextState(
-                chordBlockEnabled = !state.chordBlockEnabled,
-                isPaused = state.isPaused,
-            )
-
-            HomeAction.ToggleChordArpeggio -> nextState(
-                chordArpeggioEnabled = !state.chordArpeggioEnabled,
-                isPaused = state.isPaused,
-            )
+            is HomeAction.UpdateHintsVisibility -> nextState(showHints = action.showHints)
 
             HomeAction.ToggleLoop -> nextState(
                 loopEnabled = !state.loopEnabled,
                 isPaused = state.isPaused,
             )
+
             HomeAction.ToggleLibraryOverlay -> nextState(isLibraryOverlayVisible = !state.isLibraryOverlayVisible)
+
             HomeAction.TogglePlaybackDisplayMode -> nextState(
                 displayMode = when (state.displayMode) {
                     PlaybackDisplayMode.NOTE_FOCUS -> PlaybackDisplayMode.NOTE_AND_SEQUENCE
@@ -158,6 +154,10 @@ class HomeReducer(
                 isPlaying = false,
                 isPaused = false,
             )
+
+            HomeAction.StartPlaybackWithCountdown -> state.copy(isCountdownVisible = true)
+            HomeAction.DismissCountdown -> state.copy(isCountdownVisible = false)
+            HomeAction.ToggleCountdown -> state.copy(enableCountdown = !state.enableCountdown)
 
             is HomeAction.SyncPlaybackSnapshot -> nextState(
                 isPlaying = action.snapshot.isPlaying,

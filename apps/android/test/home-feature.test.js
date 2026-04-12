@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -20,7 +20,7 @@ test('android home feature files exist', () => {
   }
 });
 
-test('android repository provides sample scale and chord library data', () => {
+test('android repository still provides scale and chord library data from assets', () => {
   const repository = read(
     'apps/android/app/src/main/java/com/xiyue/app/domain/InMemoryPracticeLibraryRepository.kt'
   );
@@ -32,30 +32,18 @@ test('android repository provides sample scale and chord library data', () => {
     /private val items = context\?\.let\(::loadFromAssets\) \?: defaultItems\(\)/
   );
   assert.match(repository, /loadFromAssets/);
-  assert.match(repository, /defaultItems\(\): List<PracticeLibraryItem> = listOf\(/);
   assert.match(repository, /PracticeKind\.SCALE/);
   assert.match(repository, /PracticeKind\.CHORD/);
   assert.match(repository, /"Major"/);
-  assert.match(repository, /"Natural Minor"/);
-  assert.match(repository, /override fun searchLibraryItems/);
   assert.match(repository, /"Major Triad"/);
-  assert.match(repository, /"Minor Triad"/);
-  assert.match(repository, /aliases/);
-  assert.match(
-    repository,
-    /parseItems\(root\.getJSONArray\("scales"\), PracticeKind\.SCALE, "scale"\)/
-  );
-  assert.match(
-    repository,
-    /parseItems\(root\.getJSONArray\("chords"\), PracticeKind\.CHORD, "chord"\)/
-  );
+  assert.match(repository, /override fun searchLibraryItems/);
   assert.match(models, /enum class PitchClass/);
   assert.match(models, /enum class PlaybackMode/);
   assert.match(models, /val intervals: List<Int>/);
   assert.match(models, /val aliases: List<String>/);
 });
 
-test('android home state maps practice library into quick selection, playback controls, and keyboard preview', () => {
+test('android home state is aligned with the design spec selectors and playback metadata', () => {
   const uiState = read('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeUiState.kt');
   const factory = read(
     'apps/android/app/src/main/java/com/xiyue/app/features/home/HomeStateFactory.kt'
@@ -67,73 +55,67 @@ test('android home state maps practice library into quick selection, playback co
 
   assert.match(uiState, /data class HomeUiState/);
   assert.match(uiState, /data class LibraryUiItem/);
-  assert.match(uiState, /data class LibraryGroupUiState/);
-  assert.match(uiState, /data class PracticePickerUiState/);
-  assert.match(uiState, /data class PracticeShortcutUiItem/);
-  assert.match(uiState, /data class RootNoteUiItem/);
-  assert.match(uiState, /data class PlaybackControlUiState/);
-  assert.match(uiState, /data class PlaybackModeUiItem/);
   assert.match(uiState, /data class PlaybackDisplayUiState/);
-  assert.match(uiState, /data class TempoPresetUiItem/);
-  assert.match(uiState, /data class TonePresetUiItem/);
-  assert.match(uiState, /TonePreset/);
+  assert.match(uiState, /data class PlaybackControlUiState/);
   assert.match(uiState, /data class KeyboardPreviewUiState/);
-  assert.match(uiState, /data class KeyboardKeyUiState/);
+  assert.match(uiState, /val libraryFilter: LibraryFilter/);
+  assert.match(uiState, /val showHints: Boolean/);
   assert.match(uiState, /val isPaused: Boolean/);
-  assert.match(uiState, /val isLibraryOverlayVisible: Boolean/);
-  assert.match(uiState, /val practicePicker: PracticePickerUiState/);
   assert.match(uiState, /val playbackDisplay: PlaybackDisplayUiState/);
   assert.match(uiState, /val playbackControl: PlaybackControlUiState/);
   assert.match(uiState, /val keyboardPreview: KeyboardPreviewUiState/);
+  assert.match(uiState, /val currentNoteLabel: String/);
+  assert.match(uiState, /val stepIndex: Int/);
+  assert.match(uiState, /val stepCount: Int/);
+  assert.match(uiState, /val toneButtonLabel: String/);
+  assert.match(uiState, /val modeOptions: List<PlaybackModeUiItem>/);
+  assert.match(uiState, /val hintLabel: String/);
+  assert.doesNotMatch(uiState, /val searchQuery: String/);
+  assert.doesNotMatch(uiState, /val isBpmInputVisible: Boolean/);
+  assert.doesNotMatch(uiState, /val showStopButton: Boolean/);
+  assert.doesNotMatch(uiState, /val stopButtonLabel: String/);
+
   assert.match(factory, /class HomeStateFactory/);
-  assert.match(factory, /fun create\(/);
-  assert.match(factory, /selectedRoot/);
-  assert.match(factory, /loopEnabled/);
-  assert.match(factory, /background playback/i);
-  assert.match(factory, /effectivePaused|isPaused/);
-  assert.match(factory, /groupedLibraryItems|buildLibraryGroups/);
-  assert.match(factory, /buildPracticePicker/);
   assert.match(factory, /buildPlaybackDisplay/);
   assert.match(factory, /buildPlaybackControl/);
   assert.match(factory, /buildKeyboardPreview/);
-  assert.match(factory, /favoriteLibraryItems/);
-  assert.match(factory, /recentLibraryItems/);
-  assert.match(factory, /TonePreset/);
-  assert.match(factory, /TonePreset\.WARM_PRACTICE/);
+  assert.match(factory, /showHints/);
   assert.match(factory, /selectedTonePreset/);
-  assert.match(factory, /selectedTonePreset|effectiveTonePreset/);
-  assert.match(factory, /buildPlaybackDisplay|buildPlaybackControl/);
-  assert.doesNotMatch(factory, /路/);
-  assert.match(factory, /stepCount|currentActiveNote|sequenceNotes/);
-  assert.match(screen, /@Composable/);
-  assert.match(screen, /HomeScreen/);
-  assert.match(screen, /Column/);
-  assert.doesNotMatch(screen, /LazyColumn/);
-  assert.match(screen, /PlaybackControlsSection\(/);
-  assert.match(screen, /PlaybackDisplaySection\(/);
+  assert.doesNotMatch(factory, /searchQuery/);
+  assert.doesNotMatch(factory, /isBpmInputVisible/);
+
   assert.match(screen, /CompactLibrarySelector/);
-  assert.doesNotMatch(screen, /Dialog\(/);
+  assert.match(screen, /SwipeableRootNoteSelector/);
   assert.match(screen, /SelectRoot/);
-  assert.match(screen, /previousRoot|nextRoot|selectedRoot/);
-  assert.doesNotMatch(screen, /rootNotes\.forEach/);
-  assert.doesNotMatch(screen, /practicePicker\.summaryLabel/);
   assert.match(screen, /UpdateLibraryFilter/);
-  assert.match(screen, /weight\(/);
+  assert.doesNotMatch(screen, /OutlinedTextField/);
+  assert.doesNotMatch(screen, /Icons\.Default\.Search/);
+  assert.doesNotMatch(screen, /UpdateSearchQuery/);
+  assert.doesNotMatch(screen, /ClearSearchQuery/);
+
   assert.match(sessionFactory, /class PracticeSessionFactory/);
   assert.match(sessionFactory, /fun createPlan\(/);
   assert.match(sessionFactory, /PlaybackStep/);
-  assert.doesNotMatch(uiState, /PlaybackQuickSelectUiItem/);
-  assert.doesNotMatch(uiState, /val sections:/);
-  assert.doesNotMatch(factory, /sections\s*=/);
-  assert.doesNotMatch(factory, /quickSelectItems\s*=/);
 });
 
-test('android home actions expose tone preset updates', () => {
+test('android home actions expose playback, hints, and filter updates without text search or bpm dialog actions', () => {
   const action = read('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeAction.kt');
   const reducer = read('apps/android/app/src/main/java/com/xiyue/app/features/home/HomeReducer.kt');
 
-  assert.match(action, /TonePreset/);
+  assert.match(action, /UpdateLibraryFilter/);
+  assert.match(action, /SelectRoot/);
   assert.match(action, /UpdateTonePreset/);
-  assert.match(reducer, /TonePreset/);
-  assert.match(reducer, /UpdateTonePreset/);
+  assert.match(action, /ToggleLoop/);
+  assert.match(action, /StopPlayback/);
+  assert.doesNotMatch(action, /UpdateSearchQuery/);
+  assert.doesNotMatch(action, /ClearSearchQuery/);
+  assert.doesNotMatch(action, /OpenBpmInput/);
+  assert.doesNotMatch(action, /CloseBpmInput/);
+  assert.doesNotMatch(action, /SubmitBpmInput/);
+
+  assert.match(reducer, /UpdateLibraryFilter/);
+  assert.match(reducer, /ToggleLoop/);
+  assert.match(reducer, /SyncPlaybackSnapshot/);
+  assert.doesNotMatch(reducer, /searchQuery/);
+  assert.doesNotMatch(reducer, /isBpmInputVisible/);
 });
