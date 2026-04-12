@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +24,11 @@ import androidx.compose.ui.Modifier
 import com.xiyue.app.ui.components.LibraryItemDetailsDialog
 import com.xiyue.app.ui.components.LibraryItemWithContextMenu
 import com.xiyue.app.ui.components.MetronomeEdgeGlow
+import com.xiyue.app.ui.components.MockupSectionSurface
 import com.xiyue.app.ui.components.SwipeableRootNoteSelector
 import com.xiyue.app.ui.theme.DesignTokens
+import com.xiyue.app.ui.theme.XiyueAccent
+import com.xiyue.app.ui.theme.XiyueAccentStrong
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -52,37 +54,31 @@ fun HomeScreen(
                 state = state.playbackDisplay,
                 keyboardState = state.keyboardPreview,
                 onAction = onAction,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 isPlaying = state.isPlaying,
                 bpm = state.bpm,
             )
 
-            CompactLibrarySelector(
-                state = state,
-                onAction = onAction,
-            )
+            if (state.isPlaying) {
+                KeyboardPreviewSection(
+                    state = state.keyboardPreview,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            } else {
+                CompactLibrarySelector(
+                    state = state,
+                    onAction = onAction,
+                )
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f),
-                ),
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                Column(
-                    modifier = Modifier.padding(vertical = DesignTokens.Spacing.sm),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-                ) {
+                MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = DesignTokens.Spacing.md),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = "Root Note",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = "ROOT",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = XiyueAccentStrong,
                         )
                         Text(
                             text = "Swipe or tap",
@@ -118,53 +114,51 @@ private fun CompactLibrarySelector(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm, Alignment.CenterHorizontally),
-        ) {
-            LibraryFilter.entries.forEach { filter ->
-                FilterChip(
-                    selected = state.libraryFilter == filter,
-                    onClick = { onAction(HomeAction.UpdateLibraryFilter(filter)) },
-                    label = {
-                        Text(
-                            text = when (filter) {
-                                LibraryFilter.ALL -> "All"
-                                LibraryFilter.SCALE -> "Scales"
-                                LibraryFilter.CHORD -> "Chords"
-                                LibraryFilter.FAVORITES -> "Favorites"
-                            },
-                        )
+        MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs, Alignment.CenterHorizontally),
+            ) {
+                LibraryFilter.entries.forEach { filter ->
+                    LibraryFilterPill(
+                        label = when (filter) {
+                            LibraryFilter.ALL -> "All"
+                            LibraryFilter.SCALE -> "Scales"
+                            LibraryFilter.CHORD -> "Chords"
+                            LibraryFilter.FAVORITES -> "Favorites"
+                        },
+                        selected = state.libraryFilter == filter,
+                        onClick = { onAction(HomeAction.UpdateLibraryFilter(filter)) },
+                    )
+                }
+            }
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+            ) {
+                items(state.libraryItems) { item ->
+                    LibraryItemWithContextMenu(
+                        item = item,
+                        isSelected = item.selected,
+                        onClick = { onAction(HomeAction.SelectLibraryItem(item.id)) },
+                        onToggleFavorite = { onAction(HomeAction.ToggleFavoriteLibraryItem(item.id)) },
+                        onShowDetails = { showDetailsItem = item },
+                    )
+                }
+            }
+
+            if (state.libraryItems.isEmpty()) {
+                Text(
+                    text = if (state.libraryFilter == LibraryFilter.FAVORITES) {
+                        "No favorites yet"
+                    } else {
+                        "No practice items available"
                     },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-        }
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-        ) {
-            items(state.libraryItems) { item ->
-                LibraryItemWithContextMenu(
-                    item = item,
-                    isSelected = item.selected,
-                    onClick = { onAction(HomeAction.SelectLibraryItem(item.id)) },
-                    onToggleFavorite = { onAction(HomeAction.ToggleFavoriteLibraryItem(item.id)) },
-                    onShowDetails = { showDetailsItem = item },
-                )
-            }
-        }
-
-        if (state.libraryItems.isEmpty()) {
-            Text(
-                text = if (state.libraryFilter == LibraryFilter.FAVORITES) {
-                    "No favorites yet"
-                } else {
-                    "No practice items available"
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
 
         showDetailsItem?.let { item ->
@@ -176,5 +170,25 @@ private fun CompactLibrarySelector(
                 },
             )
         }
+    }
+}
+
+@Composable
+private fun LibraryFilterPill(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.small,
+        color = if (selected) XiyueAccent else MaterialTheme.colorScheme.surface.copy(alpha = 0.44f),
+        contentColor = if (selected) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onSurfaceVariant,
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = DesignTokens.Spacing.sm, vertical = DesignTokens.Spacing.xs),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
 }

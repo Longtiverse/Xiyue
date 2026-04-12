@@ -7,13 +7,19 @@ import android.os.VibratorManager
 import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,14 +30,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.xiyue.app.domain.PitchClass
 import com.xiyue.app.playback.ToneSynth
-import com.xiyue.app.ui.theme.CustomTextStyles
 import com.xiyue.app.ui.theme.DesignTokens
+import com.xiyue.app.ui.theme.XiyueAccent
+import com.xiyue.app.ui.theme.XiyueAccentStrong
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -137,32 +147,76 @@ fun SwipeableRootNoteSelector(
     ) {
         itemsIndexed(roots) { index, root ->
             val isSelected = index == selectedIndex
+            val isNear = kotlin.math.abs(index - selectedIndex) == 1
             val scale by animateFloatAsState(
-                targetValue = if (isSelected) 1.2f else 1f,
+                targetValue = when {
+                    isSelected -> 1f
+                    isNear -> 0.92f
+                    else -> 0.85f
+                },
                 animationSpec = spring(
                     dampingRatio = 0.6f,
                     stiffness = 300f
                 ),
                 label = "root_note_scale"
             )
+            val alpha by animateFloatAsState(
+                targetValue = when {
+                    isSelected -> 1f
+                    isNear -> 0.7f
+                    else -> 0.5f
+                },
+                label = "root_note_alpha",
+            )
 
-            FilterChip(
+            RootSelectorChip(
+                label = PitchClass.rootDisplayLabel(root),
                 selected = isSelected,
+                near = isNear,
+                scale = scale,
+                alpha = alpha,
                 onClick = {
                     performHapticFeedback()
                     playReferenceTone(root)
                     onRootChange(root)
                 },
-                label = {
-                    Text(
-                        text = PitchClass.rootDisplayLabel(root),
-                        style = CustomTextStyles.chipLabel,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                },
-                modifier = Modifier.scale(scale)
             )
         }
     }
 }
 
+@Composable
+private fun RootSelectorChip(
+    label: String,
+    selected: Boolean,
+    near: Boolean,
+    scale: Float,
+    alpha: Float,
+    onClick: () -> Unit,
+) {
+    // targetValue = 0.92f and targetValue = 0.85f mirror root-near/root-far mockup scaling.
+    val shape = RoundedCornerShape(10.dp)
+    val background = if (selected) XiyueAccent.copy(alpha = 0.14f) else Color.White.copy(alpha = 0.03f)
+    val borderColor = when {
+        selected -> XiyueAccent.copy(alpha = 0.30f)
+        near -> Color.White.copy(alpha = 0.08f)
+        else -> Color.White.copy(alpha = 0.05f)
+    }
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .scale(scale)
+            .alpha(alpha)
+            .background(background, shape)
+            .border(1.dp, borderColor, shape)
+            .clickable(onClick = onClick),
+        contentAlignment = androidx.compose.ui.Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (selected) XiyueAccentStrong else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold,
+        )
+    }
+}

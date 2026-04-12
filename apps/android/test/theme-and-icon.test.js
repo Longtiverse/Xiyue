@@ -11,6 +11,10 @@ test('android theme palette aligns with the design spec accent and gold tokens',
     'apps/android/app/src/main/java/com/xiyue/app/ui/theme/Theme.kt',
     'utf8'
   );
+  const app = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/ui/XiyueApp.kt',
+    'utf8'
+  );
 
   assert.match(colors, /XiyueAccent/);
   assert.match(colors, /XiyueAccentStrong/);
@@ -20,6 +24,10 @@ test('android theme palette aligns with the design spec accent and gold tokens',
   assert.match(theme, /darkColorScheme/);
   assert.match(theme, /primary = XiyueAccent/);
   assert.match(theme, /tertiary = XiyueGold|secondary = XiyueGold/);
+  assert.match(theme, /dynamicColor: Boolean = false/);
+  assert.match(theme, /XiyueDarkColorScheme/);
+  assert.doesNotMatch(theme, /dynamicLightColorScheme/);
+  assert.match(app, /XiyueTheme\(darkTheme = isDarkTheme, dynamicColor = false\)/);
 });
 
 test('android adaptive icon resources define foreground and background layers', () => {

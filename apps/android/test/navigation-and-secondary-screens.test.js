@@ -15,7 +15,14 @@ test('android navigation exposes practice, combo, favorites, and settings tabs',
   assert.match(navigation, /COMBO/);
   assert.match(navigation, /FAVORITES/);
   assert.match(navigation, /SETTINGS/);
-  assert.match(navigation, /NavigationBar/);
+  assert.match(navigation, /MockupNavTab/);
+  assert.match(navigation, /NavTabIndicator/);
+  assert.match(navigation, /Brush\.linearGradient/);
+  assert.match(navigation, /FavoriteBorder|PlayCircleOutline|Piano|Settings/);
+  assert.doesNotMatch(navigation, /Icons\.Filled\.Home/);
+  assert.doesNotMatch(navigation, /Icons\.Filled\.LibraryMusic/);
+  assert.doesNotMatch(navigation, /NavigationBarItem/);
+  assert.doesNotMatch(navigation, /NavigationBar\(/);
   assert.match(app, /BottomNavItem\.COMBO/);
 });
 
@@ -54,12 +61,18 @@ test('android custom combo screen exists with mode tabs, note grid, preview, and
 
   const combo = read(comboPath);
   assert.match(combo, /ComboScreen/);
+  assert.match(combo, /ModeTab/);
+  assert.match(combo, /ToneCell/);
+  assert.match(combo, /BuilderChip/);
+  assert.match(combo, /PreviewNote/);
+  assert.match(combo, /Brush\.linearGradient/);
   assert.match(combo, /音符选择|Note Selection/);
   assert.match(combo, /和弦进行|Chord Progression/);
   assert.match(combo, /LazyVerticalGrid|FlowRow/);
   assert.match(combo, /Selected Preview|已选内容预览/);
   assert.match(combo, /Chord Constructor|和弦构造器/);
   assert.match(combo, /ii.?V.?I|I.?vi.?IV.?V/);
+  assert.doesNotMatch(combo, /FilterChip/);
 });
 
 test('android theme palette includes accent and gold tokens from the spec', () => {

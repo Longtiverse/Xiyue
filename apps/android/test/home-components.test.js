@@ -30,11 +30,14 @@ test('android home screen delegates to spec-shaped section composables', () => {
 
   assert.match(screen, /PlaybackControlsSection\(/);
   assert.match(screen, /PlaybackDisplaySection\(/);
+  assert.match(screen, /KeyboardPreviewSection\(/);
   assert.match(screen, /CompactLibrarySelector\(/);
   assert.match(screen, /SwipeableRootNoteSelector/);
-  assert.match(screen, /FilterChip/);
   assert.match(screen, /LazyRow/);
   assert.match(screen, /Column\(/);
+  assert.match(screen, /if \(state\.isPlaying\)/);
+  assert.match(screen, /MockupSectionSurface/);
+  assert.doesNotMatch(screen, /modifier = Modifier\.weight\(1f\)/);
   assert.doesNotMatch(screen, /OutlinedTextField/);
   assert.doesNotMatch(screen, /Search/);
 
@@ -47,15 +50,25 @@ test('android home screen delegates to spec-shaped section composables', () => {
   assert.match(displaySection, /TextAlign\.Center/);
   assert.match(displaySection, /WaveformVisualizer/);
   assert.match(displaySection, /gold|Gold|accent/i);
+  assert.match(displaySection, /playbackGlowBrush/);
+  assert.match(displaySection, /LiveStatusPill/);
+  assert.match(displaySection, /SequenceChip/);
+  assert.doesNotMatch(displaySection, /PianoKeyboardDisplay/);
 
   assert.match(playbackSection, /combinedClickable|onLongClick|onDoubleClick/);
   assert.match(playbackSection, /SwipeableBpmSelector/);
+  assert.match(playbackSection, /Brush\.linearGradient/);
+  assert.match(playbackSection, /widthIn\(max = 240\.dp\)/);
+  assert.match(playbackSection, /OptionPill/);
+  assert.match(playbackSection, /StatusPill/);
   assert.match(playbackSection, /TogglePlayback/);
   assert.match(playbackSection, /StopPlayback/);
   assert.match(playbackSection, /ToggleLoop/);
   assert.match(playbackSection, /UpdateTonePreset/);
   assert.match(playbackSection, /UpdatePlaybackMode/);
-  assert.match(playbackSection, /FilterChip|AssistChip|Surface/);
+  assert.match(playbackSection, /Surface/);
+  assert.doesNotMatch(playbackSection, /FilterChip/);
+  assert.doesNotMatch(playbackSection, /AssistChip/);
   assert.doesNotMatch(playbackSection, /Slider/);
   assert.doesNotMatch(playbackSection, /EnhancedBpmSlider/);
   assert.doesNotMatch(playbackSection, /AlertDialog/);
@@ -65,5 +78,34 @@ test('android home screen delegates to spec-shaped section composables', () => {
   assert.match(keyboardSection, /Row/);
   assert.match(keyboardSection, /Live/);
   assert.match(keyboardSection, /current|active|scale/i);
+  assert.match(keyboardSection, /BlackKey/);
+  assert.match(keyboardSection, /keyActiveBlack/);
+  assert.match(keyboardSection, /pianoBlackKeys/);
+  assert.match(keyboardSection, /blackKeyOffsets/);
+  assert.match(keyboardSection, /offset\(x = /);
+  assert.match(keyboardSection, /KeyboardLegend/);
   assert.match(keyboardSection, /animateColorAsState|Card|Surface/);
+});
+
+test('android root and bpm selectors use mockup scaled custom chips', () => {
+  const rootSelector = read(
+    'apps/android/app/src/main/java/com/xiyue/app/ui/components/SwipeableRootNoteSelector.kt'
+  );
+  const bpmSelector = read(
+    'apps/android/app/src/main/java/com/xiyue/app/ui/components/SwipeableBpmSelector.kt'
+  );
+
+  assert.match(rootSelector, /RootSelectorChip/);
+  assert.match(rootSelector, /targetValue = 0\.92f/);
+  assert.match(rootSelector, /targetValue = 0\.85f/);
+  assert.match(rootSelector, /alpha/);
+  assert.doesNotMatch(rootSelector, /FilterChip/);
+
+  assert.match(bpmSelector, /BpmSelectorChip/);
+  assert.match(bpmSelector, /tempoLabel/);
+  assert.match(bpmSelector, /Andante|Moderato|Allegro/);
+  assert.match(bpmSelector, /TextAlign\.Center/);
+  assert.match(bpmSelector, /targetValue = 0\.92f/);
+  assert.match(bpmSelector, /targetValue = 0\.85f/);
+  assert.doesNotMatch(bpmSelector, /FilterChip/);
 });

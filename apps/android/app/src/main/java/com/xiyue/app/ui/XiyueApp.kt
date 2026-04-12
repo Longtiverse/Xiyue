@@ -2,6 +2,7 @@ package com.xiyue.app.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -111,7 +112,7 @@ fun XiyueApp() {
         ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
     }
 
-    XiyueTheme(darkTheme = isDarkTheme) {
+    XiyueTheme(darkTheme = isDarkTheme, dynamicColor = false) {
         MainScreen(
             state = state,
             onHomeAction = { action ->
@@ -217,6 +218,7 @@ private fun MainScreen(
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             XiyueBottomNavigation(
                 selectedItem = selectedTab,
