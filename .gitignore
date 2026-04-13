@@ -52,4 +52,5 @@ desktop.ini
 .superpowers/
 
 # Git worktrees
+.worktrees
 .worktrees/
