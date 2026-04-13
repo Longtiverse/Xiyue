@@ -287,13 +287,72 @@ Must include:
 
 Focus: onboarding clarity and richer library content.
 
+Must include:
+
+- Idle or first-open play-button breathing animation that gently suggests the primary action without adding a full onboarding flow
+- Chinese-forward library cards where the Chinese description or localized name is prominent and the English label remains secondary
+- Difficulty stars on library items, with a simple beginner/intermediate/advanced visual distinction
+- Grouped library browsing so scales and chords are easier to scan than the current flat row
+- A "learn more" affordance for each library item that surfaces description, interval structure, and typical use cases from `library.json`
+
+Primary acceptance criteria:
+
+- A new user can identify what to tap first without a blocking tutorial
+- Library rows communicate name, type, difficulty, and learning context without opening playback
+- Existing favorites and recent selections still work with grouped display
+- Missing optional teaching metadata does not crash or hide the item
+
+Out of scope:
+
+- No first-run wizard, account system, progress tracking, or full lesson engine
+
 ### Batch 4
 
 Focus: playback control depth and richer interaction.
 
+Must include:
+
+- Automatic short audio preview after selecting a scale or chord
+- BPM fine controls with +/- stepping and a path toward direct numeric input
+- Octave selector using the existing `PracticeSelection.octave` field instead of hard-coded octave 4
+- Tap an already-rendered sequence step to jump back to that playback position
+- More visible stop affordance for pause state or first-use long-press guidance
+
+Primary acceptance criteria:
+
+- Selection preview is brief, interruptible, and does not conflict with active practice playback
+- BPM fine changes are reflected in state, persisted preferences, and playback requests
+- Octave changes affect generated MIDI notes and visible note labels
+- Step jump clamps safely and updates both audio position and UI snapshot
+- Stop/reset is discoverable without removing the existing long-press/double-tap shortcut
+
+Out of scope:
+
+- No MIDI clock sync, external controller support, or full transport timeline
+
 ### Batch 5
 
 Focus: polish, readability, guidance, and final UX consistency.
+
+Must include:
+
+- Non-playing keyboard preview highlights the full selected scale or chord instead of waiting for playback
+- Dark-theme white keys gain clearer contrast through border/shadow treatment
+- Long playback sequences wrap or scroll cleanly instead of crowding chips
+- Recommended next-practice path appears after completing or practicing an item, backed by optional `nextRecommended` data
+- Chord block duration can be controlled independently from BPM for sustained chord practice
+
+Primary acceptance criteria:
+
+- Ready state still teaches the selected material visually before sound starts
+- Keyboard contrast is improved without breaking active/current key color hierarchy
+- Sequences with 8 or more notes remain legible on mobile width
+- Recommendation UI is optional and data-driven; absent data means no recommendation, not an error
+- Chord block duration only affects block playback and does not unexpectedly slow arpeggios
+
+Out of scope:
+
+- No statistics dashboard, mastery tracking, achievements, reminders, or custom scale authoring
 
 ## Testing Strategy
 
