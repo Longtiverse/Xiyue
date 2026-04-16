@@ -6,7 +6,9 @@ import android.media.AudioTrack
 import com.xiyue.app.domain.PlaybackStep
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,6 +20,8 @@ class ToneSynth {
     private val playingTracks = linkedSetOf<AudioTrack>()
     private val solfegeMidiBase = 60 // C4
     private val synthesisEngine = ToneSynthesisEngine(SAMPLE_RATE)
+    private var aaudioPlayer: AaudioPlayer? = null
+    private var aaudioReleaseJob: Job? = null
 
     suspend fun playStep(
         step: PlaybackStep,
@@ -63,32 +67,40 @@ class ToneSynth {
             )
         }
         
-        val audioTrack = AudioTrack.Builder()
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build(),
-            )
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                    .setSampleRate(SAMPLE_RATE)
-                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-                    .build(),
-            )
-            .setTransferMode(AudioTrack.MODE_STATIC)
-            .setBufferSizeInBytes(pcm.size * BYTES_PER_SAMPLE)
-            .build()
+        // Try AAudio low-latency path first
+        if (tryAaudioPath(pcm, step.durationMs, renderDurationMs)) {
+            delay(step.durationMs)
+            return
+        }
+
+        val audioTrack = createAudioTrack(pcm.size * BYTES_PER_SAMPLE)
+            ?: throw PlaybackException("AudioTrack initialization failed")
+
 
         withContext(Dispatchers.IO) {
             synchronized(lock) {
+                // 并发保护：限制同时存在的 track 数量，避免 OOM
+                while (playingTracks.size >= MAX_CONCURRENT_TRACKS) {
+                    playingTracks.firstOrNull()?.let { oldest ->
+                        playingTracks.remove(oldest)
+                        if (activeTrack == oldest) activeTrack = null
+                        oldest.releaseQuietly()
+                    } ?: break
+                }
                 activeTrack = audioTrack
                 playingTracks += audioTrack
             }
-            audioTrack.write(pcm, 0, pcm.size)
-            audioTrack.play()
-            scheduleRelease(audioTrack, renderDurationMs + RELEASE_MARGIN_MS)
+            val writeResult = audioTrack.write(pcm, 0, pcm.size)
+            synchronized(lock) {
+                if (writeResult > 0 && playingTracks.contains(audioTrack)) {
+                    audioTrack.play()
+                    scheduleRelease(audioTrack, renderDurationMs + RELEASE_MARGIN_MS)
+                } else {
+                    playingTracks.remove(audioTrack)
+                    if (activeTrack == audioTrack) activeTrack = null
+                    audioTrack.releaseQuietly()
+                }
+            }
         }
 
         delay(step.durationMs)
@@ -97,6 +109,76 @@ class ToneSynth {
                 activeTrack = null
             }
         }
+    }
+
+    private fun createAudioTrack(bufferSizeBytes: Int): AudioTrack? {
+        return try {
+            AudioTrack.Builder()
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build(),
+                )
+                .setAudioFormat(
+                    AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(SAMPLE_RATE)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                        .build(),
+                )
+                .setTransferMode(AudioTrack.MODE_STATIC)
+                .setBufferSizeInBytes(bufferSizeBytes)
+                .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
+                .build()
+        } catch (e: Exception) {
+            // 降级：MODE_STREAM 对 buffer size 要求更宽松
+            try {
+                AudioTrack.Builder()
+                    .setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build(),
+                    )
+                    .setAudioFormat(
+                        AudioFormat.Builder()
+                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                            .setSampleRate(SAMPLE_RATE)
+                            .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                            .build(),
+                    )
+                    .setTransferMode(AudioTrack.MODE_STREAM)
+                    .setBufferSizeInBytes(bufferSizeBytes.coerceAtLeast(4096))
+                    .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
+                    .build()
+            } catch (e2: Exception) {
+                null
+            }
+        }
+    }
+
+    private fun tryAaudioPath(pcm: ShortArray, durationMs: Long, renderDurationMs: Long): Boolean {
+        if (aaudioPlayer == null) {
+            aaudioPlayer = AaudioPlayer(SAMPLE_RATE, 2)
+        }
+        val player = aaudioPlayer
+        if (player == null || !player.isSupported) return false
+
+        aaudioReleaseJob?.cancel()
+        player.start()
+        var offset = 0
+        while (offset < pcm.size) {
+            val chunk = minOf(pcm.size - offset, AAUDIO_WRITE_CHUNK)
+            val written = player.write(pcm, offset, chunk)
+            if (written <= 0) break
+            offset += written
+        }
+        aaudioReleaseJob = releaseScope.launch {
+            delay((renderDurationMs + RELEASE_MARGIN_MS).coerceAtLeast(1L))
+            player.stop()
+        }
+        return true
     }
 
     /**
@@ -112,37 +194,42 @@ class ToneSynth {
             volumeFactor = 1.0f,
         )
 
-        val audioTrack = AudioTrack.Builder()
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build(),
-            )
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                    .setSampleRate(SAMPLE_RATE)
-                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-                    .build(),
-            )
-            .setTransferMode(AudioTrack.MODE_STATIC)
-            .setBufferSizeInBytes(pcm.size * BYTES_PER_SAMPLE)
-            .build()
+        val audioTrack = try {
+            createAudioTrack(pcm.size * BYTES_PER_SAMPLE)
+        } catch (_: Exception) {
+            return
+        } ?: return
 
         withContext(Dispatchers.IO) {
             synchronized(lock) {
+                while (playingTracks.size >= MAX_CONCURRENT_TRACKS) {
+                    playingTracks.firstOrNull()?.let { oldest ->
+                        playingTracks.remove(oldest)
+                        if (activeTrack == oldest) activeTrack = null
+                        oldest.releaseQuietly()
+                    } ?: break
+                }
                 playingTracks += audioTrack
             }
-            audioTrack.write(pcm, 0, pcm.size)
-            audioTrack.play()
-            scheduleRelease(audioTrack, durationMs + RELEASE_MARGIN_MS)
+            val writeResult = audioTrack.write(pcm, 0, pcm.size)
+            synchronized(lock) {
+                if (writeResult > 0 && playingTracks.contains(audioTrack)) {
+                    audioTrack.play()
+                    scheduleRelease(audioTrack, durationMs + RELEASE_MARGIN_MS)
+                } else {
+                    playingTracks.remove(audioTrack)
+                    if (activeTrack == audioTrack) activeTrack = null
+                    audioTrack.releaseQuietly()
+                }
+            }
         }
 
         delay(durationMs.toLong())
     }
 
     fun stop() {
+        aaudioReleaseJob?.cancel(null)
+        aaudioReleaseJob = null
         synchronized(lock) {
             playingTracks.forEach { track ->
                 track.releaseQuietly()
@@ -150,6 +237,14 @@ class ToneSynth {
             playingTracks.clear()
             activeTrack = null
         }
+        aaudioPlayer?.stop()
+    }
+
+    fun release() {
+        stop()
+        aaudioPlayer?.release()
+        aaudioPlayer = null
+        releaseScope.cancel()
     }
 
     private fun scheduleRelease(audioTrack: AudioTrack, releaseDelayMs: Long) {
@@ -169,5 +264,7 @@ class ToneSynth {
         private const val SAMPLE_RATE = 44_100
         private const val BYTES_PER_SAMPLE = 2
         private const val RELEASE_MARGIN_MS = 32L
+        private const val MAX_CONCURRENT_TRACKS = 8
+        private const val AAUDIO_WRITE_CHUNK = 2048
     }
 }

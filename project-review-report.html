@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xiyue 项目全面 Review 报告</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/kotlin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            secondary: '#8b5cf6',
+            success: '#22c55e',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            info: '#3b82f6',
+            dark: '#0f172a',
+            card: '#1e293b',
+            surface: '#334155'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #0f172a; color: #e2e8f0; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; }
+    .tab-inactive { color: #94a3b8; }
+    .tab-inactive:hover { color: #e2e8f0; }
+    .metric-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3); }
+    .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+    .collapsible-content.open { max-height: 2000px; }
+    .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+    .search-highlight { background-color: rgba(99, 102, 241, 0.4); padding: 0 2px; border-radius: 2px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full z-50 glass border-b border-slate-700/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">X</div>
+          <div>
+            <h1 class="text-xl font-bold text-white">Xiyue 项目 Review</h1>
+            <p class="text-xs text-slate-400">生成于 2026-04-15</p>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center gap-6">
+          <input type="text" id="globalSearch" placeholder="搜索报告内容..." 
+            class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-sm focus:outline-none focus:border-primary w-64 transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+            <span class="text-sm text-slate-300">状态: 健康</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Hero Scorecard -->
+    <section class="mb-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Overall Health -->
+        <div class="glass rounded-2xl p-6 metric-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-slate-300 font-medium">综合健康度</h3>
+            <span class="text-2xl font-bold text-success">A</span>
+          </div>
+          <div class="relative w-32 h-32 mx-auto">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="8"/>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="283" stroke-dashoffset="28" class="progress-ring__circle"/>
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#22c55e"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-3xl font-bold text-white">90%</span>
+            </div>
+          </div>
+          <p class="text-center text-sm text-slate-400 mt-2">基于代码、测试、文档综合评分</p>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-xl p-5 metric-card">
+            <div class="text-3xl font-bold text-white">13,251</div>
+            <div class="text-sm text-slate-400 mt-1">总代码行数</div>
+            <div class="mt-2 text-xs text-success">+ Kotlin 10,887 / JS 1,888</div>
+          </div>
+          <div class="glass rounded-xl p-5 metric-card">
+            <div class="text-3xl font-bold text-white">58/58</div>
+            <div class="text-sm text-slate-400 mt-1">测试通过</div>
+            <div class="mt-2 text-xs text-success">覆盖率 79.7%</div>
+          </div>
+          <div class="glass rounded-xl p-5 metric-card">
+            <div class="text-3xl font-bold text-white">0</div>
+            <div class="text-sm text-slate-400 mt-1">Lint 错误</div>
+            <div class="mt-2 text-xs text-success">代码风格规范</div>
+          </div>
+          <div class="glass rounded-xl p-5 metric-card">
+            <div class="text-3xl font-bold text-white">42</div>
+            <div class="text-sm text-slate-400 mt-1">文档文件</div>
+            <div class="mt-2 text-xs text-info">文档完善度极高</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <div class="glass rounded-xl mb-6 sticky top-20 z-40">
+      <div class="flex overflow-x-auto border-b border-slate-700/50">
+        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn tab-active px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">概览</button>
+        <button onclick="switchTab('code')" id="tab-code" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">代码分析</button>
+        <button onclick="switchTab('architecture')" id="tab-architecture" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">架构</button>
+        <button onclick="switchTab('testing')" id="tab-testing" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">测试与质量</button>
+        <button onclick="switchTab('builds')" id="tab-builds" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">构建与发布</button>
+        <button onclick="switchTab('git')" id="tab-git" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">Git 分析</button>
+        <button onclick="switchTab('docs')" id="tab-docs" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">文档</button>
+        <button onclick="switchTab('issues')" id="tab-issues" class="tab-btn tab-inactive px-6 py-4 text-sm font-medium whitespace-nowrap transition-colors">风险与建议</button>
+      </div>
+    </div>
+
+    <!-- Tab Content: Overview -->
+    <div id="content-overview" class="tab-content">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Project Info -->
+          <div class="glass rounded-2xl p-6">
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">ℹ</span>
+              项目信息
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-3">
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">项目名称</span>
+                  <span class="text-white font-medium">Xiyue (习乐)</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">版本</span>
+                  <span class="text-white font-medium">v0.1.0</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">状态</span>
+                  <span class="px-2 py-1 rounded bg-success/20 text-success text-xs font-medium">开发中 / 预发布</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">主平台</span>
+                  <span class="text-white font-medium">Android (Kotlin + Compose)</span>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">仓库地址</span>
+                  <a href="https://github.com/Longtiverse/Xiyue" target="_blank" class="text-primary hover:underline text-sm">GitHub ↗</a>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">本地路径</span>
+                  <span class="text-white font-medium text-sm">D:\Project\Xiyue</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">最新提交</span>
+                  <span class="text-white font-medium text-sm font-mono">1147371</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-700/50">
+                  <span class="text-slate-400">分支</span>
+                  <span class="text-white font-medium">master (+ codex/ux-iteration)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tech Stack -->
+          <div class="glass rounded-2xl p-6">
+            <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">⚡</span>
+              技术栈
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🤖</div>
+                <div class="text-sm font-medium text-white">Android</div>
+                <div class="text-xs text-slate-400">SDK 36 / min 28</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🎨</div>
+                <div class="text-sm font-medium text-white">Jetpack Compose</div>
+                <div class="text-xs text-slate-400">BOM 2025.02.00</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">⚙️</div>
+                <div class="text-sm font-medium text-white">Kotlin</div>
+                <div class="text-xs text-slate-400">2.0.21 / Coroutines 1.9.0</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🎵</div>
+                <div class="text-sm font-medium text-white">AudioTrack + PCM</div>
+                <div class="text-xs text-slate-400">44.1kHz / 16-bit</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">📦</div>
+                <div class="text-sm font-medium text-white">Gradle</div>
+                <div class="text-xs text-slate-400">8.14 / AGP 8.7.3</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🌐</div>
+                <div class="text-sm font-medium text-white">HTML Sandbox</div>
+                <div class="text-xs text-slate-400">ES Modules / Node 20</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🧪</div>
+                <div class="text-sm font-medium text-white">node:test + c8</div>
+                <div class="text-xs text-slate-400">JS 覆盖率工具</div>
+              </div>
+              <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                <div class="text-2xl mb-2">🔧</div>
+                <div class="text-sm font-medium text-white">ESLint + Prettier</div>
+                <div class="text-xs text-slate-400">v10.2.0 / v3.8.1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="glass rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-info/20 flex items-center justify-center text-info">📅</span>
+            开发活跃度
+          </h2>
+          <canvas id="activityChart" height="200"></canvas>
+          <div class="mt-6 space-y-3">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-slate-400">最近 7 天提交</span>
+              <span class="text-white font-medium">16</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-slate-400">主要贡献者</span>
+              <span class="text-white font-medium">Longtiverse (19 commits)</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-slate-400">项目启动</span>
+              <span class="text-white font-medium">2026-03-27</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Code Analysis -->
+    <div id="content-code" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">代码分布</h3>
+          <canvas id="locChart" height="220"></canvas>
+        </div>
+        <div class="lg:col-span-2 glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">模块统计</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                  <th class="pb-3 font-medium">模块</th>
+                  <th class="pb-3 font-medium">语言</th>
+                  <th class="pb-3 font-medium text-right">文件数</th>
+                  <th class="pb-3 font-medium text-right">代码行数</th>
+                  <th class="pb-3 font-medium text-right">测试文件</th>
+                  <th class="pb-3 font-medium text-right">测试 LOC</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-300">
+                <tr class="border-b border-slate-700/30">
+                  <td class="py-3 font-medium text-white">Android App</td>
+                  <td class="py-3">Kotlin</td>
+                  <td class="py-3 text-right">64</td>
+                  <td class="py-3 text-right">10,887</td>
+                  <td class="py-3 text-right">3 (.kt UI Test)</td>
+                  <td class="py-3 text-right">-</td>
+                </tr>
+                <tr class="border-b border-slate-700/30">
+                  <td class="py-3 font-medium text-white">Android Tests (Node)</td>
+                  <td class="py-3">JavaScript</td>
+                  <td class="py-3 text-right">-</td>
+                  <td class="py-3 text-right">-</td>
+                  <td class="py-3 text-right">4</td>
+                  <td class="py-3 text-right">~800</td>
+                </tr>
+                <tr class="border-b border-slate-700/30">
+                  <td class="py-3 font-medium text-white">music-core</td>
+                  <td class="py-3">JavaScript</td>
+                  <td class="py-3 text-right">6</td>
+                  <td class="py-3 text-right">491</td>
+                  <td class="py-3 text-right">5</td>
+                  <td class="py-3 text-right">~450</td>
+                </tr>
+                <tr class="border-b border-slate-700/30">
+                  <td class="py-3 font-medium text-white">html-sandbox</td>
+                  <td class="py-3">JavaScript</td>
+                  <td class="py-3 text-right">11</td>
+                  <td class="py-3 text-right">1,397</td>
+                  <td class="py-3 text-right">9</td>
+                  <td class="py-3 text-right">~946</td>
+                </tr>
+                <tr class="border-b border-slate-700/30">
+                  <td class="py-3 font-medium text-white">Scripts</td>
+                  <td class="py-3">JavaScript/PowerShell</td>
+                  <td class="py-3 text-right">5</td>
+                  <td class="py-3 text-right">~300</td>
+                  <td class="py-3 text-right">-</td>
+                  <td class="py-3 text-right">-</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-bold text-white">总计</td>
+                  <td class="py-3">-</td>
+                  <td class="py-3 text-right font-bold text-white">86+</td>
+                  <td class="py-3 text-right font-bold text-white">13,251+</td>
+                  <td class="py-3 text-right font-bold text-white">21+</td>
+                  <td class="py-3 text-right font-bold text-white">2,196+</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Complexity -->
+      <div class="glass rounded-2xl p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-white">Android 文件复杂度 (Top 20)</h3>
+          <button onclick="toggleCollapse('complexity-list')" class="text-primary text-sm hover:underline">展开/折叠</button>
+        </div>
+        <div id="complexity-list" class="collapsible-content open">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                  <th class="pb-3 font-medium">文件名</th>
+                  <th class="pb-3 font-medium">路径</th>
+                  <th class="pb-3 font-medium text-right">行数</th>
+                  <th class="pb-3 font-medium">评估</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-300">
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">AchievementComponents.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">393</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">ComboScreen.kt</td><td class="py-2 text-xs">features/combo</td><td class="py-2 text-right">375</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">VisualEffects.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">361</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">GestureComponents.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">340</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">XiyueApp.kt</td><td class="py-2 text-xs">ui</td><td class="py-2 text-right">339</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">LibraryItemContextMenu.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">313</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">PracticePlaybackService.kt</td><td class="py-2 text-xs">playback</td><td class="py-2 text-right">315</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">ToneSynthesisEngine.kt</td><td class="py-2 text-xs">playback</td><td class="py-2 text-right">307</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">MetronomeVisualEffect.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">305</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs">较大</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">CountdownBeep.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">277</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">HomeUiStateBuilder.kt</td><td class="py-2 text-xs">features/home</td><td class="py-2 text-right">278</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">AchievementManager.kt</td><td class="py-2 text-xs">practice</td><td class="py-2 text-right">281</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">PlaybackDisplaySection.kt</td><td class="py-2 text-xs">features/home</td><td class="py-2 text-right">268</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">StatusAnimations.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">263</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">PlaybackControlsSection.kt</td><td class="py-2 text-xs">features/home</td><td class="py-2 text-right">252</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">EnhancedBpmSlider.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">251</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">WaveformVisualizer.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">257</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">SwipeableRootNoteSelector.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">211</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">HomeStateFactory.kt</td><td class="py-2 text-xs">features/home</td><td class="py-2 text-right">203</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+                <tr><td class="py-2 font-mono text-xs">ZoomableKeyboard.kt</td><td class="py-2 text-xs">ui/components</td><td class="py-2 text-right">186</td><td class="py-2"><span class="px-2 py-0.5 rounded bg-success/20 text-success text-xs">适中</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Sample -->
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">架构亮点: HomeReducer (MVI 模式)</h3>
+        <div class="bg-slate-900 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+            <span class="text-xs text-slate-400 font-mono">HomeReducer.kt</span>
+            <span class="text-xs text-slate-500">Kotlin</span>
+          </div>
+          <pre class="p-4 overflow-x-auto text-sm"><code class="language-kotlin">class HomeReducer(private val stateFactory: HomeStateFactory = HomeStateFactory()) {
+    fun reduce(state: HomeUiState, action: HomeAction): HomeUiState {
+        // ...辅助函数 nextState(...)
+        return when (action) {
+            is HomeAction.SelectLibraryItem -> nextState(
+                selectedLibraryItemId = action.itemId,
+                isLibraryOverlayVisible = false,
+            )
+            is HomeAction.TogglePlayback -> nextState(
+                isPlaying = !state.isPlaying,
+                isPaused = state.isPlaying,
+            )
+            is HomeAction.SyncPlaybackSnapshot -> nextState(
+                playbackSnapshot = action.snapshot,
+            )
+            // ... 其他 Action 处理
+        }
+    }
+}</code></pre>
+        </div>
+        <p class="text-sm text-slate-400 mt-3">采用纯函数 Reducer 处理用户意图(Action)，通过 StateFactory 重新构建不可变状态，符合 MVI 单向数据流原则。</p>
+      </div>
+    </div>
+
+    <!-- Tab Content: Architecture -->
+    <div id="content-architecture" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">应用架构</h3>
+          <div class="space-y-4">
+            <div class="flex items-start gap-4 p-4 bg-slate-800/50 rounded-xl">
+              <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-bold">1</div>
+              <div>
+                <h4 class="font-medium text-white">UI Layer (Compose)</h4>
+                <p class="text-sm text-slate-400 mt-1">Screens, Components, Features。使用 Jetpack Compose 构建声明式 UI，包含 27 种动画效果。</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-slate-800/50 rounded-xl">
+              <div class="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary font-bold">2</div>
+              <div>
+                <h4 class="font-medium text-white">State Management (MVI)</h4>
+                <p class="text-sm text-slate-400 mt-1">Action → Reducer → State → View。HomeReducer 纯函数处理所有状态转换，配合 StateFactory 和 UiStateBuilder。</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-slate-800/50 rounded-xl">
+              <div class="w-10 h-10 rounded-lg bg-info/20 flex items-center justify-center text-info font-bold">3</div>
+              <div>
+                <h4 class="font-medium text-white">Domain Layer</h4>
+                <p class="text-sm text-slate-400 mt-1">PracticeLibraryRepository, PracticeSessionFactory, PitchClass 等纯领域模型。职责分离清晰。</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 p-4 bg-slate-800/50 rounded-xl">
+              <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center text-success font-bold">4</div>
+              <div>
+                <h4 class="font-medium text-white">Playback Layer</h4>
+                <p class="text-sm text-slate-400 mt-1">PracticePlaybackService (前台服务), PlaybackRunner, ToneSynth, ToneSynthesisEngine。支持后台播放与热切换。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">跨平台核心共享</h3>
+          <div class="bg-slate-900 rounded-xl p-4 mb-4">
+            <pre class="text-sm text-slate-300 overflow-x-auto"><code class="language-text">┌─────────────────────────────────────────┐
+│         Xiyue 应用架构                   │
+├─────────────────────────────────────────┤
+│  Android App        HTML Sandbox        │
+│  (Kotlin)           (JavaScript)        │
+│       │                   │             │
+│       └────────┬──────────┘             │
+│                ▼                        │
+│        ┌──────────────┐                 │
+│        │  Music Core  │                 │
+│        │ (JSON+Logic) │                 │
+│        └──────────────┘                 │
+└─────────────────────────────────────────┘</code></pre>
+          </div>
+          <ul class="space-y-2 text-sm text-slate-300">
+            <li class="flex items-center gap-2"><span class="text-success">✓</span> music-core 以 ES Module 导出，被 HTML Sandbox 直接引用</li>
+            <li class="flex items-center gap-2"><span class="text-success">✓</span> Android 端使用 assets/library.json 存储相同音乐数据</li>
+            <li class="flex items-center gap-2"><span class="text-warning">!</span> Android Kotlin 端尚未直接复用 JS 逻辑，存在数据重复</li>
+            <li class="flex items-center gap-2"><span class="text-success">✓</span> 单一数据源原则：library.json 为音阶/和弦的唯一真相来源</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="text-lg font-bold text-white mb-4">Android 模块依赖</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                <th class="pb-3 font-medium">包名</th>
+                <th class="pb-3 font-medium">职责</th>
+                <th class="pb-3 font-medium text-right">文件数</th>
+                <th class="pb-3 font-medium">核心类</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">domain</td><td class="py-2">领域模型与仓储</td><td class="py-2 text-right">4</td><td class="py-2 font-mono text-xs">PracticeLibraryRepository, PracticeSessionFactory</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">features/home</td><td class="py-2">主页功能与状态管理</td><td class="py-2 text-right">13</td><td class="py-2 font-mono text-xs">HomeScreen, HomeReducer, HomeStateFactory</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">features/combo</td><td class="py-2">自定义和弦组合</td><td class="py-2 text-right">1</td><td class="py-2 font-mono text-xs">ComboScreen</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">features/favorites</td><td class="py-2">收藏夹</td><td class="py-2 text-right">1</td><td class="py-2 font-mono text-xs">FavoritesScreen</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">features/settings</td><td class="py-2">设置页</td><td class="py-2 text-right">1</td><td class="py-2 font-mono text-xs">SettingsScreen</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">playback</td><td class="py-2">音频播放引擎</td><td class="py-2 text-right">10</td><td class="py-2 font-mono text-xs">PracticePlaybackService, ToneSynth, PlaybackRunner</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">ui/components</td><td class="py-2">可复用 UI 组件</td><td class="py-2 text-right">22</td><td class="py-2 font-mono text-xs">XiyueCard, AnimatedPlayButton, WaveformVisualizer</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2 font-mono text-xs">ui/theme</td><td class="py-2">主题与设计令牌</td><td class="py-2 text-right">5</td><td class="py-2 font-mono text-xs">DesignTokens, ColorPalette, Theme</td></tr>
+              <tr><td class="py-2 font-mono text-xs">practice</td><td class="py-2">练习成就与自适应速度</td><td class="py-2 text-right">2</td><td class="py-2 font-mono text-xs">AchievementManager, AdaptiveSpeedController</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">音乐核心 (music-core) 导出</h3>
+        <div class="bg-slate-900 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+            <span class="text-xs text-slate-400 font-mono">packages/music-core/package.json</span>
+            <span class="text-xs text-slate-500">JSON</span>
+          </div>
+          <pre class="p-4 overflow-x-auto text-sm"><code class="language-json">{
+  "exports": {
+    ".": "./src/index.js",
+    "./theory": "./src/theory.js",
+    "./patterns": "./src/patterns.js",
+    "./library": "./src/library.js",
+    "./playback": "./src/playback.js",
+    "./highlight": "./src/highlight.js"
+  }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Testing -->
+    <div id="content-testing" class="tab-content hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="text-4xl font-bold text-success mb-2">58</div>
+          <div class="text-slate-300 font-medium">通过测试</div>
+          <div class="text-xs text-slate-400 mt-1">0 失败 | 0 跳过</div>
+        </div>
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="text-4xl font-bold text-info mb-2">79.7%</div>
+          <div class="text-slate-300 font-medium">语句覆盖率</div>
+          <div class="text-xs text-slate-400 mt-1">Branch 74.1% | Function 74.1%</div>
+        </div>
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="text-4xl font-bold text-success mb-2">0</div>
+          <div class="text-slate-300 font-medium">ESLint 错误</div>
+          <div class="text-xs text-slate-400 mt-1">Prettier 格式化通过</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">覆盖率详情</h3>
+          <canvas id="coverageChart" height="250"></canvas>
+        </div>
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">测试分布</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm mb-1"><span class="text-slate-300">music-core</span><span class="text-success font-medium">15 测试</span></div>
+              <div class="h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-success" style="width: 25%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1"><span class="text-slate-300">html-sandbox</span><span class="text-success font-medium">17 测试</span></div>
+              <div class="h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-primary" style="width: 29%"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-1"><span class="text-slate-300">android (Node 文件检查)</span><span class="text-success font-medium">26 测试</span></div>
+              <div class="h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-secondary" style="width: 46%"></div></div>
+            </div>
+          </div>
+          <div class="mt-6 p-4 bg-warning/10 border border-warning/20 rounded-xl">
+            <h4 class="text-sm font-bold text-warning mb-2">⚠ 覆盖率说明</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              当前覆盖率由 c8 基于 Node.js 测试计算，仅覆盖 JavaScript 代码 (music-core, html-sandbox, scripts)。
+              <strong class="text-white">Android Kotlin 代码没有单元测试覆盖率数据</strong>，现有的 Android 测试主要是 Node.js 文件存在性和结构验证测试，不是真正的 Kotlin 单元/UI 测试。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="text-lg font-bold text-white mb-4">覆盖率明细表</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                <th class="pb-3 font-medium">文件/目录</th>
+                <th class="pb-3 font-medium text-right">% Stmts</th>
+                <th class="pb-3 font-medium text-right">% Branch</th>
+                <th class="pb-3 font-medium text-right">% Funcs</th>
+                <th class="pb-3 font-medium text-right">% Lines</th>
+                <th class="pb-3 font-medium">未覆盖行</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-700/30 bg-success/5"><td class="py-2 font-medium">highlight.js</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-xs text-slate-500">-</td></tr>
+              <tr class="border-b border-slate-700/30 bg-success/5"><td class="py-2 font-medium">index.js</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-xs text-slate-500">-</td></tr>
+              <tr class="border-b border-slate-700/30 bg-success/5"><td class="py-2 font-medium">patterns.js</td><td class="py-2 text-right text-success">96.2%</td><td class="py-2 text-right text-success">92.3%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">96.2%</td><td class="py-2 text-xs text-slate-500">15-16</td></tr>
+              <tr class="border-b border-slate-700/30 bg-success/5"><td class="py-2 font-medium">library.js</td><td class="py-2 text-right text-success">97.4%</td><td class="py-2 text-right text-success">95%</td><td class="py-2 text-right text-warning">85.7%</td><td class="py-2 text-right text-success">97.4%</td><td class="py-2 text-xs text-slate-500">79-80, 102</td></tr>
+              <tr class="border-b border-slate-700/30 bg-warning/5"><td class="py-2 font-medium">sandbox-model.js</td><td class="py-2 text-right text-success">98.5%</td><td class="py-2 text-right text-success">95%</td><td class="py-2 text-right text-success">100%</td><td class="py-2 text-right text-success">98.5%</td><td class="py-2 text-xs text-slate-500">35-36</td></tr>
+              <tr class="border-b border-slate-700/30 bg-warning/5"><td class="py-2 font-medium">theory.js</td><td class="py-2 text-right text-warning">85.4%</td><td class="py-2 text-right text-danger">50%</td><td class="py-2 text-right text-warning">85.7%</td><td class="py-2 text-right text-warning">85.4%</td><td class="py-2 text-xs text-slate-500">86-102, 142-143, 154-155, 158-159</td></tr>
+              <tr class="border-b border-slate-700/30 bg-warning/5"><td class="py-2 font-medium">playback.js</td><td class="py-2 text-right text-warning">76%</td><td class="py-2 text-right text-danger">62.1%</td><td class="py-2 text-right text-warning">81.8%</td><td class="py-2 text-right text-warning">76%</td><td class="py-2 text-xs text-slate-500">145-166, 169-172, 182-188, 199-217</td></tr>
+              <tr class="border-b border-slate-700/30 bg-warning/5"><td class="py-2 font-medium">web-audio-player.js</td><td class="py-2 text-right text-success">88.6%</td><td class="py-2 text-right text-warning">65.5%</td><td class="py-2 text-right text-warning">80%</td><td class="py-2 text-right text-success">88.6%</td><td class="py-2 text-xs text-slate-500">52-55, 83-84, 111-112, 127-131, 153-154, 169</td></tr>
+              <tr class="border-b border-slate-700/30 bg-danger/5"><td class="py-2 font-medium">controller.js</td><td class="py-2 text-right text-warning">70.3%</td><td class="py-2 text-right text-success">77.4%</td><td class="py-2 text-right text-warning">67.6%</td><td class="py-2 text-right text-warning">70.3%</td><td class="py-2 text-xs text-slate-500">...348-356, 359-365, 368-370, 377-391</td></tr>
+              <tr class="border-b border-slate-700/30 bg-danger/5"><td class="py-2 font-medium">storage.js</td><td class="py-2 text-right text-danger">66.4%</td><td class="py-2 text-right text-danger">54.5%</td><td class="py-2 text-right text-danger">38.5%</td><td class="py-2 text-right text-danger">66.4%</td><td class="py-2 text-xs text-slate-500">...81-92, 101-105, 109-117, 122-124</td></tr>
+              <tr class="border-b border-slate-700/30 bg-danger/5"><td class="py-2 font-medium">html-sandbox-server.js</td><td class="py-2 text-right text-warning">70.6%</td><td class="py-2 text-right text-warning">53.3%</td><td class="py-2 text-right text-warning">75%</td><td class="py-2 text-right text-warning">70.6%</td><td class="py-2 text-xs text-slate-500">36-39, 46-48, 52-62, 67-68</td></tr>
+              <tr class="bg-danger/5"><td class="py-2 font-medium">open-html-sandbox.js</td><td class="py-2 text-right text-danger">35.5%</td><td class="py-2 text-right text-warning">66.7%</td><td class="py-2 text-right text-danger">50%</td><td class="py-2 text-right text-danger">35.5%</td><td class="py-2 text-xs text-slate-500">8-23, 28-31</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">质量评估</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 bg-success/10 border border-success/20 rounded-xl">
+            <h4 class="font-medium text-success mb-2">✅ 优势</h4>
+            <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>所有测试 100% 通过</li>
+              <li>ESLint 0 错误，代码风格一致</li>
+              <li>HTML Sandbox 测试覆盖端到端场景</li>
+              <li>music-core 核心算法覆盖率优秀</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl">
+            <h4 class="font-medium text-warning mb-2">⚠ 待改进</h4>
+            <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside">
+              <li>Android Kotlin 缺少真正的单元测试</li>
+              <li>storage.js 和 open-html-sandbox.js 覆盖率偏低</li>
+              <li>theory.js 分支覆盖率仅 50%</li>
+              <li>缺少 Compose UI 的 instrumentation test</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Builds -->
+    <div id="content-builds" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">最新 APK</h3>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-success mb-2">20.48</div>
+            <div class="text-slate-300">MB</div>
+            <div class="text-xs text-slate-400 mt-2 font-mono">xiyue-android-v0.1.0-20260413-0344-debug.apk</div>
+          </div>
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-slate-400">版本号</span><span class="text-white">1 (0.1.0)</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">targetSdk</span><span class="text-white">34</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">minSdk</span><span class="text-white">28</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">compileSdk</span><span class="text-white">36</span></div>
+          </div>
+        </div>
+        <div class="lg:col-span-2 glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">APK 大小趋势</h3>
+          <canvas id="apkChart" height="200"></canvas>
+          <p class="text-xs text-slate-400 mt-3">注意：4 月 13 日 APK 大小从 ~54MB 骤降至 ~20MB，与 build.gradle.kts 中启用 <code class="bg-slate-800 px-1 rounded">isMinifyEnabled</code> 和 <code class="bg-slate-800 px-1 rounded">isShrinkResources</code> 时间吻合。</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="text-lg font-bold text-white mb-4">构建配置分析</h3>
+        <div class="bg-slate-900 rounded-xl overflow-hidden mb-4">
+          <div class="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+            <span class="text-xs text-slate-400 font-mono">apps/android/app/build.gradle.kts</span>
+            <span class="text-xs text-slate-500">Kotlin DSL</span>
+          </div>
+          <pre class="p-4 overflow-x-auto text-sm"><code class="language-kotlin">buildTypes {
+    release {
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(...)
+    }
+    debug {
+        isMinifyEnabled = true
+        isShrinkResources = true
+        isDebuggable = false
+        applicationIdSuffix = ".debug"
+    }
+}</code></pre>
+        </div>
+        <div class="p-4 bg-warning/10 border border-warning/20 rounded-xl">
+          <h4 class="text-sm font-bold text-warning mb-2">⚠ 构建配置观察</h4>
+          <ul class="text-sm text-slate-300 space-y-1 list-disc list-inside">
+            <li><strong>Debug 构建启用 ProGuard</strong>：debug 类型设置了 <code>isMinifyEnabled = true</code> 和 <code>isShrinkResources = true</code>，这会延长构建时间并影响调试堆栈跟踪的可读性。</li>
+            <li><strong>isDebuggable = false</strong>：debug build 关闭了可调试性，实际上更像是 release 配置。建议在开发调试时恢复 <code>isDebuggable = true</code> 并关闭 minify。</li>
+            <li><strong>APK 命名规范</strong>：使用 <code>SimpleDateFormat("yyyyMMdd-HHmm")</code> 自动生成带时间戳的 APK 文件名，便于版本追溯。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">CI/CD 流程 (GitHub Actions)</h3>
+        <div class="space-y-3">
+          <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl">
+            <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success text-xl">1</div>
+            <div class="flex-1">
+              <h4 class="font-medium text-white">test-js</h4>
+              <p class="text-sm text-slate-400">Node 20 → npm ci → ESLint → 测试 + c8 覆盖率 → Codecov 上传</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-medium">通过</span>
+          </div>
+          <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl">
+            <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success text-xl">2</div>
+            <div class="flex-1">
+              <h4 class="font-medium text-white">test-android</h4>
+              <p class="text-sm text-slate-400">Java 17 + Android SDK → 运行 Android 结构测试 (Node.js)</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-medium">通过</span>
+          </div>
+          <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl">
+            <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success text-xl">3</div>
+            <div class="flex-1">
+              <h4 class="font-medium text-white">build-android</h4>
+              <p class="text-sm text-slate-400">依赖 test-js & test-android → 下载 Gradle 8.14 → 构建 APK → 上传 Artifact</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-medium">通过</span>
+          </div>
+          <div class="flex items-center gap-4 p-4 bg-slate-800/50 rounded-xl">
+            <div class="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success text-xl">4</div>
+            <div class="flex-1">
+              <h4 class="font-medium text-white">format-check</h4>
+              <p class="text-sm text-slate-400">Prettier 格式检查</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-medium">通过</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Git -->
+    <div id="content-git" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">提交历史 (最近 20)</h3>
+          <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">1147371</span><span class="text-sm text-slate-300 flex-1">docs: clarify later ux batch scope</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">96a01a2</span><span class="text-sm text-slate-300 flex-1">chore: harden local worktree ignore</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">46e166e</span><span class="text-sm text-slate-300 flex-1">chore: ignore local worktrees</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">8ed4ce6</span><span class="text-sm text-slate-300 flex-1">docs: add ux iteration design spec</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">09d4194</span><span class="text-sm text-slate-300 flex-1">feat: tighten android ui to match mockup</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">06b783c</span><span class="text-sm text-slate-300 flex-1">feat: align Android app with design spec</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-warning/20 text-warning text-xs font-mono">4e09079</span><span class="text-sm text-slate-300 flex-1">chore: project health pass - fix CI, lint, format, tests, docs, and add license</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">cc577d1</span><span class="text-sm text-slate-300 flex-1">feat: add Chinese localization and improvements</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">a4da42d</span><span class="text-sm text-slate-300 flex-1">feat: complete all improvements and optimizations</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">d49c534</span><span class="text-sm text-slate-300 flex-1">docs: add comprehensive documentation and tests</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">5e57ac8</span><span class="text-sm text-slate-300 flex-1">feat: add advanced visual effects components</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">9540555</span><span class="text-sm text-slate-300 flex-1">feat: add comprehensive gesture interaction components</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">7780148</span><span class="text-sm text-slate-300 flex-1">feat: add comprehensive animation components</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-secondary/20 text-secondary text-xs font-mono">9031f47</span><span class="text-sm text-slate-300 flex-1">refactor: replace hardcoded values with DesignTokens</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">63116bc</span><span class="text-sm text-slate-300 flex-1">feat: integrate new UI components into HomeScreen</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-mono">33984b9</span><span class="text-sm text-slate-300 flex-1">docs: add comprehensive documentation for new session</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-danger/20 text-danger text-xs font-mono">b523f52</span><span class="text-sm text-slate-300 flex-1">fix: resolve compilation errors in UI components</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">ca04a6a</span><span class="text-sm text-slate-300 flex-1">feat: complete UI iteration with design system and animated components</span></div>
+            <div class="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-mono">cdf8b9e</span><span class="text-sm text-slate-300 flex-1">feat: initialize xiyue android practice app</span></div>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">提交类型统计</h3>
+          <canvas id="commitTypeChart" height="220"></canvas>
+          <div class="mt-6 space-y-3">
+            <div class="flex justify-between items-center text-sm"><span class="text-slate-300">✨ feat (新功能)</span><span class="px-2 py-1 rounded bg-primary/20 text-primary text-xs font-medium">10</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-slate-300">📚 docs (文档)</span><span class="px-2 py-1 rounded bg-info/20 text-info text-xs font-medium">4</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-slate-300">🔧 chore (杂项)</span><span class="px-2 py-1 rounded bg-warning/20 text-warning text-xs font-medium">3</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-slate-300">♻️ refactor (重构)</span><span class="px-2 py-1 rounded bg-secondary/20 text-secondary text-xs font-medium">1</span></div>
+            <div class="flex justify-between items-center text-sm"><span class="text-slate-300">🐛 fix (修复)</span><span class="px-2 py-1 rounded bg-danger/20 text-danger text-xs font-medium">1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">最近 5 次提交变更统计</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700/50">
+                <th class="pb-3 font-medium">指标</th>
+                <th class="pb-3 font-medium text-right">数值</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-700/30"><td class="py-2">变更文件数</td><td class="py-2 text-right font-mono">16 files</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2">新增行数</td><td class="py-2 text-right font-mono text-success">+1,611</td></tr>
+              <tr class="border-b border-slate-700/30"><td class="py-2">删除行数</td><td class="py-2 text-right font-mono text-danger">-554</td></tr>
+              <tr><td class="py-2">净变更</td><td class="py-2 text-right font-mono text-info">+1,057</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm text-slate-400 mt-4">最近提交主要集中在 UI 迭代设计规范的落地，包括 <code class="bg-slate-800 px-1 rounded">ComboScreen</code>、<code class="bg-slate-800 px-1 rounded">HomeScreen</code> 及其子组件的大规模重构，以及新的 UX 设计文档。</p>
+      </div>
+    </div>
+
+    <!-- Tab Content: Docs -->
+    <div id="content-docs" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">文档健康度</h3>
+          <div class="relative w-32 h-32 mx-auto mb-4">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#1e293b" stroke-width="8"/>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="28"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white">90%</span></div>
+          </div>
+          <p class="text-center text-sm text-slate-400">42+ 文档文件，涵盖架构、设计、贡献指南</p>
+        </div>
+        <div class="lg:col-span-2 glass rounded-2xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">文档类别分布</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-800/50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">8</div><div class="text-xs text-slate-400">架构/规划</div></div>
+            <div class="bg-slate-800/50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">10</div><div class="text-xs text-slate-400">UI/UX 设计</div></div>
+            <div class="bg-slate-800/50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">6</div><div class="text-xs text-slate-400">开发指南</div></div>
+            <div class="bg-slate-800/50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">18</div><div class="text-xs text-slate-400">其他 (状态/反馈/HTML)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">关键文档清单</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+            <h4 class="font-medium text-white mb-2">🏗️ 架构与规范</h4>
+            <ul class="text-sm text-slate-300 space-y-1">
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> README.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> PROJECT-SUMMARY.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/architecture.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> COMPONENT_GUIDE.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> ANIMATION_GUIDE.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> CONTRIBUTING.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/new-session-guide.md</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+            <h4 class="font-medium text-white mb-2">🎨 设计与产品</h4>
+            <ul class="text-sm text-slate-300 space-y-1">
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/design-spec.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/ui-redesign-guide.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/interaction-design-review.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/product-strategy.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> competitive-analysis-music-apps.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/icon-proposals.html</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+            <h4 class="font-medium text-white mb-2">📋 迭代与进度</h4>
+            <ul class="text-sm text-slate-300 space-y-1">
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/improvement-plan.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/improvement-completion-report.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/ui-iteration-completion-report.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/ui-iteration-progress.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> todos-improvements.json</li>
+            </ul>
+          </div>
+          <div class="p-4 bg-slate-800/50 rounded-xl">
+            <h4 class="font-medium text-white mb-2">⚙️ 技术规范</h4>
+            <ul class="text-sm text-slate-300 space-y-1">
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> packages/music-core-spec/*.md (5 份)</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> docs/android-build-and-release.md</li>
+              <li class="flex items-center gap-2"><span class="text-success">✓</span> .github/workflows/ci.yml</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Issues & Recommendations -->
+    <div id="content-issues" class="tab-content hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Issues -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-danger/20 flex items-center justify-center text-danger">!</span>
+            发现的问题
+          </h3>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-danger">
+            <div class="flex items-start justify-between">
+              <h4 class="font-medium text-white">1. Android Kotlin 缺乏真正的单元测试</h4>
+              <span class="px-2 py-0.5 rounded bg-danger/20 text-danger text-xs font-medium">高优先级</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">现有 Android 测试使用 Node.js 脚本验证文件存在性和结构，无法验证 Reducer 逻辑、音频合成正确性或 Compose UI 行为。建议引入 JUnit + Robolectric/Compose Test。</p>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-warning">
+            <div class="flex items-start justify-between">
+              <h4 class="font-medium text-white">2. Debug 构建配置异常</h4>
+              <span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs font-medium">中优先级</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2"><code>build.gradle.kts</code> 中 debug buildType 启用了 <code>isMinifyEnabled=true</code> 和 <code>isDebuggable=false</code>，几乎等同于 release 配置。这会显著拖慢日常开发构建并阻碍调试。</p>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-warning">
+            <div class="flex items-start justify-between">
+              <h4 class="font-medium text-white">3. library.json 数据重复</h4>
+              <span class="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs font-medium">中优先级</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">音阶/和弦数据同时存在于 <code>packages/music-core/data/library.json</code> 和 <code>apps/android/app/src/main/assets/library.json</code>。虽然内容可能相同，但存在同步不一致的风险。建议通过构建脚本自动复制。</p>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-info">
+            <div class="flex items-start justify-between">
+              <h4 class="font-medium text-white">4. 单一贡献者风险</h4>
+              <span class="px-2 py-0.5 rounded bg-info/20 text-info text-xs font-medium">低优先级</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">所有 19 次提交均来自 Longtiverse。知识集中度高，建议完善 CONTRIBUTING.md 流程并考虑代码审查机制（PR + Review）。</p>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-info">
+            <div class="flex items-start justify-between">
+              <h4 class="font-medium text-white">5. 部分 JS 覆盖率偏低</h4>
+              <span class="px-2 py-0.5 rounded bg-info/20 text-info text-xs font-medium">低优先级</span>
+            </div>
+            <p class="text-sm text-slate-400 mt-2"><code>storage.js</code> (66.4%)、<code>open-html-sandbox.js</code> (35.5%)、<code>controller.js</code> (70.3%) 覆盖率较低。多为错误处理路径和浏览器环境特定代码未触发。</p>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center text-success">✓</span>
+            改进建议
+          </h3>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-success">
+            <h4 class="font-medium text-white mb-2">🎯 短期 (1-2 周)</h4>
+            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+              <li>为 <code>HomeReducer</code> 和 <code>HomeStateFactory</code> 编写 Kotlin 单元测试</li>
+              <li>修复 debug buildType 配置：关闭 minify，开启 isDebuggable</li>
+              <li>在 CI 中添加 Android  instrumentation test 步骤</li>
+              <li>添加 Gradle 任务自动同步 library.json 到 Android assets</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-primary">
+            <h4 class="font-medium text-white mb-2">🚀 中期 (1-2 月)</h4>
+            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+              <li>将 music-core 的核心算法通过 Kotlin Multiplatform 或 JNI 共享给 Android</li>
+              <li>建立真机/模拟器 UI 自动化测试（Compose Test + Maestro）</li>
+              <li>引入 SonarQube 或 Detekt 做 Kotlin 静态分析</li>
+              <li>完善错误上报和崩溃监控（Firebase Crashlytics）</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-secondary">
+            <h4 class="font-medium text-white mb-2">🔮 长期 (3-6 月)</h4>
+            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+              <li>评估 Kotlin Multiplatform Mobile (KMM) 共享更多业务逻辑</li>
+              <li>iOS 版本开发（基于共享的 music-core 逻辑）</li>
+              <li>云端数据同步与用户账户系统</li>
+              <li>社区乐谱分享与自定义练习内容市场</li>
+            </ul>
+          </div>
+
+          <div class="glass rounded-xl p-5 border-l-4 border-warning">
+            <h4 class="font-medium text-white mb-2">💡 代码质量建议</h4>
+            <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+              <li>部分 UI 组件文件超过 300 行（如 AchievementComponents.kt 393 行），可考虑进一步拆分</li>
+              <li>ToneSynthesisEngine.kt 包含多种合成算法，可按波形类型拆分为策略模式</li>
+              <li>统一使用 DesignTokens 替代剩余的硬编码颜色/尺寸值</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-700/50 py-8 px-4">
+    <div class="max-w-7xl mx-auto text-center text-sm text-slate-500">
+      <p>Xiyue Project Review Report · Generated by Kimi Code CLI on 2026-04-15</p>
+      <p class="mt-1">Data sourced from D:\Project\Xiyue · Commit 1147371</p>
+    </div>
+  </footer>
+
+  <script>
+    // Tab switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('content-' + tabId).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('tab-active');
+        el.classList.add('tab-inactive');
+      });
+      document.getElementById('tab-' + tabId).classList.remove('tab-inactive');
+      document.getElementById('tab-' + tabId).classList.add('tab-active');
+    }
+
+    // Collapsible sections
+    function toggleCollapse(id) {
+      const el = document.getElementById(id);
+      if (el.classList.contains('open')) {
+        el.classList.remove('open');
+      } else {
+        el.classList.add('open');
+      }
+    }
+
+    // Highlight.js
+    hljs.highlightAll();
+
+    // Charts
+    const chartColors = {
+      primary: '#6366f1',
+      secondary: '#8b5cf6',
+      success: '#22c55e',
+      warning: '#f59e0b',
+      danger: '#ef4444',
+      info: '#3b82f6',
+      slate: '#64748b'
+    };
+
+    // Activity Chart
+    new Chart(document.getElementById('activityChart'), {
+      type: 'bar',
+      data: {
+        labels: ['03-27', '04-07', '04-08', '04-09', '04-10', '04-13', '04-14'],
+        datasets: [{
+          label: '提交数',
+          data: [1, 1, 8, 2, 1, 2, 4],
+          backgroundColor: chartColors.primary,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+          x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+
+    // LOC Chart
+    new Chart(document.getElementById('locChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Android Kotlin', 'HTML Sandbox JS', 'music-core JS', 'Tests JS', 'Scripts/Other'],
+        datasets: [{
+          data: [10887, 1397, 491, 2196, 300],
+          backgroundColor: [chartColors.primary, chartColors.secondary, chartColors.info, chartColors.success, chartColors.slate],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#e2e8f0' } }
+        }
+      }
+    });
+
+    // Coverage Chart
+    new Chart(document.getElementById('coverageChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Statements', 'Branch', 'Functions', 'Lines'],
+        datasets: [{
+          label: '覆盖率 %',
+          data: [79.73, 74.07, 74.13, 79.73],
+          backgroundColor: [chartColors.success, chartColors.warning, chartColors.warning, chartColors.success],
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 100, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+          x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+
+    // APK Chart
+    new Chart(document.getElementById('apkChart'), {
+      type: 'line',
+      data: {
+        labels: ['04-02', '04-04', '04-05', '04-06', '04-08', '04-09', '04-11', '04-13'],
+        datasets: [{
+          label: 'APK Size (MB)',
+          data: [23.8, 53.8, 54.1, 53.9, 54.2, 54.1, 54.7, 20.5],
+          borderColor: chartColors.primary,
+          backgroundColor: 'rgba(99,102,241,0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: chartColors.primary
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+          x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+
+    // Commit Type Chart
+    new Chart(document.getElementById('commitTypeChart'), {
+      type: 'pie',
+      data: {
+        labels: ['feat', 'docs', 'chore', 'refactor', 'fix'],
+        datasets: [{
+          data: [10, 4, 3, 1, 1],
+          backgroundColor: [chartColors.primary, chartColors.info, chartColors.warning, chartColors.secondary, chartColors.danger],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#e2e8f0' } }
+        }
+      }
+    });
+
+    // Global search
+    document.getElementById('globalSearch').addEventListener('input', function(e) {
+      const term = e.target.value.trim().toLowerCase();
+      if (!term) {
+        document.querySelectorAll('.search-highlight').forEach(el => {
+          const parent = el.parentNode;
+          parent.replaceChild(document.createTextNode(el.textContent), el);
+          parent.normalize();
+        });
+        return;
+      }
+      // Simple highlight in visible tab content
+      const visibleContent = document.querySelector('.tab-content:not(.hidden)');
+      if (!visibleContent) return;
+      // Walk text nodes and highlight
+      const walker = document.createTreeWalker(visibleContent, NodeFilter.SHOW_TEXT, null, false);
+      const nodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.parentElement.tagName === 'SCRIPT' || node.parentElement.tagName === 'STYLE' || node.parentElement.classList.contains('search-highlight')) continue;
+        if (node.textContent.toLowerCase().includes(term)) {
+          nodes.push(node);
+        }
+      }
+      nodes.forEach(textNode => {
+        const span = document.createElement('span');
+        span.className = 'search-highlight';
+        const regex = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        const parts = textNode.textContent.split(regex);
+        const fragment = document.createDocumentFragment();
+        parts.forEach((part, i) => {
+          if (i % 2 === 1) {
+            const mark = document.createElement('span');
+            mark.className = 'search-highlight';
+            mark.textContent = part;
+            fragment.appendChild(mark);
+          } else {
+            fragment.appendChild(document.createTextNode(part));
+          }
+        });
+        textNode.parentNode.replaceChild(fragment, textNode);
+      });
+    });
+  </script>
+</body>
+</html>

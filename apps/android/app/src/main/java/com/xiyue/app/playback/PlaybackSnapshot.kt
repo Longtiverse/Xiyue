@@ -3,11 +3,12 @@
 import com.xiyue.app.domain.PitchClass
 import com.xiyue.app.domain.PlaybackMode
 import com.xiyue.app.domain.PracticeSelection
+import com.xiyue.app.domain.RhythmPattern
 
 data class PlaybackRequest(
     val itemId: String,
     val root: PitchClass,
-    val bpm: Int,
+    val bpm: Float,
     val loopEnabled: Boolean,
     val playbackMode: PlaybackMode,
     val tonePreset: TonePreset = TonePreset.WARM_PRACTICE,
@@ -16,6 +17,8 @@ data class PlaybackRequest(
     val chordBlockEnabled: Boolean = true,
     val chordArpeggioEnabled: Boolean = false,
     val soundMode: PlaybackSoundMode = PlaybackSoundMode.PITCH,
+    val inversion: Int = 0,
+    val rhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
 ) {
     fun toSelection(): PracticeSelection = PracticeSelection(
         libraryItemId = itemId,
@@ -26,6 +29,8 @@ data class PlaybackRequest(
         playbackMode = playbackMode,
         chordBlockEnabled = chordBlockEnabled,
         chordArpeggioEnabled = chordArpeggioEnabled,
+        inversion = inversion,
+        rhythmPattern = rhythmPattern,
     )
 }
 
@@ -42,4 +47,6 @@ data class PlaybackSnapshot(
     val stepCount: Int = 0,
     val activePitchClasses: Set<PitchClass> = emptySet(),
     val activeNoteLabels: List<String> = emptyList(),
+    val resumeHighlight: Boolean = false,
+    val completedAt: Long = 0L,
 )

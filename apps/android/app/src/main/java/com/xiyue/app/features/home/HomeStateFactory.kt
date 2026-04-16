@@ -3,6 +3,7 @@ package com.xiyue.app.features.home
 import com.xiyue.app.domain.InMemoryPracticeLibraryRepository
 import com.xiyue.app.domain.PitchClass
 import com.xiyue.app.domain.PlaybackMode
+import com.xiyue.app.domain.PracticeKind
 import com.xiyue.app.domain.PracticeLibraryRepository
 import com.xiyue.app.domain.PracticeSessionFactory
 import com.xiyue.app.playback.PlaybackSnapshot
@@ -33,10 +34,14 @@ class HomeStateFactory(
         loopDurationMs: Long = 0L,
         isPlaying: Boolean = false,
         isPaused: Boolean = false,
-        bpm: Int = 92,
+        bpm: Float = 92f,
         isLibraryOverlayVisible: Boolean = false,
         displayMode: PlaybackDisplayMode = PlaybackDisplayMode.NOTE_FOCUS,
         showHints: Boolean = true,
+        selectedInversion: Int = 0,
+        selectedOctave: Int = 4,
+        selectedDifficultyLabel: String? = null,
+        selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = com.xiyue.app.domain.RhythmPattern.STRAIGHT,
         playbackSnapshot: PlaybackSnapshot = PlaybackSnapshot(),
     ): HomeUiState {
         val resolution = selectionResolver.resolve(
@@ -48,6 +53,10 @@ class HomeStateFactory(
             bpm = bpm,
             chordBlockEnabled = chordBlockEnabled,
             chordArpeggioEnabled = chordArpeggioEnabled,
+            inversion = selectedInversion,
+            octave = selectedOctave,
+            selectedDifficultyLabel = selectedDifficultyLabel,
+            selectedRhythmPattern = selectedRhythmPattern,
         )
         val filterKind = resolution.filterKind
         val resolvedSelectedItem = resolution.resolvedSelectedItem
@@ -71,6 +80,27 @@ class HomeStateFactory(
             playbackSnapshot = playbackSnapshot,
             previewPlan = previewPlan,
         )
+
+        val keyDepths: Map<PitchClass, Int> = if (resolvedSelectedItem?.kind == PracticeKind.CHORD) {
+            val intervals = resolvedSelectedItem.intervals
+            val inversion = selectedInversion.coerceIn(0, (intervals.size - 1).coerceAtLeast(0))
+            val transposedIntervals = intervals.drop(inversion) + intervals.take(inversion).map { it + 12 }
+            transposedIntervals.mapIndexed { index, interval ->
+                val semitone = ((selectedRoot.semitone + interval) % 12 + 12) % 12
+                val pitchClass = PitchClass.entries.first { it.semitone == semitone }
+                pitchClass to (intervals.size - index)
+            }.toMap()
+        } else {
+            emptyMap()
+        }
+
+        val fingeringMap: Map<PitchClass, Int> = resolvedSelectedItem?.fingerings?.let { fingerings ->
+            resolvedSelectedItem.intervals.mapIndexedNotNull { index, interval ->
+                val semitone = ((selectedRoot.semitone + interval) % 12 + 12) % 12
+                val pitchClass = PitchClass.entries.first { it.semitone == semitone }
+                fingerings.getOrNull(index)?.let { pitchClass to it }
+            }.toMap()
+        } ?: emptyMap()
 
         val currentActiveNote = selectionResolver.currentActiveNote(
             playbackSnapshot = playbackSnapshot,
@@ -206,13 +236,21 @@ class HomeStateFactory(
                 effectivePlaying = effectivePlaying,
                 effectivePaused = effectivePaused,
                 showHints = showHints,
+                selectedInversion = selectedInversion,
+                selectedRhythmPattern = selectedRhythmPattern,
             ),
             keyboardPreview = uiStateBuilder.buildKeyboardPreview(
                 effectivePlaying = effectivePlaying,
                 effectivePaused = effectivePaused,
                 previewPitchClasses = previewPitchClasses,
                 currentActiveNote = currentActiveNote,
+                keyDepths = keyDepths,
+                fingeringMap = fingeringMap,
             ),
+            selectedInversion = selectedInversion,
+            selectedOctave = selectedOctave,
+            selectedDifficultyLabel = selectedDifficultyLabel,
+            selectedRhythmPattern = selectedRhythmPattern,
         )
     }
 }

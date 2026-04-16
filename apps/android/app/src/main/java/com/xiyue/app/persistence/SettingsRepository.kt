@@ -40,10 +40,19 @@ class SettingsRepository(
         }
     }
 
+    fun hasSeenOnboarding(): Boolean = prefs.getBoolean(KEY_HAS_SEEN_ONBOARDING, false)
+
+    fun setHasSeenOnboarding(hasSeen: Boolean) {
+        prefs.edit {
+            putBoolean(KEY_HAS_SEEN_ONBOARDING, hasSeen)
+        }
+    }
+
     companion object {
         private const val PREFS_NAME = "settings_prefs"
         private const val KEY_THEME_MODE = "theme_mode"
         private const val KEY_SHOW_HINTS = "show_hints"
         private const val KEY_DEFAULT_BPM = "default_bpm"
+        private const val KEY_HAS_SEEN_ONBOARDING = "has_seen_onboarding"
     }
 }

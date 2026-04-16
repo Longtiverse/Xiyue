@@ -1,5 +1,5 @@
 param(
-    [string]$GradleTask = ':app:assembleDebug',
+    [string]$GradleTask = ':app:assembleRelease',
     [string]$GradleBinary = $env:GRADLE_BIN
 )
 
@@ -328,7 +328,7 @@ else {
 }
 
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmm'
-$apkOutputDir = Join-Path $androidRoot 'app\build\outputs\apk\debug'
+$apkOutputDir = Join-Path $androidRoot 'app\build\outputs\apk\release'
 $apkMetadataPath = Join-Path $apkOutputDir 'output-metadata.json'
 $apkSource = $null
 if (Test-Path $apkMetadataPath) {
@@ -351,8 +351,11 @@ $archiveDir = Join-Path $repoRoot 'builds\android\archive'
 $latestDir = Join-Path $repoRoot 'builds\android\latest'
 New-Item -ItemType Directory -Path $archiveDir,$latestDir -Force | Out-Null
 
-$archiveFilename = "xiyue-android-v$versionName-$timestamp-debug.apk"
-$latestFilename = "xiyue-android-v$versionName-$timestamp-debug.apk"
+# Clean up old debug APKs from latest directory so it only contains release builds
+Get-ChildItem -Path $latestDir -Filter '*-debug.apk' -File -ErrorAction SilentlyContinue | Remove-Item -Force
+
+$archiveFilename = "xiyue-android-v$versionName-$timestamp-release.apk"
+$latestFilename = "xiyue-android-v$versionName-$timestamp-release.apk"
 $archivePath = Join-Path $archiveDir $archiveFilename
 $latestPath = Join-Path $latestDir $latestFilename
 $legacyLatestPath = Join-Path $latestDir 'xiyue-android-latest-debug.apk'
@@ -374,7 +377,7 @@ catch {
 $buildInfo = [ordered]@{
     version = $versionName
     timestamp = $timestamp
-    buildType = 'debug'
+    buildType = 'release'
     sourceApk = $apkSource
     archiveApk = $archiveFilename
     latestApk = $latestFilename

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import com.xiyue.app.ui.theme.XiyueAccent
+import com.xiyue.app.ui.theme.XiyueGold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -43,161 +45,69 @@ import kotlin.math.sin
 @Composable
 fun WaveformVisualizer(
     isPlaying: Boolean,
-    bpm: Int,
+    bpm: Float,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
 ) {
-    // 波形数据点
-    val waveformPoints = remember { mutableStateListOf<Float>() }
-    val pointCount = 60
-
-    // 初始化波形点
-    LaunchedEffect(Unit) {
-        repeat(pointCount) {
-            waveformPoints.add(0.5f)
-        }
-    }
-
-    // 动画相位
     val infiniteTransition = rememberInfiniteTransition(label = "waveform")
     val phase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 2 * PI.toFloat(),
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 60000 / bpm.coerceIn(40, 240),
-                easing = LinearEasing
+                durationMillis = if (isPlaying) 1200 else 2000,
+                easing = LinearEasing,
             ),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "waveform_phase"
+        label = "waveform_phase",
     )
 
-    // 更新波形数据
-    LaunchedEffect(isPlaying, bpm) {
-        if (!isPlaying) {
-            // 播放停止时逐渐归零
-            try {
-                while (waveformPoints.any { it > 0.01f }) {
-                    for (i in waveformPoints.indices) {
-                        waveformPoints[i] = waveformPoints[i] * 0.9f
-                    }
-                    delay(16)
-                }
-            } catch (_: Exception) {
-                // 忽略取消异常
-            }
-            return@LaunchedEffect
-        }
+    val baseHeights = listOf(0.30f, 0.50f, 0.35f, 0.70f, 0.45f, 0.60f, 0.25f, 0.55f)
+    val delays = listOf(0f, 0.15f, 0.30f, 0.45f, 0.60f, 0.75f, 0.90f, 1.05f)
 
-        // 播放时更新波形
-        while (isPlaying) {
-            try {
-                withFrameNanos { _ ->
-                    val speed = bpm / 120f
-                    for (i in waveformPoints.indices) {
-                        val x = i.toFloat() / pointCount
-                        val wave1 = sin((x * 4 * PI.toFloat() + phase * speed).toDouble()).toFloat() * 0.3f
-                        val wave2 = sin((x * 8 * PI.toFloat() + phase * speed * 1.5f).toDouble()).toFloat() * 0.2f
-                        val wave3 = sin((x * 2 * PI.toFloat() + phase * speed * 0.5f).toDouble()).toFloat() * 0.15f
-                        val noise = (Math.random() - 0.5).toFloat() * 0.1f
-                        waveformPoints[i] = (0.5f + wave1 + wave2 + wave3 + noise).coerceIn(0f, 1f)
-                    }
-                }
-                delay(16) // ~60fps
-            } catch (_: Exception) {
-                // 忽略取消异常，退出循环
-                break
-            }
-        }
-    }
-
-    // 绘制波形
     Canvas(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(36.dp),
     ) {
-        val width = size.width
-        val height = size.height
-        val centerY = height / 2
+        val barCount = 8
+        val gapPx = 2.dp.toPx()
+        val barWidth = (size.width - (barCount - 1) * gapPx) / barCount
+        val maxBarHeight = size.height
 
-        // 创建渐变画笔
-        val brush = Brush.verticalGradient(
-            colors = listOf(
-                color.copy(alpha = 0.8f),
-                color.copy(alpha = 0.4f),
-                color.copy(alpha = 0.8f)
-            ),
-            startY = 0f,
-            endY = height
-        )
+        val topColor = if (isPlaying) XiyueGold else XiyueAccent
+        val bottomColor = topColor.copy(alpha = 0.3f)
 
-        // 绘制填充区域
-        val fillPath = Path().apply {
-            if (waveformPoints.isNotEmpty()) {
-                val xStep = width / (waveformPoints.size - 1)
-                moveTo(0f, centerY)
-
-                waveformPoints.forEachIndexed { index, value ->
-                    val x = index * xStep
-                    val y = centerY - (value - 0.5f) * height * 0.8f
-                    if (index == 0) {
-                        moveTo(x.toFloat(), y.toFloat())
-                    } else {
-                        lineTo(x.toFloat(), y.toFloat())
-                    }
+        baseHeights.forEachIndexed { index, base ->
+            val delay = delays[index]
+            val localPhase = (phase + delay * PI.toFloat()) % (2 * PI.toFloat())
+            val scale = if (isPlaying) {
+                val t = localPhase / (2 * PI.toFloat())
+                when {
+                    t < 0.25f -> 0.4f + t * 4 * 0.6f
+                    t < 0.50f -> 1.0f - (t - 0.25f) * 4 * 0.4f
+                    t < 0.75f -> 0.6f + (t - 0.50f) * 4 * 0.3f
+                    else -> 0.9f - (t - 0.75f) * 4 * 0.5f
                 }
-
-                lineTo(width, centerY)
-                close()
+            } else {
+                0.7f + 0.3f * sin(localPhase.toDouble()).toFloat()
             }
-        }
+            val barHeight = maxBarHeight * base * scale
+            val left = index * (barWidth + gapPx)
+            val top = maxBarHeight - barHeight
 
-        // 绘制填充
-        drawPath(
-            path = fillPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    color.copy(alpha = 0.3f),
-                    color.copy(alpha = 0.1f),
-                    color.copy(alpha = 0.3f)
+            drawRoundRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(topColor, bottomColor),
+                    startY = top,
+                    endY = maxBarHeight,
                 ),
-                startY = 0f,
-                endY = height
+                topLeft = Offset(left, top),
+                size = androidx.compose.ui.geometry.Size(barWidth, barHeight),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(2.dp.toPx(), 2.dp.toPx()),
             )
-        )
-
-        // 绘制波形线
-        val strokePath = Path().apply {
-            if (waveformPoints.isNotEmpty()) {
-                val xStep = width / (waveformPoints.size - 1)
-
-                waveformPoints.forEachIndexed { index, value ->
-                    val x = index * xStep
-                    val y = centerY - (value - 0.5f) * height * 0.8f
-                    if (index == 0) {
-                        moveTo(x, y)
-                    } else {
-                        lineTo(x, y)
-                    }
-                }
-            }
         }
-
-        drawPath(
-            path = strokePath,
-            color = color,
-            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
-        )
-
-        // 绘制中心线
-        drawLine(
-            color = color.copy(alpha = 0.2f),
-            start = Offset(0f, centerY),
-            end = Offset(width, centerY),
-            strokeWidth = 1.dp.toPx()
-        )
     }
 }
 
@@ -208,7 +118,7 @@ fun WaveformVisualizer(
 @Composable
 fun CircularVisualizer(
     isPlaying: Boolean,
-    bpm: Int,
+    bpm: Float,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     barCount: Int = 12,

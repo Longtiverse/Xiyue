@@ -46,10 +46,10 @@ object ColorPalette {
         val surface = Color(0xFFFFFBFE)
         val onSurface = Color(0xFF1C1B1F)
         val surfaceVariant = Color(0xFFE7E0EC)
-        val onSurfaceVariant = Color(0xFF49454F)
+        val onSurfaceVariant = Color(0xFF333333)
         
         // Outline colors
-        val outline = Color(0xFF79747E)
+        val outline = Color(0xFF49454F)
         val outlineVariant = Color(0xFFCAC4D0)
         
         // Custom semantic colors

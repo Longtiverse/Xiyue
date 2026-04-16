@@ -272,10 +272,61 @@ fun LibraryItemDetailsDialog(
                 // 类型
                 DetailRow(label = "类型", value = item.kindLabel)
 
-                // 描述
-                if (item.supportingText.isNotBlank()) {
+                // 音程结构
+                if (item.intervals.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-                    DetailRow(label = "说明", value = item.supportingText)
+                    DetailRow(
+                        label = "音程结构",
+                        value = item.intervals.joinToString(" · ") { "${it} 半音" },
+                    )
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
+                    DetailRow(
+                        label = "组成音",
+                        value = item.intervals.joinToString(" · ") { intervalName(it) },
+                    )
+                }
+
+                // 描述
+                if (item.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
+                    Text(
+                        text = "说明",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = item.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                    )
+                }
+
+                // 乐理知识
+                if (item.theory.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(DesignTokens.CornerRadius.md),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(DesignTokens.Spacing.md)
+                        ) {
+                            Text(
+                                text = "乐理知识",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
+                            Text(
+                                text = item.theory,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
@@ -314,6 +365,22 @@ private fun DetailRow(
 /**
  * 分享音阶/和弦
  */
+private fun intervalName(semitones: Int): String = when (semitones % 12) {
+    0 -> "根音"
+    1 -> "小二度"
+    2 -> "大二度"
+    3 -> "小三度"
+    4 -> "大三度"
+    5 -> "纯四度"
+    6 -> "三全音"
+    7 -> "纯五度"
+    8 -> "小六度"
+    9 -> "大六度"
+    10 -> "小七度"
+    11 -> "大七度"
+    else -> "${semitones} 半音"
+}
+
 private fun sharePracticeItem(context: Context, item: LibraryUiItem) {
     val shareText = buildString {
         appendLine("我在习乐（Xiyue）练习了「${item.label}」")

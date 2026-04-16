@@ -50,6 +50,8 @@ class InMemoryPracticeLibraryRepository(
                         aliases = obj.optJSONArray("aliases")?.toStringList().orEmpty(),
                         difficulty = DifficultyLevel.fromLabel(difficultyLabel),
                         description = obj.optString("description", ""),
+                        fingerings = obj.optJSONArray("fingerings")?.toIntList(),
+                        theory = obj.optString("theory", ""),
                     )
                 )
             }

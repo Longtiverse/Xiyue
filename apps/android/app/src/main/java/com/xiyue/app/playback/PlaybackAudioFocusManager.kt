@@ -11,10 +11,10 @@ internal class PlaybackAudioFocusManager(private val context: Context) {
         private set
 
     fun requestFocus(
-        onGain: () -> Unit,
-        onDuck: () -> Unit,
-        onPause: () -> Unit,
-        onStop: () -> Unit,
+        onGain: () -> Unit = {},
+        onDuck: () -> Unit = {},
+        onPause: () -> Unit = {},
+        onStop: () -> Unit = {},
     ) {
         val audioManager = context.getSystemService(AudioManager::class.java) ?: return
         val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)

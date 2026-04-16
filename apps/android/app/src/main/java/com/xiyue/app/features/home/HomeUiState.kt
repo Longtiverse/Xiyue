@@ -2,6 +2,7 @@ package com.xiyue.app.features.home
 
 import com.xiyue.app.domain.PitchClass
 import com.xiyue.app.domain.PlaybackMode
+import com.xiyue.app.domain.RhythmPattern
 import com.xiyue.app.playback.PlaybackSoundMode
 import com.xiyue.app.playback.TonePreset
 
@@ -35,7 +36,7 @@ data class HomeUiState(
     val chordArpeggioEnabled: Boolean,
     val selectedTonePreset: TonePreset,
     val soundMode: PlaybackSoundMode,
-    val bpm: Int,
+    val bpm: Float,
     val loopEnabled: Boolean,
     val loopDurationMs: Long,
     val isPlaying: Boolean,
@@ -53,6 +54,10 @@ data class HomeUiState(
     val keyboardPreview: KeyboardPreviewUiState,
     val isCountdownVisible: Boolean = false,
     val enableCountdown: Boolean = true,
+    val selectedInversion: Int = 0,
+    val selectedOctave: Int = 4,
+    val selectedDifficultyLabel: String? = null,
+    val selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
 )
 
 data class PracticePickerUiState(
@@ -74,6 +79,10 @@ data class LibraryUiItem(
     val supportingText: String,
     val favorite: Boolean,
     val selected: Boolean,
+    val intervals: List<Int> = emptyList(),
+    val description: String = "",
+    val theory: String = "",
+    val fingerings: List<Int> = emptyList(),
 )
 
 data class LibraryGroupUiState(
@@ -105,6 +114,7 @@ data class PlaybackDisplayUiState(
     val hintLabel: String,
     val displayMode: PlaybackDisplayMode,
     val sequenceNotes: List<SequenceNoteUiItem>,
+    val resumeHighlight: Boolean = false,
 )
 
 data class SequenceNoteUiItem(
@@ -114,7 +124,9 @@ data class SequenceNoteUiItem(
 )
 
 data class PlaybackControlUiState(
-    val bpm: Int,
+    val isPlaying: Boolean = false,
+    val isPaused: Boolean = false,
+    val bpm: Float,
     val loopEnabled: Boolean,
     val loopDurationMs: Long,
     val loopDurationLabel: String,
@@ -130,10 +142,34 @@ data class PlaybackControlUiState(
     val optionSummaryPills: List<String>,
     val hintLabel: String,
     val showHints: Boolean,
+    val inversionOptions: List<InversionOptionUiItem> = emptyList(),
+    val selectedInversion: Int = 0,
+    val octaveOptions: List<OctaveOptionUiItem> = emptyList(),
+    val selectedOctave: Int = 4,
+    val rhythmOptions: List<RhythmOptionUiItem> = emptyList(),
+    val selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+)
+
+data class RhythmOptionUiItem(
+    val pattern: RhythmPattern,
+    val label: String,
+    val selected: Boolean,
+)
+
+data class InversionOptionUiItem(
+    val inversion: Int,
+    val label: String,
+    val selected: Boolean,
+)
+
+data class OctaveOptionUiItem(
+    val octave: Int,
+    val label: String,
+    val selected: Boolean,
 )
 
 data class TempoPresetUiItem(
-    val bpm: Int,
+    val bpm: Float,
     val label: String,
     val selected: Boolean,
 )
@@ -166,4 +202,6 @@ data class KeyboardKeyUiState(
     val inScale: Boolean,
     val isCurrent: Boolean,
     val midiNumber: Int = 0,
+    val layerDepth: Int = 0,
+    val fingering: Int? = null,
 )

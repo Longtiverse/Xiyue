@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Piano
+import com.xiyue.app.ui.icons.CustomHeadphones
 import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ enum class BottomNavItem(
     val icon: ImageVector,
 ) {
     PRACTICE("练习", Icons.Outlined.PlayCircleOutline),
+    EAR_TRAINING("听力", CustomHeadphones),
     COMBO("组合", Icons.Outlined.Piano),
     FAVORITES("收藏", Icons.Outlined.FavoriteBorder),
     SETTINGS("设置", Icons.Outlined.Settings),

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGENTS.md 设计解析 — Xiyue 习乐</title>
+  <style>
+    :root {
+      --bg-primary: #0f0f13;
+      --bg-secondary: #16161f;
+      --bg-card: #1c1c27;
+      --bg-hover: #252536;
+      --accent-primary: #7c3aed;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+      --text-primary: #f1f1f4;
+      --text-secondary: #a0a0b0;
+      --border-color: #2a2a3c;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #12121a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --radius: 14px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 32px 20px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      border-left: 3px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border-left-color: var(--accent-primary);
+    }
+
+    .nav-link .num {
+      display: inline-block;
+      width: 22px;
+      font-weight: 600;
+      color: var(--accent-secondary);
+    }
+
+    /* Main Content */
+    .main {
+      margin-left: 280px;
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 900px;
+    }
+
+    .hero {
+      padding: 48px 0 56px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 48px;
+    }
+
+    .hero h2 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: var(--bg-hover);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .badge.highlight {
+      background: rgba(124, 58, 237, 0.12);
+      border-color: rgba(124, 58, 237, 0.3);
+      color: #c4b5fd;
+    }
+
+    /* Section Cards */
+    .section {
+      margin-bottom: 48px;
+      scroll-margin-top: 90px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .section-num {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent-primary);
+      line-height: 1;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .purpose-box {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+      border-left: 4px solid var(--accent-primary);
+      border-radius: 0 12px 12px 0;
+      padding: 20px 22px;
+      margin-bottom: 22px;
+    }
+
+    .purpose-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #c4b5fd;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .purpose-label::before {
+      content: "🎯";
+    }
+
+    .purpose-text {
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      line-height: 1.8;
+    }
+
+    .content-preview {
+      color: var(--text-primary);
+    }
+
+    .content-preview h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 18px 0 10px;
+      color: var(--accent-secondary);
+    }
+
+    .content-preview ul,
+    .content-preview ol {
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+
+    .content-preview li {
+      margin-bottom: 8px;
+    }
+
+    .content-preview code {
+      background: var(--code-bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.88em;
+      color: #fcd34d;
+    }
+
+    .content-preview pre {
+      background: var(--code-bg);
+      padding: 18px 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 14px 0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    /* Interactive Decision Tree */
+    .decision-widget {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 18px;
+    }
+
+    .decision-step {
+      display: none;
+    }
+
+    .decision-step.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .decision-question {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .decision-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .decision-btn {
+      text-align: left;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.95rem;
+    }
+
+    .decision-btn:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-hover);
+    }
+
+    .decision-result {
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .decision-result h4 {
+      color: var(--success);
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .decision-result p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .decision-reset {
+      margin-top: 16px;
+      padding: 10px 18px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .decision-reset:hover {
+      border-color: var(--accent-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Checklist interactive */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .checklist-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .checklist-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-primary);
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .checklist-item.checked {
+      opacity: 0.55;
+    }
+
+    .checklist-item.checked span {
+      text-decoration: line-through;
+    }
+
+    /* Pitfalls highlight */
+    .pitfall-card {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+
+    .pitfall-title {
+      font-weight: 600;
+      color: #fca5a5;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pitfall-desc {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    /* Command grid */
+    .command-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .command-item {
+      background: var(--code-bg);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+    }
+
+    .command-item code {
+      color: #7dd3fc;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .command-item span {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-family: -apple-system, sans-serif;
+    }
+
+    /* Responsive */
+    @media (max-width: 920px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main {
+        margin-left: 0;
+        padding: 24px;
+      }
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 200;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    }
+
+    @media (min-width: 921px) {
+      .menu-toggle { display: none; }
+    }
+
+    /* TOC inline for mobile */
+    .mobile-toc {
+      display: none;
+    }
+    @media (max-width: 920px) {
+      .mobile-toc {
+        display: block;
+        margin-bottom: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1>AGENTS.md</h1>
+        <p>Xiyue 项目 · AI 协作者指南设计解析</p>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#sec-overview" class="nav-link"><span class="num">01</span>项目概述</a></li>
+        <li class="nav-item"><a href="#sec-env" class="nav-link"><span class="num">02</span>环境要求</a></li>
+        <li class="nav-item"><a href="#sec-structure" class="nav-link"><span class="num">03</span>目录结构</a></li>
+        <li class="nav-item"><a href="#sec-decision" class="nav-link"><span class="num">04</span>改动决策树</a></li>
+        <li class="nav-item"><a href="#sec-commands" class="nav-link"><span class="num">05</span>常用命令</a></li>
+        <li class="nav-item"><a href="#sec-style" class="nav-link"><span class="num">06</span>代码规范</a></li>
+        <li class="nav-item"><a href="#sec-commit" class="nav-link"><span class="num">07</span>提交规范</a></li>
+        <li class="nav-item"><a href="#sec-checklist" class="nav-link"><span class="num">08</span>检查清单</a></li>
+        <li class="nav-item"><a href="#sec-pitfalls" class="nav-link"><span class="num">09</span>AI 注意事项</a></li>
+        <li class="nav-item"><a href="#sec-docs" class="nav-link"><span class="num">10</span>相关文档</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="hero">
+        <h2>为什么这样设计 AGENTS.md？</h2>
+        <p>这个页面不仅展示 Xiyue 的 AGENTS.md 内容，更重要的是解释<strong>每一个栏目存在的原因</strong>——它是为了解决 AI 协作中的哪个具体问题而诞生的。</p>
+        <div class="badge-row">
+          <span class="badge highlight">🎵 Xiyue 习乐</span>
+          <span class="badge">Monorepo</span>
+          <span class="badge">Android + HTML Sandbox</span>
+          <span class="badge">AI-First 设计</span>
+        </div>
+      </div>
+
+      <!-- 01 项目概述 -->
+      <section class="section" id="sec-overview">
+        <div class="section-header">
+          <span class="section-num">01</span>
+          <h3 class="section-title">项目概述</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              这是 AI 的<strong>「第一眼」</strong>。很多 AI 在拿到任务后，会先尝试理解项目是什么、技术栈是什么。如果没有这个栏目，AI 可能会把 Xiyue 当成一个普通的 Web App，而忽略掉它其实是一个"Android App + 共享 JS 核心"的 monorepo 结构。这里用一句话+ bullet points 明确主入口和共享逻辑的位置，让 AI 在动手写代码之前就建立正确的全局认知。
+            </div>
+          </div>
+          <div class="content-preview">
+            <ul>
+              <li><strong>主入口</strong>：<code>apps/android</code>（Kotlin + Jetpack Compose）</li>
+              <li><strong>共享逻辑</strong>：<code>packages/music-core</code>（纯 JavaScript，音乐理论核心）</li>
+              <li><strong>快速验证</strong>：<code>apps/html-sandbox</code>（HTML/JS 沙盒，用于内部测试与 UI 预览）</li>
+              <li><strong>包管理</strong>：npm Workspaces（<code>packages/*</code> + <code>apps/*</code>）</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 环境要求 -->
+      <section class="section" id="sec-env">
+        <div class="section-header">
+          <span class="section-num">02</span>
+          <h3 class="section-title">环境要求</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              AI 的<strong>训练数据有截止日期</strong>，它可能不知道 Node.js 20 才原生支持 <code>node --test</code>，也可能默认推荐 Kotlin 1.9 的语法。这个栏目明确告诉 AI：「请以这些版本为基准生成代码」。它解决的核心问题是<strong>版本错位导致的兼容性问题</strong>——比如 AI 写出旧版 ESLint 配置、用废弃的 Kotlin API、或推荐 pnpm 导致 lock 文件冲突。
+            </div>
+          </div>
+          <div class="content-preview">
+            <ul>
+              <li><strong>Node.js</strong>: ≥ 20（原生 <code>node --test</code>）</li>
+              <li><strong>Kotlin</strong>: 2.0.21</li>
+              <li><strong>JDK</strong>: 17</li>
+              <li><strong>包管理器</strong>: npm（禁止引入 pnpm/yarn 配置）</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 目录结构 -->
+      <section class="section" id="sec-structure">
+        <div class="section-header">
+          <span class="section-num">03</span>
+          <h3 class="section-title">目录结构与模块规则</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              这个栏目是为了解决 monorepo 中<strong>最隐蔽但最高频的错误</strong>：错误的模块引用方式和环境边界混淆。AI 很容易写出 <code>../../../packages/music-core/src/index.js</code> 这样的深层相对路径，或者在纯 Node 包里引入 <code>window</code> 对象。通过把「目录树 + 模块规则」放在一起，并配上 ✅❌ 示例，AI 能更直观地理解边界在哪里。
+            </div>
+          </div>
+          <div class="content-preview">
+            <h4>模块引用规则</h4>
+            <pre>// ✅ 正确
+import { generateScalePitches } from '#music-core';
+
+// ❌ 错误
+import { generateScalePitches } from '../../../packages/music-core/src/index.js';</pre>
+            <ul>
+              <li><code>packages/music-core</code> 必须是纯 JS/Node，<strong>不能引入浏览器 API</strong></li>
+              <li><code>apps/html-sandbox</code> 可以使用浏览器 API</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 改动决策树 -->
+      <section class="section" id="sec-decision">
+        <div class="section-header">
+          <span class="section-num">04</span>
+          <h3 class="section-title">改动决策树</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              这是整个 AGENTS.md 的<strong>「核心导航系统」</strong>。它的设计初衷是：AI 接收到的任务指令往往是局部的（比如"加一个节拍器"），但一个功能可能涉及音乐核心、Android UI、HTML 沙盒三个地方。决策树把「我该先改哪里、后改哪里、怎么验证」显性化，防止 AI 只改了一个端而漏掉其他端，或者改错顺序导致反复返工。
+            </div>
+          </div>
+
+          <div class="decision-widget">
+            <div class="decision-step active" id="d-step-1">
+              <div class="decision-question">你想做哪类改动？</div>
+              <div class="decision-options">
+                <button class="decision-btn" onclick="showResult('r-core')">🎵 修改音阶/和弦/播放逻辑等音乐理论</button>
+                <button class="decision-btn" onclick="showResult('r-ui')">📱 修改 Android 界面或交互</button>
+                <button class="decision-btn" onclick="showResult('r-sandbox')">🧪 在 HTML 沙盒里做原型或验证</button>
+                <button class="decision-btn" onclick="showResult('r-deps')">📦 新增 npm 依赖</button>
+                <button class="decision-btn" onclick="showResult('r-ci')">🔧 修改构建脚本或 CI</button>
+              </div>
+            </div>
+
+            <div class="decision-step" id="d-result">
+              <div class="decision-result" id="result-box">
+                <!-- dynamic content -->
+              </div>
+              <button class="decision-reset" onclick="resetDecision()">↺ 重新选择</button>
+            </div>
+          </div>
+
+          <div class="content-preview" style="margin-top:22px">
+            <h4>表格版决策树</h4>
+            <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:0.92rem">
+              <thead>
+                <tr style="border-bottom:1px solid var(--border-color);text-align:left">
+                  <th style="padding:10px 8px;color:var(--accent-secondary)">改动类型</th>
+                  <th style="padding:10px 8px;color:var(--accent-secondary)">推荐路径</th>
+                </tr>
+              </thead>
+              <tbody style="color:var(--text-secondary)">
+                <tr style="border-bottom:1px solid var(--border-color)">
+                  <td style="padding:10px 8px;font-weight:500;color:var(--text-primary)">音乐理论逻辑</td>
+                  <td style="padding:10px 8px">先改 <code>packages/music-core</code> → 跑测试 → 同步检查 Android / Sandbox 调用方</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-color)">
+                  <td style="padding:10px 8px;font-weight:500;color:var(--text-primary)">Android UI / 交互</td>
+                  <td style="padding:10px 8px">直接改 <code>apps/android</code>；新组件可先在 Sandbox 验证</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-color)">
+                  <td style="padding:10px 8px;font-weight:500;color:var(--text-primary)">新增 npm 依赖</td>
+                  <td style="padding:10px 8px">开发依赖在根目录装；业务依赖在对应 workspace 装</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 常用命令 -->
+      <section class="section" id="sec-commands">
+        <div class="section-header">
+          <span class="section-num">05</span>
+          <h3 class="section-title">常用命令</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              AI 在生成代码后，经常需要运行测试或 lint 来验证。但如果 AI 不知道项目有哪些 script，它要么去猜，要么硬编一个可能不存在的命令（比如 <code>npm run test:unit</code>）。这个栏目把所有高频命令集中列出，让 AI 在「写代码 → 验证」的闭环中不需要翻 <code>package.json</code>，直接复制使用。
+            </div>
+          </div>
+          <div class="command-grid">
+            <div class="command-item"><code>npm test</code><span>运行全部测试</span></div>
+            <div class="command-item"><code>npm run test:music-core</code><span>仅测试核心库</span></div>
+            <div class="command-item"><code>npm run lint</code><span>ESLint 检查</span></div>
+            <div class="command-item"><code>npm run lint:fix</code><span>自动修复 lint 问题</span></div>
+            <div class="command-item"><code>npm run format</code><span>Prettier 格式化</span></div>
+            <div class="command-item"><code>npm run typecheck</code><span>TS 类型检查（music-core）</span></div>
+            <div class="command-item"><code>npm run build:android</code><span>构建 Android APK</span></div>
+            <div class="command-item"><code>npm run sandbox</code><span>启动 HTML 沙盒服务器</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 代码规范 -->
+      <section class="section" id="sec-style">
+        <div class="section-header">
+          <span class="section-num">06</span>
+          <h3 class="section-title">代码规范</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              AI 的默认风格偏好可能与项目不一致（比如用双引号、4 空格缩进、或者 snake_case 命名）。这个栏目通过<strong>明确且简洁的规则 + 示例</strong>，让 AI 生成的第一版代码就更接近项目的实际风格，减少格式化返工。特别重要的是区分了 JS（2 空格）和 Kotlin（4 空格），这是很多 AI 容易混淆的地方。
+            </div>
+          </div>
+          <div class="content-preview">
+            <h4>JavaScript / Node.js</h4>
+            <ul>
+              <li>模块：ESM（<code>import/export</code>）</li>
+              <li>命名：文件 <code>kebab-case.js</code>，变量 <code>camelCase</code>，常量 <code>UPPER_SNAKE_CASE</code></li>
+              <li>风格：单引号、<strong>2 空格</strong>缩进、每行最多 100 字符</li>
+            </ul>
+            <h4>Kotlin（Android）</h4>
+            <ul>
+              <li>4 空格缩进、类名 <code>PascalCase</code></li>
+              <li>每行最多 120 字符</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 提交规范 -->
+      <section class="section" id="sec-commit">
+        <div class="section-header">
+          <span class="section-num">07</span>
+          <h3 class="section-title">提交规范</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              当 AI 执行多步骤任务时（比如 Agent 模式），它可能会自动生成 git commit。如果没有提交规范约束，AI 的 commit message 往往很随意（比如 "update files"）。这个栏目让 AI 学会用 <strong>Conventional Commits</strong>，确保项目历史可读，也便于未来自动生成 CHANGELOG。
+            </div>
+          </div>
+          <div class="content-preview">
+            <pre>feat(playback): add metronome support
+fix(ui): correct root note selector alignment
+test(music-core): add tests for pentatonic scales</pre>
+            <p style="color:var(--text-secondary);margin-top:10px">常用类型：<code>feat</code>、<code>fix</code>、<code>docs</code>、<code>style</code>、<code>refactor</code>、<code>perf</code>、<code>test</code>、<code>chore</code>、<code>ci</code></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 检查清单 -->
+      <section class="section" id="sec-checklist">
+        <div class="section-header">
+          <span class="section-num">08</span>
+          <h3 class="section-title">提交前检查清单</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              这是从<strong>「规范」到「执行」的最后一道防线</strong>。AI 在完成任务时，容易因为用户催促或步骤限制而跳过测试和 lint。把检查项写成显式的 checklist，能让 AI 在 self-correction 阶段主动对照执行，也便于人类快速 review AI 的输出是否合规。这里特别强调 monorepo 特有的同步检查：改完 <code>music-core</code> 后，必须确认 Android 和 Sandbox 调用方是否适配。
+            </div>
+          </div>
+          <div class="content-preview">
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span><code>npm test</code> 全部通过</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span><code>npm run lint</code> 无错误</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span><code>npm run format</code> 已执行</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span>若修改了 <code>music-core</code> 的公开 API，<code>npm run typecheck</code> 通过</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span>新功能/修复包含对应测试</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span><code>music-core</code> API 变更已同步到 Android 和 Sandbox 调用方</span>
+            </div>
+            <div class="checklist-item" onclick="toggleCheck(this)">
+              <input type="checkbox">
+              <span>没有手动修改 <code>package-lock.json</code>、<code>builds/</code>、<code>.tmp/</code> 等生成目录</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 AI 注意事项 -->
+      <section class="section" id="sec-pitfalls">
+        <div class="section-header">
+          <span class="section-num">09</span>
+          <h3 class="section-title">AI 协作注意事项</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              这是 AGENTS.md 的<strong>「护城河」</strong>，专门收录那些"AI 特别特别容易踩的坑"。它的设计逻辑是：与其让 AI 犯错后再纠正，不如提前把陷阱标出来。这里每一条都对应一个真实的高频错误场景。把它们集中放在文档末尾，是因为前面的栏目负责"教 AI 怎么做"，而这个栏目负责"告诉 AI 什么不能做"。
+            </div>
+          </div>
+
+          <div style="margin-top:18px">
+            <div class="pitfall-card">
+              <div class="pitfall-title">🚫 禁止手改的文件</div>
+              <div class="pitfall-desc">
+                <code>package-lock.json</code> 由 <code>npm install</code> 生成；<code>builds/</code>、<code>.tmp/</code>、<code>coverage/</code> 是生成目录；Gradle wrapper 和设计规范文档也不要手改。
+              </div>
+            </div>
+
+            <div class="pitfall-card">
+              <div class="pitfall-title">⚠️ <code>test:android</code> 是 JS 测试，不是 Kotlin 单元测试</div>
+              <div class="pitfall-desc">
+                它运行在 Node.js 下，测试路径是 <code>apps/android/test/**/*.test.js</code>。真正的 Android 编译用 <code>npm run build:android</code> 或 Android Studio。
+              </div>
+            </div>
+
+            <div class="pitfall-card">
+              <div class="pitfall-title">⚠️ <code>packages/music-core</code> 不能依赖浏览器 API</div>
+              <div class="pitfall-desc">
+                因为它是纯 Node/JS 库，被 Android 和 Sandbox 两端引用。引入 <code>window</code>、<code>document</code>、<code>navigator</code> 会导致测试或运行时失败。
+              </div>
+            </div>
+
+            <div class="pitfall-card">
+              <div class="pitfall-title">⚠️ Android 状态管理与 <code>music-core</code> 数据结构需兼容</div>
+              <div class="pitfall-desc">
+                Android 使用 Action/Reducer/State 状态管理。如果 <code>music-core</code> 返回的数据结构变了，Kotlin 侧的解析逻辑和状态定义必须同步更新。
+              </div>
+            </div>
+
+            <div class="pitfall-card">
+              <div class="pitfall-title">⚠️ 不要引入新的包管理器配置</div>
+              <div class="pitfall-desc">
+                项目只用 npm。不要创建 <code>pnpm-lock.yaml</code>、<code>yarn.lock</code>、<code>.yarnrc</code> 等文件。
+              </div>
+            </div>
+
+            <div class="pitfall-card">
+              <div class="pitfall-title">⚠️ 环境变量从 <code>.env</code> 读取，不要硬编码本地路径</div>
+              <div class="pitfall-desc">
+                Android 构建依赖 <code>.env</code> 中的 <code>JAVA_HOME</code> 和 <code>ANDROID_SDK_ROOT</code>。脚本里不要写死 <code>C:\Users\...</code> 这类绝对路径。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 相关文档 -->
+      <section class="section" id="sec-docs">
+        <div class="section-header">
+          <span class="section-num">10</span>
+          <h3 class="section-title">相关文档</h3>
+        </div>
+        <div class="section-card">
+          <div class="purpose-box">
+            <div class="purpose-label">设计目的</div>
+            <div class="purpose-text">
+              AGENTS.md 不应该重复其他文档的内容，但需要<strong>告诉 AI 其他信息在哪里</strong>。这个栏目起到「导航中枢」的作用：当 AI 遇到设计规范问题时，知道去看 <code>COMPONENT_GUIDE.md</code>；遇到 PR 流程问题时，知道去看 <code>CONTRIBUTING.md</code>。它保证了 AGENTS.md 自身的简洁性，同时不让信息孤岛化。
+            </div>
+          </div>
+          <div class="content-preview">
+            <ul>
+              <li><code>README.md</code> — 项目介绍与快速开始</li>
+              <li><code>CONTRIBUTING.md</code> — 完整的贡献指南、环境配置、PR 流程</li>
+              <li><code>COMPONENT_GUIDE.md</code> — UI 组件规范</li>
+              <li><code>ANIMATION_GUIDE.md</code> — 动画效果规范</li>
+              <li><code>docs/</code> — 其他技术文档</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <footer style="text-align:center;padding:40px 0;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid var(--border-color);margin-top:20px">
+        Generated for Xiyue Project · AGENTS.md 设计解析
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Sidebar active state on scroll
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        const sectionTop = sec.offsetTop;
+        if (scrollY >= sectionTop - 120) {
+          current = sec.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Decision tree logic
+    const results = {
+      'r-core': {
+        title: '推荐路径：先改核心库，再同步两端',
+        text: '先改 packages/music-core → 运行 npm run test:music-core → 检查 apps/android 和 apps/html-sandbox 的调用方是否需适配 → 最后跑 npm test 全部验证。'
+      },
+      'r-ui': {
+        title: '推荐路径：直接改 Android，必要时先做原型',
+        text: '在 apps/android 中开发。如果涉及新组件或新动画，可先在 apps/html-sandbox 做原型验证，确认后再迁移到 Kotlin 侧。'
+      },
+      'r-sandbox': {
+        title: '推荐路径： sandbox 快速验证，再提取复用',
+        text: '直接在 apps/html-sandbox 中实验。如果逻辑可被 Android 复用，把它提取到 packages/music-core，而不是让 Android 直接依赖 sandbox 代码。'
+      },
+      'r-deps': {
+        title: '推荐路径：根目录装 dev，workspace 装业务',
+        text: '开发依赖在根目录 npm install -D <pkg>；业务依赖在对应的 apps/xxx 或 packages/xxx 下安装。不要引入 pnpm/yarn 配置。'
+      },
+      'r-ci': {
+        title: '推荐路径：改 scripts 或 .github/workflows',
+        text: '修改 scripts/ 目录或 .github/workflows/ 后，在本地验证 npm run build:android 和 npm test 仍然通过。'
+      }
+    };
+
+    function showResult(key) {
+      const res = results[key];
+      document.getElementById('result-box').innerHTML =
+        '<h4>' + res.title + '</h4><p>' + res.text + '</p>';
+      document.getElementById('d-step-1').classList.remove('active');
+      document.getElementById('d-result').classList.add('active');
+    }
+
+    function resetDecision() {
+      document.getElementById('d-step-1').classList.add('active');
+      document.getElementById('d-result').classList.remove('active');
+    }
+
+    // Checklist toggle
+    function toggleCheck(el) {
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      el.classList.toggle('checked', cb.checked);
+    }
+  </script>
+</body>
+</html>

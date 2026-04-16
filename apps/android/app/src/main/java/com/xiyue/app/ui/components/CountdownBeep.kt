@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun CountdownBeep(
-    bpm: Int,
+    bpm: Float,
     onCountdownComplete: () -> Unit,
     onDismiss: () -> Unit,
 ) {

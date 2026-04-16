@@ -25,9 +25,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.xiyue.app.domain.PitchClass
+import com.xiyue.app.domain.PlaybackMode
+import com.xiyue.app.playback.PlaybackRequest
+import com.xiyue.app.playback.PlaybackSoundMode
+import com.xiyue.app.playback.PracticePlaybackService
+import com.xiyue.app.playback.TonePreset
 import com.xiyue.app.ui.components.MockupSectionSurface
 import com.xiyue.app.ui.theme.DesignTokens
 import com.xiyue.app.ui.theme.XiyueAccent
@@ -47,6 +54,7 @@ private enum class ComboMode {
 fun ComboScreen(
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     var mode by remember { mutableStateOf(ComboMode.NOTE_SELECTION) }
     val selectedNotes = remember { mutableStateListOf("C", "D", "E", "G") }
     val selectedProgression = remember { mutableStateListOf("Cmaj7", "Am7", "Dm7", "G7") }
@@ -174,6 +182,7 @@ fun ComboScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
+                    val offset = (PitchClass.fromLabel(chordRoot).semitone - PitchClass.C.semitone + 12) % 12
                     listOf("ii-V-I", "I-vi-IV-V", "I-IV-V-I").forEach { preset ->
                         BuilderChip(
                             label = preset,
@@ -181,9 +190,9 @@ fun ComboScreen(
                             onClick = {
                                 selectedProgression.clear()
                                 when (preset) {
-                                    "ii-V-I" -> selectedProgression.addAll(listOf("Dm7", "G7", "Cmaj7"))
-                                    "I-vi-IV-V" -> selectedProgression.addAll(listOf("Cmaj7", "Am7", "Fmaj7", "G7"))
-                                    else -> selectedProgression.addAll(listOf("Cmaj7", "Fmaj7", "G7", "Cmaj7"))
+                                    "ii-V-I" -> selectedProgression.addAll(listOf("Dm7", "G7", "Cmaj7").map { transposeChord(it, offset) })
+                                    "I-vi-IV-V" -> selectedProgression.addAll(listOf("Cmaj7", "Am7", "Fmaj7", "G7").map { transposeChord(it, offset) })
+                                    else -> selectedProgression.addAll(listOf("Cmaj7", "Fmaj7", "G7", "Cmaj7").map { transposeChord(it, offset) })
                                 }
                             },
                         )
@@ -223,7 +232,10 @@ fun ComboScreen(
                 BuilderAddButton(
                     label = if (mode == ComboMode.NOTE_SELECTION) "播放序列" else "播放进行",
                     primary = true,
-                    onClick = {},
+                    onClick = {
+                        val request = createComboPlaybackRequest(mode, selectedNotes, selectedProgression, chordRoot)
+                        PracticePlaybackService.play(context, request)
+                    },
                 )
             }
             FlowRow(
@@ -240,6 +252,53 @@ fun ComboScreen(
             }
         }
     }
+}
+
+private fun createComboPlaybackRequest(
+    mode: ComboMode,
+    selectedNotes: List<String>,
+    selectedProgression: List<String>,
+    chordRoot: String,
+): PlaybackRequest {
+    return when (mode) {
+        ComboMode.NOTE_SELECTION -> {
+            val root = selectedNotes.firstOrNull()?.let { PitchClass.fromLabel(it) } ?: PitchClass.C
+            PlaybackRequest(
+                itemId = "combo:notes:${selectedNotes.joinToString("-")}",
+                root = root,
+                bpm = 92f,
+                loopEnabled = true,
+                playbackMode = PlaybackMode.SCALE_ASCENDING,
+                tonePreset = TonePreset.SOFT_PIANO,
+                soundMode = PlaybackSoundMode.PITCH,
+            )
+        }
+        ComboMode.CHORD_PROGRESSION -> {
+            val root = PitchClass.fromLabel(chordRoot)
+            PlaybackRequest(
+                itemId = "combo:chords:${selectedProgression.joinToString("-")}",
+                root = root,
+                bpm = 92f,
+                loopEnabled = true,
+                playbackMode = PlaybackMode.CHORD_BLOCK,
+                tonePreset = TonePreset.SOFT_PIANO,
+                soundMode = PlaybackSoundMode.PITCH,
+                chordBlockEnabled = true,
+                chordArpeggioEnabled = true,
+            )
+        }
+    }
+}
+
+private fun transposeChord(label: String, offset: Int): String {
+    val match = Regex("^([A-G][#b]?)(.*)$").find(label)
+    if (match == null) return label
+    val rootLabel = match.groupValues[1]
+    val suffix = match.groupValues[2]
+    val rootSemitone = PitchClass.fromLabel(rootLabel).semitone
+    val newSemitone = ((rootSemitone + offset) % 12 + 12) % 12
+    val newPitchClass = PitchClass.entries.first { it.semitone == newSemitone }
+    return PitchClass.rootDisplayLabel(newPitchClass) + suffix
 }
 
 @Composable

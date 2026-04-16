@@ -79,7 +79,29 @@ internal class PlaybackSnapshotManager(
     }
 
     fun publishStopped() {
-        statePublisher(PlaybackSnapshot())
+        statePublisher(PlaybackSnapshot(completedAt = 0L))
+    }
+
+    fun publishResumeHighlight(
+        request: PlaybackRequest,
+        plan: PracticePlaybackPlan,
+        subtitle: String,
+        stepIndex: Int,
+        activePitchClasses: Set<PitchClass>,
+        activeNoteLabels: List<String>,
+    ) {
+        val snapshot = createSnapshot(
+            request = request,
+            plan = plan,
+            isPlaying = false,
+            isPaused = true,
+            subtitle = subtitle,
+            stepIndex = stepIndex,
+            activePitchClasses = activePitchClasses,
+            activeNoteLabels = activeNoteLabels,
+            resumeHighlight = true,
+        )
+        statePublisher(snapshot)
     }
 
     fun createSnapshot(
@@ -93,6 +115,7 @@ internal class PlaybackSnapshotManager(
         activeNoteLabels: List<String>,
         queuedItemId: String? = null,
         queuedTitle: String? = null,
+        resumeHighlight: Boolean = false,
     ): PlaybackSnapshot = PlaybackSnapshot(
         isPlaying = isPlaying,
         isPaused = isPaused,
@@ -106,5 +129,6 @@ internal class PlaybackSnapshotManager(
         stepCount = plan.steps.size,
         activePitchClasses = activePitchClasses,
         activeNoteLabels = activeNoteLabels,
+        resumeHighlight = resumeHighlight,
     )
 }

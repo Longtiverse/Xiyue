@@ -189,17 +189,28 @@ data class PracticeLibraryItem(
     val aliases: List<String> = emptyList(),
     val difficulty: DifficultyLevel = DifficultyLevel.BEGINNER,
     val description: String = "",
+    val fingerings: List<Int>? = null,
+    val theory: String = "",
 )
+
+enum class RhythmPattern(val label: String) {
+    STRAIGHT("四分音符"),
+    EIGHTH("八分音符"),
+    SWING("Swing"),
+    TRIPLET("三连音"),
+}
 
 data class PracticeSelection(
     val libraryItemId: String,
     val root: PitchClass,
     val octave: Int,
-    val bpm: Int,
+    val bpm: Float,
     val loopEnabled: Boolean,
     val playbackMode: PlaybackMode,
     val chordBlockEnabled: Boolean = true,
     val chordArpeggioEnabled: Boolean = false,
+    val inversion: Int = 0,
+    val rhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
 )
 
 data class PlaybackStep(

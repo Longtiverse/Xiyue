@@ -1,5 +1,19 @@
 package com.xiyue.app.features.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,10 +33,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,14 +53,14 @@ import com.xiyue.app.ui.theme.XiyueGold
 import com.xiyue.app.ui.theme.XiyueGoldSoft
 import com.xiyue.app.ui.theme.XiyueGoldStrong
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun PlaybackControlsSection(
     state: PlaybackControlUiState,
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isPlaying = state.playButtonLabel.contains("Pause", ignoreCase = true)
+    val isPlaying = state.isPlaying
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -56,7 +72,7 @@ fun PlaybackControlsSection(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 PlaybackGradientButton(
-                    label = if (isPlaying) "Pause" else state.playButtonLabel,
+                    label = if (isPlaying) "暂停" else state.playButtonLabel,
                     isPlaying = isPlaying,
                     onClick = { onAction(HomeAction.TogglePlayback) },
                     onStop = { onAction(HomeAction.StopPlayback) },
@@ -74,50 +90,45 @@ fun PlaybackControlsSection(
             }
         }
 
-        if (isPlaying) {
-            MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        DesignTokens.Spacing.xs,
-                        Alignment.CenterHorizontally,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-                ) {
-                    state.optionSummaryPills.forEach { pill ->
-                        StatusPill(label = pill)
-                    }
-                }
-            }
-        } else {
-            MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        DesignTokens.Spacing.xs,
-                        Alignment.CenterHorizontally,
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-                ) {
-                    OptionLabel("Direction")
-                    state.modeOptions.forEach { option ->
+        MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(
+                    DesignTokens.Spacing.xs,
+                    Alignment.CenterHorizontally,
+                ),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
+            ) {
+                OptionLabel("方向")
+                state.modeOptions.forEach { option ->
+                    if (isPlaying) {
+                        if (option.selected) StatusPill(label = option.label)
+                    } else {
                         OptionPill(
                             label = option.label,
                             selected = option.selected,
                             onClick = { onAction(HomeAction.UpdatePlaybackMode(option.mode)) },
                         )
                     }
+                }
 
-                    OptionLabel("Loop")
+                OptionLabel("循环")
+                if (isPlaying) {
+                    StatusPill(label = if (state.loopEnabled) "开" else "关")
+                } else {
                     OptionPill(
-                        label = if (state.loopEnabled) "On" else "Off",
+                        label = if (state.loopEnabled) "开" else "关",
                         selected = state.loopEnabled,
                         onClick = { onAction(HomeAction.ToggleLoop) },
                     )
+                }
 
-                    if (state.isChord) {
-                        OptionLabel("Chord")
-                        state.chordModeOptions.forEach { option ->
+                if (state.isChord) {
+                    OptionLabel("和弦")
+                    state.chordModeOptions.forEach { option ->
+                        if (isPlaying) {
+                            if (option.selected) StatusPill(label = option.label)
+                        } else {
                             OptionPill(
                                 label = option.label,
                                 selected = option.selected,
@@ -125,16 +136,64 @@ fun PlaybackControlsSection(
                             )
                         }
                     }
+                    if (state.inversionOptions.isNotEmpty()) {
+                        OptionLabel("转位")
+                        state.inversionOptions.forEach { option ->
+                            if (isPlaying) {
+                                if (option.selected) StatusPill(label = option.label)
+                            } else {
+                                OptionPill(
+                                    label = option.label,
+                                    selected = option.selected,
+                                    onClick = { onAction(HomeAction.UpdateInversion(option.inversion)) },
+                                )
+                            }
+                        }
+                    }
+                }
 
-                    OptionLabel("Tone")
-                    state.toneOptions.forEach { option ->
+                OptionLabel("八度")
+                state.octaveOptions.forEach { option ->
+                    if (isPlaying) {
+                        if (option.selected) StatusPill(label = option.label)
+                    } else {
+                        OptionPill(
+                            label = option.label,
+                            selected = option.selected,
+                            onClick = { onAction(HomeAction.UpdateOctave(option.octave)) },
+                        )
+                    }
+                }
+
+                OptionLabel("节奏")
+                state.rhythmOptions.forEach { option ->
+                    if (isPlaying) {
+                        if (option.selected) StatusPill(label = option.label)
+                    } else {
+                        OptionPill(
+                            label = option.label,
+                            selected = option.selected,
+                            onClick = { onAction(HomeAction.UpdateRhythmPattern(option.pattern)) },
+                        )
+                    }
+                }
+
+                OptionLabel("音色")
+                state.toneOptions.forEach { option ->
+                    if (isPlaying) {
+                        if (option.selected) StatusPill(label = option.shortLabel)
+                    } else {
                         OptionPill(
                             label = option.shortLabel,
                             selected = option.selected,
                             onClick = { onAction(HomeAction.UpdateTonePreset(option.preset)) },
                         )
                     }
+                }
 
+                if (isPlaying) {
+                    StatusPill(label = state.soundMode.label)
+                } else {
                     OptionPill(
                         label = state.soundMode.label,
                         selected = state.soundMode == PlaybackSoundMode.SOLFEGE,
@@ -149,8 +208,17 @@ fun PlaybackControlsSection(
                     )
                 }
             }
+        }
 
-            MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
+        MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
+            if (isPlaying) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    StatusPill(label = "${state.bpm.toInt()} BPM")
+                }
+            } else {
                 SwipeableBpmSelector(
                     selectedBpm = state.bpm,
                     presets = state.tempoPresets,
@@ -175,8 +243,23 @@ private fun PlaybackGradientButton(
     } else {
         Brush.linearGradient(listOf(XiyueAccent, XiyueAccentStrong))
     }
+
+    val breatheScale by rememberInfiniteTransition(label = "breathe").animateFloat(
+        initialValue = 1f,
+        targetValue = if (!isPlaying) 1.03f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1800),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "button-breathe",
+    )
+
     Box(
         modifier = Modifier
+            .graphicsLayer {
+                scaleX = breatheScale
+                scaleY = breatheScale
+            }
             .fillMaxWidth()
             .widthIn(max = 240.dp)
             .height(48.dp)

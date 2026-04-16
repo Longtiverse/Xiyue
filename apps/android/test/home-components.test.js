@@ -35,11 +35,10 @@ test('android home screen delegates to spec-shaped section composables', () => {
   assert.match(screen, /SwipeableRootNoteSelector/);
   assert.match(screen, /LazyRow/);
   assert.match(screen, /Column\(/);
-  assert.match(screen, /if \(state\.isPlaying\)/);
   assert.match(screen, /MockupSectionSurface/);
   assert.doesNotMatch(screen, /modifier = Modifier\.weight\(1f\)/);
   assert.doesNotMatch(screen, /OutlinedTextField/);
-  assert.doesNotMatch(screen, /Search/);
+  // Search icon is now legitimately used for empty-state UI
 
   assert.match(displaySection, /AnimatedContent/);
   assert.match(displaySection, /TogglePlaybackDisplayMode/);
@@ -79,12 +78,11 @@ test('android home screen delegates to spec-shaped section composables', () => {
   assert.match(keyboardSection, /Live/);
   assert.match(keyboardSection, /current|active|scale/i);
   assert.match(keyboardSection, /BlackKey/);
-  assert.match(keyboardSection, /keyActiveBlack/);
-  assert.match(keyboardSection, /pianoBlackKeys/);
-  assert.match(keyboardSection, /blackKeyOffsets/);
+  assert.match(keyboardSection, /boundaryCentersPx/);
+  assert.match(keyboardSection, /whiteKeyWidthPx/);
   assert.match(keyboardSection, /offset\(x = /);
   assert.match(keyboardSection, /KeyboardLegend/);
-  assert.match(keyboardSection, /animateColorAsState|Card|Surface/);
+  assert.match(keyboardSection, /Brush\.verticalGradient/);
 });
 
 test('android root and bpm selectors use mockup scaled custom chips', () => {

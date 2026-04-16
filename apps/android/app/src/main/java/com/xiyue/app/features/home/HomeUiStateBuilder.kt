@@ -5,6 +5,7 @@ import com.xiyue.app.domain.PlaybackMode
 import com.xiyue.app.domain.PracticeKind
 import com.xiyue.app.domain.PracticeLibraryItem
 import com.xiyue.app.domain.PracticePlaybackPlan
+import com.xiyue.app.domain.RhythmPattern
 import com.xiyue.app.playback.PlaybackSnapshot
 import com.xiyue.app.playback.PlaybackSoundMode
 import com.xiyue.app.playback.TonePreset
@@ -29,16 +30,17 @@ internal class HomeUiStateBuilder {
         currentNoteLabel = currentActiveNote,
         queuedLabel = playbackSnapshot.queuedTitle,
         hintLabel = when {
-            playbackSnapshot.isPaused -> "Tap play to continue or long press to reset"
-            playbackSnapshot.isPlaying -> "Tap to collapse back to note focus"
-            else -> "Tap to show sequence detail"
+            playbackSnapshot.isPaused -> "点击继续练习，长按重置"
+            playbackSnapshot.isPlaying -> "点击返回音符聚焦"
+            else -> "点击查看序列详情"
         },
         displayMode = displayMode,
         sequenceNotes = sequenceNotes,
+        resumeHighlight = playbackSnapshot.resumeHighlight,
     )
 
     fun buildPlaybackControl(
-        clampedBpm: Int,
+        clampedBpm: Float,
         loopEnabled: Boolean,
         loopDurationMs: Long,
         chordBlockEnabled: Boolean,
@@ -51,6 +53,9 @@ internal class HomeUiStateBuilder {
         effectivePlaying: Boolean,
         effectivePaused: Boolean,
         showHints: Boolean,
+        selectedInversion: Int = 0,
+        selectedOctave: Int = 4,
+        selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
     ): PlaybackControlUiState {
         val selectedChordPlaybackMode = chordPlaybackMode(
             chordBlockEnabled = chordBlockEnabled,
@@ -58,6 +63,8 @@ internal class HomeUiStateBuilder {
         )
 
         return PlaybackControlUiState(
+            isPlaying = effectivePlaying,
+            isPaused = effectivePaused,
             bpm = clampedBpm,
             loopEnabled = loopEnabled,
             loopDurationMs = loopDurationMs,
@@ -96,21 +103,54 @@ internal class HomeUiStateBuilder {
                 )
             },
             playButtonLabel = when {
-                effectivePlaying -> "Pause"
-                effectivePaused -> "Resume Practice"
-                else -> "Start Practice"
+                effectivePlaying -> "暂停"
+                effectivePaused -> "继续练习"
+                else -> "开始练习"
             },
             optionSummaryPills = buildList {
                 add(resolvedPlaybackMode.label)
-                if (loopEnabled) add("Loop")
+                if (loopEnabled) add("循环")
                 add(selectedTonePreset.shortLabel)
                 add("${clampedBpm} BPM")
                 if (resolvedSelectedItem?.kind == PracticeKind.CHORD) {
                     add(selectedChordPlaybackMode.label)
                 }
             },
-            hintLabel = "Long press or double tap to stop and reset",
+            hintLabel = "长按或双击可停止并重置",
             showHints = showHints,
+            inversionOptions = if (resolvedSelectedItem?.kind == PracticeKind.CHORD) {
+                val maxInversion = (resolvedSelectedItem.intervals.size - 1).coerceAtLeast(0)
+                (0..maxInversion).map { inv ->
+                    InversionOptionUiItem(
+                        inversion = inv,
+                        label = when (inv) {
+                            0 -> "原位"
+                            1 -> "一转"
+                            2 -> "二转"
+                            3 -> "三转"
+                            else -> "${inv}转"
+                        },
+                        selected = inv == selectedInversion,
+                    )
+                }
+            } else emptyList(),
+            selectedInversion = selectedInversion,
+            octaveOptions = (2..6).map { oct ->
+                OctaveOptionUiItem(
+                    octave = oct,
+                    label = "O$oct",
+                    selected = oct == selectedOctave,
+                )
+            },
+            selectedOctave = selectedOctave,
+            rhythmOptions = RhythmPattern.entries.map { pattern ->
+                RhythmOptionUiItem(
+                    pattern = pattern,
+                    label = pattern.label,
+                    selected = pattern == selectedRhythmPattern,
+                )
+            },
+            selectedRhythmPattern = selectedRhythmPattern,
         )
     }
 
@@ -119,22 +159,24 @@ internal class HomeUiStateBuilder {
         effectivePaused: Boolean,
         previewPitchClasses: Set<PitchClass>,
         currentActiveNote: String,
+        keyDepths: Map<PitchClass, Int> = emptyMap(),
+        fingeringMap: Map<PitchClass, Int> = emptyMap(),
     ): KeyboardPreviewUiState {
         val currentPitchClass = pitchClassFromActiveNote(currentActiveNote)
 
         return KeyboardPreviewUiState(
-            title = "Keyboard Preview",
+            title = "键盘预览",
             description = when {
-                effectivePlaying -> "Live preview shows the current note and scale tones."
-                effectivePaused -> "Paused notes stay highlighted for quick restart."
-                else -> "Starts showing live keys when playback begins."
+                effectivePlaying -> "实时预览显示当前音符和音阶音"
+                effectivePaused -> "暂停时音符保持高亮，便于快速重新开始"
+                else -> "开始播放后显示实时琴键"
             },
             activeKeysLabel = if (previewPitchClasses.isEmpty()) {
-                "Current: waiting to start"
+                "当前：等待开始"
             } else {
-                "In scale: ${previewPitchClasses.joinToString(" · ") { it.label }}"
+                "音阶内：${previewPitchClasses.joinToString(" · ") { it.label }}"
             },
-            liveLabel = if (effectivePlaying) "Live" else "Ready",
+            liveLabel = if (effectivePlaying) "实时" else "就绪",
             keys = PitchClass.entries.map { note ->
                 KeyboardKeyUiState(
                     label = note.label,
@@ -142,6 +184,8 @@ internal class HomeUiStateBuilder {
                     sharp = note.semitone in BLACK_KEY_SEMITONES,
                     inScale = note in previewPitchClasses,
                     isCurrent = note == currentPitchClass,
+                    layerDepth = keyDepths[note] ?: 0,
+                    fingering = fingeringMap[note],
                 )
             },
         )
@@ -153,7 +197,7 @@ internal class HomeUiStateBuilder {
         recentItems: List<PracticeLibraryItem>,
         rootNotes: List<RootNoteUiItem>,
         filterKind: PracticeKind?,
-        bpm: Int,
+        bpm: Float,
         loopEnabled: Boolean,
     ): PracticePickerUiState {
         val shortcuts = buildList {
@@ -173,12 +217,12 @@ internal class HomeUiStateBuilder {
             }
 
         val summaryLabel = buildString {
-            append(selectedItem?.label ?: "Choose Practice")
+            append(selectedItem?.label ?: "选择练习")
             append(" · ")
             append(bpm)
             append(" BPM")
             if (loopEnabled) {
-                append(" · Loop")
+                append(" · 循环")
             }
         }
 
@@ -196,29 +240,18 @@ internal class HomeUiStateBuilder {
     ): List<LibraryGroupUiState> {
         if (items.isEmpty()) return emptyList()
 
-        val groups = linkedMapOf(
-            "Scales" to linkedSetOf("scale:Major", "scale:NaturalMinor", "scale:PentatonicMajor", "scale:PentatonicMinor", "scale:Dorian"),
-            "Chords" to linkedSetOf("chord:MajorTriad", "chord:MinorTriad", "chord:Maj7", "chord:Min7", "chord:Dom7"),
-        )
-
-        return groups.mapNotNull { (title, ids) ->
-            val groupItems = items
-                .filter { it.id in ids }
-                .map { item ->
-                    item.toUiItem(
-                        selectedId = selectedId,
-                        favoriteIds = favoriteIds,
-                    )
-                }
-
-            groupItems.takeIf { it.isNotEmpty() }?.let { uiItems ->
+        return items
+            .groupBy { it.kind }
+            .map { (kind, groupItems) ->
                 LibraryGroupUiState(
-                    title = title,
-                    description = "${uiItems.size} items",
-                    items = uiItems,
+                    title = when (kind) {
+                        PracticeKind.SCALE -> "音阶"
+                        PracticeKind.CHORD -> "和弦"
+                    },
+                    description = "${groupItems.size} 项",
+                    items = groupItems.map { it.toUiItem(selectedId = selectedId, favoriteIds = favoriteIds) },
                 )
             }
-        }
     }
 
     fun buildSequenceNotes(
@@ -260,12 +293,23 @@ internal class HomeUiStateBuilder {
         id = id,
         label = label,
         kindLabel = when (kind) {
-            PracticeKind.SCALE -> "Scale"
-            PracticeKind.CHORD -> "Chord"
+            PracticeKind.SCALE -> "音阶"
+            PracticeKind.CHORD -> "和弦"
         },
-        supportingText = "${type} · ${intervals.size} notes",
+        supportingText = buildString {
+            val stars = "★".repeat(difficulty.stars) + "☆".repeat(3 - difficulty.stars)
+            append(stars)
+            if (description.isNotBlank()) {
+                append(" · ")
+                append(description)
+            }
+        },
         favorite = id in favoriteIds,
         selected = id == selectedId,
+        intervals = intervals,
+        description = description,
+        theory = theory,
+        fingerings = fingerings ?: emptyList(),
     )
 
     private fun chordPlaybackMode(
@@ -286,12 +330,12 @@ internal class HomeUiStateBuilder {
         const val MAX_FAVORITE_ITEMS = 6
         const val MAX_RECENT_ITEMS = 6
         const val MAX_VISIBLE_SHORTCUTS = 6
-        val TEMPO_PRESETS = listOf(60, 72, 80, 92, 100, 120, 140)
+        val TEMPO_PRESETS = listOf(60f, 72f, 80f, 92f, 100f, 120f, 140f)
         /** Semitones that correspond to black keys on a piano keyboard. */
         val BLACK_KEY_SEMITONES = setOf(1, 3, 6, 8, 10)
 
         fun formatLoopDuration(durationMs: Long): String = when {
-            durationMs <= 0 -> "Off"
+            durationMs <= 0 -> "关"
             durationMs < 60_000 -> "${durationMs / 1000}s"
             durationMs < 3_600_000 -> "${durationMs / 60_000}m"
             else -> "${durationMs / 3_600_000}h"

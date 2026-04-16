@@ -1,6 +1,10 @@
 package com.xiyue.app.features.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -15,13 +20,18 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import com.xiyue.app.data.AnalyticsSummary
 import com.xiyue.app.ui.theme.DesignTokens
+import com.xiyue.app.ui.theme.XiyueAccent
 
 enum class ThemeMode {
     LIGHT,
@@ -36,6 +46,7 @@ fun SettingsScreen(
     onThemeModeChange: (ThemeMode) -> Unit,
     showHints: Boolean,
     onShowHintsChange: (Boolean) -> Unit,
+    analyticsSummary: AnalyticsSummary,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -93,6 +104,17 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
 
             Text(
+                text = "使用统计",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
+            AnalyticsCard(summary = analyticsSummary)
+
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(DesignTokens.Spacing.xl))
+
+            Text(
                 text = "关于习乐",
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -125,6 +147,66 @@ private fun ThemeModeSelector(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AnalyticsCard(
+    summary: AnalyticsSummary,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(DesignTokens.CornerRadius.lg),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+    ) {
+        Column(
+            modifier = Modifier.padding(DesignTokens.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        ) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+                maxItemsInEachRow = 2,
+            ) {
+                StatBadge(label = "练习次数", value = summary.totalPracticeSessions.toString())
+                StatBadge(label = "练习时长(分)", value = summary.totalPracticeMinutes.toString())
+                StatBadge(label = "听力答题", value = summary.totalEarTrainingQuestions.toString())
+                StatBadge(label = "听力正确", value = summary.totalEarTrainingCorrect.toString())
+                StatBadge(label = "连续天数", value = summary.consecutiveDays.toString())
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatBadge(
+    label: String,
+    value: String,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(DesignTokens.CornerRadius.md),
+            )
+            .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.sm),
+    ) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = XiyueAccent,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

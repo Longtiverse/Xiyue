@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>习乐 Xiyue — App Icon 方案选择</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0e1210;
+  --bg-card: #161c19;
+  --bg-card-hover: #1c2420;
+  --bg-selected: #1a2b24;
+  --border: #243129;
+  --border-hover: #35453d;
+  --border-selected: #73d3b5;
+  --text: #e4ebe7;
+  --text-secondary: #8fa89a;
+  --text-muted: #5a7068;
+  --accent: #73d3b5;
+  --accent-dim: rgba(115, 211, 181, 0.12);
+  --gold: #c9a76a;
+  --gold-dim: rgba(201, 167, 106, 0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.25s ease;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.page-header {
+  text-align: center;
+  padding: 48px 24px 20px;
+}
+.page-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.page-header p {
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Current icon section */
+.current-section {
+  text-align: center;
+  padding: 16px 24px 32px;
+}
+.current-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.current-icon-wrap {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3px;
+  background: var(--bg-card);
+}
+.current-icon-wrap svg {
+  display: block;
+  border-radius: 22px;
+}
+
+/* Grid */
+.grid-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 100px;
+}
+.grid-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  padding-left: 4px;
+}
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* Card */
+.icon-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.icon-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+.icon-card.selected {
+  background: var(--bg-selected);
+  border-color: var(--border-selected);
+  box-shadow: 0 0 24px rgba(115, 211, 181, 0.08);
+}
+.icon-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Icon display */
+.icon-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 26px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+.icon-preview svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Card info */
+.icon-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 10px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.icon-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  text-align: center;
+}
+.icon-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.icon-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.icon-tag {
+  font-size: 10px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.04);
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Bottom bar */
+#bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(14, 18, 16, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+#bottom-bar.visible {
+  transform: translateY(0);
+}
+#bottom-bar .selected-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+#bottom-bar .selected-info strong {
+  color: var(--accent);
+}
+#export-btn {
+  padding: 8px 20px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--accent), #5bc4a0);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+#export-btn:hover { opacity: 0.9; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 20px;
+  border-radius: 100px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 200;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Size comparison row */
+.size-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.size-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.size-item span {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+.size-item .mini-icon {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.size-item .mini-icon svg { display: block; }
+
+@media (max-width: 600px) {
+  .icon-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .icon-card { padding: 16px; }
+  .icon-preview { width: 90px; height: 90px; border-radius: 20px; }
+  .page-header { padding: 36px 16px 16px; }
+  .page-header h1 { font-size: 22px; }
+  .size-row { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="page-header">
+  <h1>习乐 App Icon 方案</h1>
+  <p>10 个差异化设计方案 — 点击选择你喜欢的，可多选对比</p>
+</div>
+
+<div class="current-section">
+  <div class="current-label">当前 Icon</div>
+  <div class="current-icon-wrap" id="current-icon"></div>
+</div>
+
+<div class="grid-container">
+  <div class="grid-title">备选方案（点击选择）</div>
+  <div class="icon-grid" id="icon-grid"></div>
+</div>
+
+<div id="bottom-bar">
+  <span class="selected-info">已选择 <strong id="selected-count">0</strong> 个方案</span>
+  <button id="export-btn">导出选择结果</button>
+</div>
+
+<script>
+// ===== Current Icon SVG =====
+const CURRENT_SVG = `<svg viewBox="0 0 108 108" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="108" height="108" fill="#0B0F14"/>
+  <circle cx="54" cy="54" r="34" fill="none" stroke="#2A3340" stroke-width="2.2" stroke-linecap="round"/>
+  <g fill="#2A3340">
+    <circle cx="54" cy="20" r="2.2"/><circle cx="69" cy="28.02" r="2.2"/>
+    <circle cx="79.98" cy="39" r="2.2"/><circle cx="79.98" cy="69" r="2.2"/>
+    <circle cx="69" cy="79.98" r="2.2"/><circle cx="54" cy="84" r="2.2"/>
+    <circle cx="28.02" cy="69" r="2.2"/><circle cx="24" cy="54" r="2.2"/>
+    <circle cx="28.02" cy="39" r="2.2"/>
+  </g>
+  <g fill="#7CF6C8">
+    <circle cx="84" cy="54" r="3.8"/><circle cx="39" cy="79.98" r="3"/>
+    <circle cx="39" cy="28.02" r="3"/>
+  </g>
+</svg>`;
+
+// ===== 10 Icon Proposals =====
+const ICONS = [
+  {
+    id: 1,
+    name: '音浪涟漪',
+    desc: '同心圆弧代表声波扩散，中心音符符号，薄荷绿渐变',
+    tags: ['极简', '声波', '渐变'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0B1210"/>
+          <stop offset="100%" stop-color="#0F1A16"/>
+        </linearGradient>
+        <linearGradient id="g1b" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7CF6C8"/>
+          <stop offset="100%" stop-color="#4DB89A"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="url(#g1a)"/>
+      <!-- sound ripples -->
+      <circle cx="100" cy="100" r="28" fill="none" stroke="url(#g1b)" stroke-width="2.5" opacity="0.9"/>
+      <circle cx="100" cy="100" r="46" fill="none" stroke="#7CF6C8" stroke-width="1.8" opacity="0.5"/>
+      <circle cx="100" cy="100" r="64" fill="none" stroke="#7CF6C8" stroke-width="1.2" opacity="0.25"/>
+      <circle cx="100" cy="100" r="82" fill="none" stroke="#7CF6C8" stroke-width="0.8" opacity="0.1"/>
+      <!-- music note in center -->
+      <ellipse cx="96" cy="107" rx="8" ry="6.5" fill="url(#g1b)" transform="rotate(-15 96 107)"/>
+      <rect x="103" y="78" width="2.8" height="30" rx="1.4" fill="url(#g1b)"/>
+      <path d="M105.8 78 Q112 74, 112 82 Q112 87, 105.8 85" fill="url(#g1b)"/>
+    </svg>`
+  },
+  {
+    id: 2,
+    name: '钢琴键韵',
+    desc: '抽象钢琴键排列，黑白键交错，金色高亮音符',
+    tags: ['钢琴', '黑白', '金色点缀'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="200" rx="44" fill="#0B0F14"/>
+      <!-- white keys -->
+      <g fill="#1E2832" opacity="0.7">
+        <rect x="30" y="55" width="18" height="90" rx="3"/>
+        <rect x="52" y="55" width="18" height="90" rx="3"/>
+        <rect x="74" y="55" width="18" height="90" rx="3"/>
+        <rect x="96" y="55" width="18" height="90" rx="3"/>
+        <rect x="118" y="55" width="18" height="90" rx="3"/>
+        <rect x="140" y="55" width="18" height="90" rx="3"/>
+        <rect x="162" y="55" width="18" height="90" rx="3"/>
+      </g>
+      <!-- black keys -->
+      <g fill="#0B0F14">
+        <rect x="42" y="55" width="14" height="55" rx="2"/>
+        <rect x="64" y="55" width="14" height="55" rx="2"/>
+        <rect x="108" y="55" width="14" height="55" rx="2"/>
+        <rect x="130" y="55" width="14" height="55" rx="2"/>
+        <rect x="152" y="55" width="14" height="55" rx="2"/>
+      </g>
+      <!-- gold highlight on one key -->
+      <rect x="96" y="55" width="18" height="90" rx="3" fill="#C9A76A" opacity="0.3"/>
+      <rect x="96" y="125" width="18" height="16" rx="3" fill="#C9A76A" opacity="0.6"/>
+      <!-- subtle glow -->
+      <circle cx="105" cy="135" r="20" fill="#C9A76A" opacity="0.06"/>
+    </svg>`
+  },
+  {
+    id: 3,
+    name: '乐理圆环',
+    desc: '十二音圆排列（五度圈），当前调高亮，学术感',
+    tags: ['五度圈', '学术', '精致'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0D1412"/>
+          <stop offset="100%" stop-color="#101816"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="url(#g3)"/>
+      <!-- outer ring -->
+      <circle cx="100" cy="100" r="72" fill="none" stroke="#1E2E28" stroke-width="1"/>
+      <circle cx="100" cy="100" r="55" fill="none" stroke="#1E2E28" stroke-width="0.5"/>
+      <!-- 12 note dots on circle -->
+      <circle cx="100.0" cy="38.0" r="7" fill="#7CF6C8" opacity="1"/>
+      <circle cx="131.0" cy="42.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="153.7" cy="62.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="162.0" cy="100.0" r="5" fill="#7CF6C8" opacity="0.5"/>
+      <circle cx="153.7" cy="138.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="131.0" cy="158.0" r="5" fill="#7CF6C8" opacity="0.5"/>
+      <circle cx="100.0" cy="162.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="69.0" cy="158.0" r="5" fill="#7CF6C8" opacity="0.5"/>
+      <circle cx="46.3" cy="138.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="38.0" cy="100.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="46.3" cy="62.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <circle cx="69.0" cy="42.0" r="3.5" fill="#2A3E36" opacity="0.6"/>
+      <!-- connecting lines for major triad (C-E-G) -->
+      <polygon points="100.0,38.0 153.7,62.0 131.0,158.0" fill="#7CF6C8" fill-opacity="0.06" stroke="#7CF6C8" stroke-width="0.8" stroke-opacity="0.2"/>
+      <!-- center text -->
+      <text x="100" y="105" text-anchor="middle" fill="#7CF6C8" font-size="18" font-weight="700" font-family="system-ui">C</text>
+    </svg>`
+  },
+  {
+    id: 4,
+    name: '山水意境',
+    desc: '中国画风格的抽象山峦线条，意境深远，呼应"习乐"',
+    tags: ['中国风', '水墨', '意境'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g4" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0F1614"/>
+          <stop offset="100%" stop-color="#0A100E"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="url(#g4)"/>
+      <!-- mountain layers -->
+      <path d="M20 160 Q60 90, 100 120 Q130 70, 160 100 Q180 85, 195 95 L195 160Z" fill="#1A2E26" opacity="0.5"/>
+      <path d="M5 160 Q40 110, 75 135 Q110 95, 140 115 Q165 100, 195 110 L195 160Z" fill="#1A2E26" opacity="0.7"/>
+      <path d="M5 160 Q30 130, 65 145 Q95 120, 130 138 Q160 125, 195 135 L195 160Z" fill="#1E362E" opacity="0.8"/>
+      <!-- moon -->
+      <circle cx="148" cy="52" r="18" fill="#7CF6C8" opacity="0.08"/>
+      <circle cx="148" cy="52" r="12" fill="#7CF6C8" opacity="0.12"/>
+      <circle cx="148" cy="52" r="2" fill="#7CF6C8" opacity="0.7"/>
+      <!-- music wave rising from mountains -->
+      <path d="M60 125 Q70 115, 80 125 Q90 115, 100 125" fill="none" stroke="#7CF6C8" stroke-width="1.5" opacity="0.4"/>
+      <path d="M70 118 Q80 108, 90 118" fill="none" stroke="#7CF6C8" stroke-width="1.2" opacity="0.25"/>
+      <!-- calligraphic stroke hint -->
+      <path d="M45 70 Q48 62, 55 58 Q62 55, 65 60" fill="none" stroke="#C9A76A" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    </svg>`
+  },
+  {
+    id: 5,
+    name: '频谱脉冲',
+    desc: '音频频谱柱状图动态感，中间最高，科技感强',
+    tags: ['频谱', '科技', '动感'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g5" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#7CF6C8"/>
+          <stop offset="100%" stop-color="#3BA88A"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="#0B0F14"/>
+      <!-- spectrum bars -->
+      <rect x="28" y="120" width="10" height="30" rx="5" fill="url(#g5)" opacity="0.47"/>
+      <rect x="46" y="100" width="10" height="50" rx="5" fill="url(#g5)" opacity="0.57"/>
+      <rect x="64" y="75" width="10" height="75" rx="5" fill="url(#g5)" opacity="0.71"/>
+      <rect x="82" y="55" width="10" height="95" rx="5" fill="url(#g5)" opacity="0.82"/>
+      <rect x="100" y="40" width="10" height="110" rx="5" fill="url(#g5)" opacity="1.00"/>
+      <rect x="118" y="65" width="10" height="85" rx="5" fill="url(#g5)" opacity="0.76"/>
+      <rect x="136" y="80" width="10" height="70" rx="5" fill="url(#g5)" opacity="0.64"/>
+      <rect x="154" y="105" width="10" height="45" rx="5" fill="url(#g5)" opacity="0.52"/>
+      <rect x="172" y="125" width="10" height="25" rx="5" fill="url(#g5)" opacity="0.44"/>
+      <!-- glow under bars -->
+      <ellipse cx="100" cy="155" rx="70" ry="8" fill="#7CF6C8" opacity="0.06"/>
+      <!-- subtle top arc -->
+      <path d="M40 120 Q100 30, 160 125" fill="none" stroke="#7CF6C8" stroke-width="1" opacity="0.15"/>
+    </svg>`
+  },
+  {
+    id: 6,
+    name: '习字印章',
+    desc: '"习" 字印章风格，朱红配深底，文化感十足',
+    tags: ['印章', '汉字', '文化'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="200" rx="44" fill="#0B0F14"/>
+      <!-- seal square -->
+      <rect x="52" y="48" width="96" height="104" rx="4" fill="none" stroke="#C94A4A" stroke-width="3" opacity="0.7"/>
+      <!-- inner border -->
+      <rect x="60" y="56" width="80" height="88" rx="2" fill="none" stroke="#C94A4A" stroke-width="1" opacity="0.3"/>
+      <!-- stylized 习 character -->
+      <g stroke="#C94A4A" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85">
+        <!-- left falling stroke -->
+        <path d="M78 75 Q82 95, 76 115"/>
+        <!-- right part: フ shape -->
+        <path d="M96 75 L125 75 L125 100"/>
+        <!-- bottom right hook -->
+        <path d="M125 100 Q125 118, 110 120"/>
+      </g>
+      <!-- subtle accent dot -->
+      <circle cx="140" cy="62" r="4" fill="#7CF6C8" opacity="0.6"/>
+      <!-- aged texture lines -->
+      <line x1="58" y1="90" x2="62" y2="90" stroke="#C94A4A" stroke-width="0.5" opacity="0.2"/>
+      <line x1="136" y1="110" x2="142" y2="110" stroke="#C94A4A" stroke-width="0.5" opacity="0.2"/>
+    </svg>`
+  },
+  {
+    id: 7,
+    name: '律动光弧',
+    desc: '多条发光弧线交织，像音符在空间中流动，现代感',
+    tags: ['光弧', '流动', '现代'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g7a" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#7CF6C8"/>
+          <stop offset="100%" stop-color="#4DB8E0"/>
+        </linearGradient>
+        <linearGradient id="g7b" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C9A76A"/>
+          <stop offset="100%" stop-color="#7CF6C8"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="#0A0E12"/>
+      <!-- flowing arcs -->
+      <path d="M30 140 Q60 60, 100 100 Q140 140, 170 60" fill="none" stroke="url(#g7a)" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+      <path d="M25 120 Q70 40, 110 85 Q150 130, 180 50" fill="none" stroke="url(#g7b)" stroke-width="1.8" stroke-linecap="round" opacity="0.4"/>
+      <path d="M35 155 Q65 90, 95 115 Q125 140, 165 80" fill="none" stroke="#7CF6C8" stroke-width="1.2" stroke-linecap="round" opacity="0.2"/>
+      <!-- node dots -->
+      <circle cx="100" cy="100" r="4" fill="#7CF6C8" opacity="0.9"/>
+      <circle cx="60" cy="82" r="2.5" fill="#C9A76A" opacity="0.6"/>
+      <circle cx="140" cy="118" r="2.5" fill="#4DB8E0" opacity="0.6"/>
+      <circle cx="45" cy="130" r="2" fill="#7CF6C8" opacity="0.3"/>
+      <circle cx="158" cy="68" r="2" fill="#7CF6C8" opacity="0.3"/>
+      <!-- ambient glow -->
+      <circle cx="100" cy="100" r="30" fill="#7CF6C8" opacity="0.03"/>
+    </svg>`
+  },
+  {
+    id: 8,
+    name: '调性棱镜',
+    desc: '几何棱镜折射出彩色音阶光谱，抽象而高级',
+    tags: ['棱镜', '几何', '光谱'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g8a" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7CF6C8"/>
+          <stop offset="35%" stop-color="#4DB8E0"/>
+          <stop offset="65%" stop-color="#C9A76A"/>
+          <stop offset="100%" stop-color="#E08A7C"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="#0B0E12"/>
+      <!-- prism triangle -->
+      <polygon points="100,45 145,140 55,140" fill="none" stroke="#2A3640" stroke-width="2" stroke-linejoin="round"/>
+      <polygon points="100,45 145,140 55,140" fill="#1A2430" opacity="0.5"/>
+      <!-- light beam entering -->
+      <line x1="25" y1="75" x2="82" y2="95" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>
+      <!-- spectrum rays exiting -->
+      <line x1="118" y1="95" x2="178" y2="70" stroke="#7CF6C8" stroke-width="1.5" opacity="0.6"/>
+      <line x1="120" y1="100" x2="180" y2="85" stroke="#4DB8E0" stroke-width="1.5" opacity="0.5"/>
+      <line x1="122" y1="105" x2="180" y2="100" stroke="#C9A76A" stroke-width="1.5" opacity="0.5"/>
+      <line x1="123" y1="110" x2="178" y2="115" stroke="#E08A7C" stroke-width="1.5" opacity="0.4"/>
+      <line x1="122" y1="115" x2="175" y2="132" stroke="#D07CAA" stroke-width="1.5" opacity="0.3"/>
+      <!-- inner glow -->
+      <circle cx="100" cy="100" r="15" fill="#7CF6C8" opacity="0.04"/>
+      <!-- small dots at endpoints -->
+      <circle cx="178" cy="70" r="2" fill="#7CF6C8" opacity="0.7"/>
+      <circle cx="180" cy="85" r="2" fill="#4DB8E0" opacity="0.6"/>
+      <circle cx="180" cy="100" r="2" fill="#C9A76A" opacity="0.6"/>
+    </svg>`
+  },
+  {
+    id: 9,
+    name: '弦振共鸣',
+    desc: '吉他/琴弦振动波形，线条优雅，适合弦乐练习者',
+    tags: ['琴弦', '振动', '优雅'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g9" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C9A76A"/>
+          <stop offset="100%" stop-color="#8B7040"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="#0C100E"/>
+      <!-- strings (vertical) -->
+      <g stroke="#C9A76A" stroke-linecap="round">
+        <line x1="55" y1="35" x2="55" y2="165" stroke-width="1" opacity="0.15"/>
+        <line x1="77" y1="35" x2="77" y2="165" stroke-width="1" opacity="0.2"/>
+        <line x1="99" y1="35" x2="99" y2="165" stroke-width="1.2" opacity="0.3"/>
+        <line x1="121" y1="35" x2="121" y2="165" stroke-width="1" opacity="0.2"/>
+        <line x1="143" y1="35" x2="143" y2="165" stroke-width="1" opacity="0.15"/>
+      </g>
+      <!-- vibrating string (center, displaced) -->
+      <path d="M99 35 Q80 70, 99 100 Q118 130, 99 165" fill="none" stroke="url(#g9)" stroke-width="2" opacity="0.8"/>
+      <!-- vibration echo -->
+      <path d="M99 35 Q75 70, 99 100 Q123 130, 99 165" fill="none" stroke="#C9A76A" stroke-width="1" opacity="0.2"/>
+      <path d="M99 35 Q85 70, 99 100 Q113 130, 99 165" fill="none" stroke="#C9A76A" stroke-width="1.5" opacity="0.4"/>
+      <!-- bridge hints -->
+      <rect x="45" y="32" width="108" height="4" rx="2" fill="#1E2E26" opacity="0.6"/>
+      <rect x="45" y="164" width="108" height="4" rx="2" fill="#1E2E26" opacity="0.6"/>
+      <!-- resonance glow -->
+      <ellipse cx="99" cy="100" rx="25" ry="40" fill="#C9A76A" opacity="0.04"/>
+      <!-- accent note -->
+      <circle cx="99" cy="100" r="4" fill="#7CF6C8" opacity="0.7"/>
+    </svg>`
+  },
+  {
+    id: 10,
+    name: '极简乐符',
+    desc: '超大单一音符，粗笔触，留白大方，一眼可辨',
+    tags: ['极简', '粗体', '标志性'],
+    svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g10" x1="0" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stop-color="#7CF6C8"/>
+          <stop offset="100%" stop-color="#55C49E"/>
+        </linearGradient>
+      </defs>
+      <rect width="200" height="200" rx="44" fill="#0B0F12"/>
+      <!-- large music note -->
+      <ellipse cx="82" cy="130" rx="22" ry="16" fill="url(#g10)" transform="rotate(-12 82 130)"/>
+      <!-- stem -->
+      <rect x="102" y="52" width="5" height="82" rx="2.5" fill="url(#g10)"/>
+      <!-- flag -->
+      <path d="M107 52 Q128 52, 130 68 Q132 80, 118 78 Q110 76, 107 68" fill="url(#g10)"/>
+      <!-- subtle shadow -->
+      <ellipse cx="90" cy="155" rx="30" ry="4" fill="#7CF6C8" opacity="0.06"/>
+    </svg>`
+  }
+];
+
+// ===== STEP 3: Rendering =====
+// Current icon
+document.getElementById('current-icon').innerHTML = CURRENT_SVG;
+
+// Icon grid
+const gridEl = document.getElementById('icon-grid');
+
+ICONS.forEach((icon) => {
+  const card = document.createElement('div');
+  card.className = 'icon-card';
+  card.dataset.id = icon.id;
+
+  card.innerHTML = `
+    <div class="icon-preview">${icon.svg}</div>
+    <span class="icon-number">方案 ${icon.id}</span>
+    <div class="icon-name">${icon.name}</div>
+    <div class="icon-desc">${icon.desc}</div>
+    <div class="icon-tags">${icon.tags.map(t => `<span class="icon-tag">${t}</span>`).join('')}</div>
+    <div class="size-row">
+      <div class="size-item">
+        <div class="mini-icon" style="width:48px;height:48px;border-radius:11px;">${icon.svg}</div>
+        <span>48px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width:32px;height:32px;border-radius:8px;">${icon.svg}</div>
+        <span>32px</span>
+      </div>
+      <div class="size-item">
+        <div class="mini-icon" style="width:20px;height:20px;border-radius:5px;">${icon.svg}</div>
+        <span>20px</span>
+      </div>
+    </div>
+  `;
+
+  gridEl.appendChild(card);
+});
+
+// ===== STEP 4: Interactivity =====
+const selectedSet = new Set();
+const bottomBar = document.getElementById('bottom-bar');
+const countEl = document.getElementById('selected-count');
+
+// Click to select/deselect
+gridEl.addEventListener('click', (e) => {
+  const card = e.target.closest('.icon-card');
+  if (!card) return;
+  const id = Number(card.dataset.id);
+
+  if (selectedSet.has(id)) {
+    selectedSet.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selectedSet.add(id);
+    card.classList.add('selected');
+  }
+
+  countEl.textContent = selectedSet.size;
+  bottomBar.classList.toggle('visible', selectedSet.size > 0);
+});
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Export
+document.getElementById('export-btn').addEventListener('click', () => {
+  if (selectedSet.size === 0) return;
+
+  const sorted = [...selectedSet].sort((a, b) => a - b);
+  let md = '# 习乐 App Icon — 选择结果\n\n';
+  md += `导出时间：${new Date().toLocaleString('zh-CN')}\n\n`;
+  md += `共选择 ${sorted.length} 个方案：\n\n`;
+
+  sorted.forEach(id => {
+    const icon = ICONS.find(ic => ic.id === id);
+    md += `- **方案 ${id}：${icon.name}** — ${icon.desc}（${icon.tags.join('、')}）\n`;
+  });
+
+  md += '\n---\n\n需要设计师根据选中方案制作高保真版本，输出 PNG（1024x1024）和 Android Adaptive Icon XML。\n';
+
+  navigator.clipboard.writeText(md).then(() => {
+    showToast('已复制到剪贴板');
+  }).catch(() => {
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'xiyue-icon-choice.md';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('已下载文件');
+  });
+});
+</script>
+</body>
+</html>

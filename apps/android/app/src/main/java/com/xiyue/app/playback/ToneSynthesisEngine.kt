@@ -348,5 +348,10 @@ internal class ToneSynthesisEngine(private val sampleRate: Int) {
         TonePreset.WARM_PRACTICE -> TonePresets.warmPractice()
         TonePreset.SOFT_PIANO -> TonePresets.softPiano()
         TonePreset.CLEAR_WOOD -> TonePresets.clearWood()
+        TonePreset.STRING_ENSEMBLE -> TonePresets.stringEnsemble()
+        TonePreset.WOODWIND -> TonePresets.woodwind()
+        TonePreset.BRASS -> TonePresets.brass()
+        TonePreset.SYNTH_PAD -> TonePresets.synthPad()
+        TonePreset.PLUCKED -> TonePresets.plucked()
     }
 }

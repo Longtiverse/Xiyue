@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /d/Project/Xiyue/apps/android/app/src/main/java/com/xiyue/app/**/*.kt)"
+    ]
+  }
+}

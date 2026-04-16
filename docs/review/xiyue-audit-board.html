@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>习乐 (Xiyue) v0.2.0 全量审计报告 · 横向评审板</title>
+  <style>
+    :root {
+      --bg: #0b0f0d;
+      --panel: #111815;
+      --panel-2: #151b18;
+      --accent: #4fd1a8;
+      --accent-2: #ffd166;
+      --danger: #ff6b6b;
+      --warn: #f4a261;
+      --info: #6c9fff;
+      --text: #e7f0ec;
+      --text-2: #9fb3ab;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; }
+    .wrap { max-width: 1600px; margin: 0 auto; padding: 24px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    h1 { font-size: 22px; margin: 0; letter-spacing: 0.5px; }
+    .subtitle { color: var(--text-2); font-size: 13px; margin-top: 6px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn { border: 1px solid var(--border); background: var(--panel); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: .15s; }
+    .btn:hover { border-color: rgba(255,255,255,0.22); }
+    .btn.primary { background: var(--accent); color: #052016; border-color: var(--accent); font-weight: 600; }
+    .btn.danger { background: rgba(255,107,107,0.12); color: var(--danger); border-color: rgba(255,107,107,0.35); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 14px 0; }
+    .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+    .stat .n { font-size: 24px; font-weight: 700; }
+    .stat .label { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text-2); font-size: 12px; cursor: pointer; user-select: none; }
+    .chip.active { background: rgba(79,209,168,0.12); color: var(--accent); border-color: rgba(79,209,168,0.45); }
+    .search { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; font-size: 13px; min-width: 220px; }
+
+    .table-hd { display: grid; grid-template-columns: 90px 1fr 220px 280px 22px; gap: 12px; align-items: center; padding: 10px 14px; color: var(--text-2); font-size: 12px; border-bottom: 1px solid var(--border); margin-top: 10px; }
+    .list { max-height: calc(100vh - 240px); overflow-y: auto; padding-right: 4px; }
+    .list::-webkit-scrollbar { width: 8px; }
+    .list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+    .row { display: grid; grid-template-columns: 90px 1fr 220px 280px 22px; gap: 12px; align-items: flex-start; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; transition: .1s; }
+    .row:hover { border-color: rgba(255,255,255,0.18); }
+    .row.now { border-left: 4px solid var(--danger); background: rgba(255,107,107,0.06); }
+    .row.later { border-left: 4px solid var(--accent-2); background: rgba(255,209,102,0.06); }
+    .row.never { border-left: 4px solid var(--text-2); opacity: .85; }
+
+    .id-col { display: flex; flex-direction: column; gap: 6px; }
+    .id { font-size: 12px; color: var(--text-2); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); color: var(--text-2); display: inline-block; width: fit-content; }
+    .tag.crit { background: rgba(255,107,107,0.12); color: var(--danger); }
+    .tag.warn { background: rgba(244,162,97,0.12); color: var(--warn); }
+    .tag.info { background: rgba(108,159,255,0.12); color: var(--info); }
+
+    .content-col { display: flex; flex-direction: column; gap: 6px; }
+    .title { font-size: 14px; line-height: 1.45; font-weight: 500; }
+    .detail { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+    .fix { font-size: 12px; color: var(--accent); line-height: 1.45; }
+
+    .actions-col { display: flex; flex-direction: column; gap: 6px; }
+    .act-btn { border: 1px solid var(--border); background: var(--panel-2); color: var(--text); padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; text-align: left; transition: .12s; }
+    .act-btn:hover { border-color: rgba(255,255,255,0.22); }
+    .act-btn.active-now { background: var(--danger); color: #fff; border-color: var(--danger); font-weight: 600; }
+    .act-btn.active-later { background: var(--accent-2); color: #2b2208; border-color: var(--accent-2); font-weight: 600; }
+    .act-btn.active-never { background: rgba(159,179,171,0.25); color: var(--text); border-color: rgba(159,179,171,0.45); font-weight: 600; }
+
+    .note-col { display: flex; flex-direction: column; gap: 6px; }
+    .note { width: 100%; min-height: 72px; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; resize: vertical; }
+    .note:focus { outline: none; border-color: rgba(255,255,255,0.25); }
+
+    .del-col { display: flex; align-items: flex-start; justify-content: center; padding-top: 2px; }
+    .del { color: var(--text-2); cursor: pointer; font-size: 16px; line-height: 1; }
+    .del:hover { color: var(--danger); }
+
+    .empty-state { text-align: center; padding: 40px 10px; color: var(--text-2); font-size: 13px; }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; width: min(960px, 92vw); max-height: 86vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+    .modal header { padding: 14px 16px; border-bottom: 1px solid var(--border); margin: 0; }
+    .modal .body { padding: 16px; overflow: auto; }
+    .modal footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+    .textarea { width: 100%; min-height: 320px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; resize: vertical; }
+
+    @media (max-width: 1100px) {
+      .table-hd { display: none; }
+      .row { grid-template-columns: 1fr; gap: 10px; }
+      .del-col { justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>习乐 (Xiyue) v0.2.0 全量审计报告 · 横向评审板</h1>
+        <div class="subtitle">3 个用户视角 · 66 条审计项 · 自动保存 · 可导出 Markdown / JSON</div>
+      </div>
+      <div class="toolbar">
+        <input class="search" id="search" placeholder="搜索编号、标题或关键词…" />
+        <button class="btn" onclick="openExport()">导出报告</button>
+        <button class="btn danger" onclick="resetBoard()">重置看板</button>
+      </div>
+    </header>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="filters" id="filters">
+      <div class="chip active" data-filter="all" onclick="setFilter('all')">全部</div>
+      <div class="chip" data-filter="novice" onclick="setFilter('novice')">新手视角</div>
+      <div class="chip" data-filter="advanced" onclick="setFilter('advanced')">进阶视角</div>
+      <div class="chip" data-filter="tech" onclick="setFilter('tech')">技术视角</div>
+      <div class="chip" data-filter="critical" onclick="setFilter('critical')">仅看致命</div>
+      <div class="chip" data-filter="playback" onclick="setFilter('playback')">播放/音频</div>
+      <div class="chip" data-filter="ear" onclick="setFilter('ear')">听力训练</div>
+      <div class="chip" data-filter="ui" onclick="setFilter('ui')">UI/UX</div>
+      <div class="chip" data-filter="analytics" onclick="setFilter('analytics')">统计/持久化</div>
+    </div>
+
+    <div class="table-hd">
+      <div>编号 / 来源</div>
+      <div>问题描述</div>
+      <div>决策</div>
+      <div>补充意见</div>
+      <div></div>
+    </div>
+
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="modal-backdrop" id="exportModal">
+    <div class="modal">
+      <header>
+        <strong>导出审计报告</strong>
+        <div class="subtitle">复制或下载完整报告</div>
+      </header>
+      <div class="body">
+        <div class="toolbar" style="margin-bottom:10px">
+          <button class="btn primary" onclick="copyReport()">复制 Markdown</button>
+          <button class="btn" onclick="downloadReport('md')">下载 .md</button>
+          <button class="btn" onclick="downloadReport('json')">下载 .json</button>
+        </div>
+        <textarea class="textarea" id="reportText" readonly></textarea>
+      </div>
+      <div class="modal footer">
+        <button class="btn" onclick="closeExport()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'xiyue_audit_board_v2';
+    const ALL_ITEMS = [
+      { id:'N1', persona:'novice', severity:'critical', area:'ui', title:'播放一开始，曲库和根音选择器直接凭空消失', detail:'HomeScreen 在播放时隐藏 CompactLibrarySelector 和根音选择器。用户以为出 bug，无法热切换。', fix:'播放时不应隐藏核心控件，保留最小化指示器。' },
+      { id:'N2', persona:'novice', severity:'critical', area:'ear', title:'听力训练没有「重播」按钮，听不清只能干瞪眼', detail:'EarTrainingScreen 没有任何重播 UI。核心练耳功能残缺。', fix:'增加「再听一遍」按钮，重新调用 PracticePlaybackService.play。' },
+      { id:'N3', persona:'novice', severity:'critical', area:'ear', title:'每次进入听力训练页都会自动播放，公共场合直接社死', detail:'LaunchedEffect(Unit) 在 IDLE 时自动 StartSession。用户只是想看看界面。', fix:'进入页面显示「开始训练」大按钮，不要自动播放。' },
+      { id:'N4', persona:'novice', severity:'warn', area:'ear', title:'切换听力训练模式会直接重置当前进度，没有任何确认', detail:'点击音阶/和弦 Chip 直接执行 stop→Reset→StartSession，做到一半的题全部清空。', fix:'进行中切换模式前弹确认对话框。' },
+      { id:'N5', persona:'novice', severity:'critical', area:'ear', title:'从听力训练页返回（或切 Tab）再回来，会强制重新开始', detail:'切出就 stop，回来 LaunchedEffect(Unit) 又 StartSession，连对记录清空。', fix:'判断会话未结束且非 FINISHED 时不重新 StartSession。' },
+      { id:'N6', persona:'novice', severity:'warn', area:'ui', title:'倒计时期间无法切 Tab，只能傻等或取消', detail:'CountdownBeep 是全局覆盖层，底部 Tab 被遮住，没有跳过按钮。', fix:'倒计时做成非模态，或允许跳过。' },
+      { id:'N7', persona:'novice', severity:'warn', area:'ui', title:'新手引导里的「上下滑动浏览曲库」是虚假宣传', detail:'HomeScreen 只处理了上滑，下滑无响应。', fix:'处理下滑关闭覆盖层，或修改引导文案。' },
+      { id:'N8', persona:'novice', severity:'critical', area:'playback', title:'音频轨道创建失败时完全静默，App 还在假装播放', detail:'ToneSynth createAudioTrack 返回 null 时只是 delay，没有任何错误提示。', fix:'抛出 PlaybackError，UI 显示音频初始化失败提示。' },
+      { id:'N9', persona:'novice', severity:'warn', area:'ui', title:'练习页左右滑动切歌时播放中没有任何视觉反馈', detail:'CompactLibrarySelector 播放时被隐藏，滑动后看不到高亮变化。', fix:'播放时保留最小化曲目指示器。' },
+      { id:'N10', persona:'novice', severity:'warn', area:'ui', title:'播放中无法收藏、查看详情或切换筛选条件', detail:'收藏按钮和详情入口在播放时被隐藏。', fix:'把收藏和详情入口嵌入始终可见区域。' },
+      { id:'N11', persona:'novice', severity:'info', area:'ear', title:'听力训练在播放阶段完全看不到答案选项', detail:'PLAYING 阶段只显示大耳机图标，ANSWERING 才出现选项。', fix:'答案选项以禁用状态展示，让用户提前浏览。' },
+      { id:'N12', persona:'novice', severity:'warn', area:'ear', title:'从听力训练页点返回会先触发「播放结束」导致状态错乱', detail:'返回按钮先 stop，LaunchedEffect 监听到变化触发 PlaybackFinished。', fix:'标记「用户主动离开」标志，忽略这次 stop。' },
+      { id:'N13', persona:'novice', severity:'warn', area:'playback', title:'Resume 播放时总是倒退一步，听力训练重听上一题', detail:'PracticePlaybackService resume 使用 startStepIndex = stepIndex - 1。', fix:'听力训练模式应从当前 step 继续，不倒退。' },
+      { id:'N14', persona:'novice', severity:'warn', area:'analytics', title:'设置页的统计数据是「死」的，没有刷新机制', detail:'analyticsSummary 是静态快照，练了一下午数字还是昨天的。', fix:'进入设置页时触发刷新并显示更新时间。' },
+      { id:'N15', persona:'novice', severity:'info', area:'ui', title:'新手引导不能回看上一页，手滑了就永远错过了', detail:'OnboardingScreen 只有「下一步」，没有「上一步」。', fix:'在第 2-4 页增加「上一步」按钮。' },
+      { id:'N16', persona:'novice', severity:'warn', area:'ear', title:'听力训练的音色、速度、八度全部锁死，没有任何自定义', detail:'PlaybackRequest 中 BPM/音色/八度全部硬编码。', fix:'提供 BPM 滑块和音色选择器。' },
+      { id:'N17', persona:'novice', severity:'warn', area:'playback', title:'切到收藏或设置 Tab 时练习页播放会被粗暴掐断', detail:'XiyueApp 切出 EarTraining 就 stop，但 Practice 播放同样被影响。', fix:'Pause 而非 Stop，或仅在明确停止时打断。' },
+      { id:'A1', persona:'advanced', severity:'warn', area:'ear', title:'根音完全随机，难度波动如同抽签', detail:'PitchClass.entries.random() 让每题根音纯随机，无法建立稳定色彩记忆。', fix:'增加固定根音模式和逐步升级根音范围。' },
+      { id:'A2', persona:'advanced', severity:'warn', area:'ear', title:'干扰项从全题库随机抽取，缺乏邻近干扰设计', detail:'干扰项可能是 Blues Scale、Pentatonic，用户可通过根音熟悉度猜答案。', fix:'按音阶/和弦亲缘关系分组，干扰项从近亲中抽取。' },
+      { id:'A3', persona:'advanced', severity:'critical', area:'ear', title:'音阶/和弦模式切换会清空全部 session 数据', detail:'Reset → StartSession 导致 correctCount/streak/roundCount 全部归零。', fix:'为两种模式分别维护 stats 或持久化当前 session。' },
+      { id:'A4', persona:'advanced', severity:'warn', area:'ear', title:'没有难度分级与题库筛选机制', detail:'只按 scale:/chord: 过滤，无法选仅三和弦或仅自然大调。', fix:'为 PracticeLibraryItem 标注 difficulty tag 并提供筛选器。' },
+      { id:'A5', persona:'advanced', severity:'critical', area:'ear', title:'听力训练页面没有任何重播按钮', detail:'没听清或被通知打断后完全无法重听当前题目。', fix:'PLAYING/ANSWERING 阶段均提供 Replay 按钮。' },
+      { id:'A6', persona:'advanced', severity:'warn', area:'ear', title:'听力训练的播放参数完全不可调', detail:'BPM 锁死 96、八度锁死 4、音色锁死 WARM_PRACTICE。', fix:'加入 BPM/Octave/Tone/Loop 控制器。' },
+      { id:'A7', persona:'advanced', severity:'critical', area:'playback', title:'Tab 切换的播放停止逻辑完全颠倒', detail:'Practice 标签播放时 Service 被 stop；EarTraining 时 Home 页示范音仍在响。', fix:'改为 Practice 页独占播放，或统一 stop 规则。' },
+      { id:'A8', persona:'advanced', severity:'warn', area:'playback', title:'Resume 播放有硬编码 1 秒延迟，完全打乱节拍感', detail:'delay(1000) 后 resume，用户无法预判进拍。', fix:'移除固定延迟，或改为 BPM 同步的预备拍。' },
+      { id:'A9', persona:'advanced', severity:'critical', area:'playback', title:'seekToStep 不校验当前位置，重复点击会导致音频卡顿/重叠', detail:'playbackJob?.cancel() 不等待结束就启动新协程，快速双击会重叠播放。', fix:'增加短路保护并使用 cancelAndJoin。' },
+      { id:'A10', persona:'advanced', severity:'critical', area:'playback', title:'AAudio 低延迟路径存在写-停竞争条件', detail:'tryAaudioPath 在 durationMs 后 stop，可能截断第二个 step 的写入。', fix:'AAudio stream 应保持 start，通过 ring buffer 连续写入。' },
+      { id:'A11', persona:'advanced', severity:'warn', area:'playback', title:'MAX_CONCURRENT_TRACKS = 4 会在和弦长音时截断 sustain', detail:'尾音较长的音色叠加时，旧 track 被强制释放，尾音被咔嚓截断。', fix:'提高并发上限或采用统一混音 buffer 架构。' },
+      { id:'A12', persona:'advanced', severity:'warn', area:'playback', title:'倒计时 beep 不走 AAudio 快速路径，首次发音可能延迟', detail:'playTone 直接 new AudioTrack，没有尝试 AAudio。', fix:'让 playTone 复用 tryAaudioPath 或预初始化低延迟 AudioTrack。' },
+      { id:'A13', persona:'advanced', severity:'warn', area:'ui', title:'黑键位置使用硬编码百分比，未考虑白键间距，导致错位', detail:'blackKeyOffsets 是 maxWidth 比例，没有减去 2.dp 的 gap。', fix:'基于白键实际宽度动态计算黑键偏移。' },
+      { id:'A14', persona:'advanced', severity:'warn', area:'ui', title:'琴键预览仅显示一个八度，无法满足音阶/琶音指法练习', detail:'仅渲染 7 白键+5 黑键，跨八度拇指穿指看不到。', fix:'默认显示 2 个八度并支持横向滚动。' },
+      { id:'A15', persona:'advanced', severity:'info', area:'ui', title:'黑键指法标注放在右上角，容易被截断且不符合惯例', detail:'黑键只有 22.dp，TopEnd 会贴边；标准教材统一放左上。', fix:'白键与黑键统一使用 TopStart。' },
+      { id:'A16', persona:'advanced', severity:'critical', area:'analytics', title:'24 小时进度过期机制让隔夜练习直接清零', detail:'晚上练到第 7 小节，第二天早上超过 24h 进度丢失。', fix:'取消 24h 限制，永远保留最近一次 step。' },
+      { id:'A17', persona:'advanced', severity:'critical', area:'analytics', title:'pendingResumeStepIndex 存在 race condition，恢复位置可能一次性丢失', detail:'Service 尚未初始化 stepCount=0 时恢复索引被永久清除。', fix:'只在成功 seek 后才置 null，增加等待机制。' },
+      { id:'A18', persona:'advanced', severity:'warn', area:'playback', title:'听力训练音色完全锁死，用户无法验证音色切换是否有区别', detail:'EarTraining 里强制 WARM_PRACTICE，无法通过不同音色强化相对音感。', fix:'读取 Home 页当前 tonePreset 或在 EarTraining 内提供选择。' },
+      { id:'A19', persona:'advanced', severity:'warn', area:'analytics', title:'练习时长只记整分钟，不足 1 分钟完全丢弃', detail:'听力训练 10 题通常 30-50 秒，durationMin=0 导致努力被抹除。', fix:'以秒为单位累加，界面显示分+秒。' },
+      { id:'A20', persona:'advanced', severity:'warn', area:'analytics', title:'暂停后恢复会被记为全新 session，导致 session 数虚高', detail:'paused→playing 每次都触发 recordPracticeStart。', fix:'引入 session timeout（5 分钟内恢复视为同一 session）。' },
+      { id:'A21', persona:'advanced', severity:'warn', area:'analytics', title:'听力正确率只有全局累计，没有分类/分项目追踪', detail:'仅 total_questions/total_correct，看不到音阶 vs 和弦的分别薄弱点。', fix:'按 category+mode 拆分统计，在 Settings 展示分类正确率。' },
+      { id:'A22', persona:'advanced', severity:'critical', area:'playback', title:'练习结束到答题的状态切换依赖 Flow 的 race condition', detail:'wasPlaying && !isPlaying 可能因 Flow 背压丢失，永远卡在 PLAYING。', fix:'在 PlaybackRunner 播放完毕处显式发送 playback completed 事件。' },
+      { id:'A23', persona:'advanced', severity:'warn', area:'ui', title:'PlaybackControlsSection 播放时隐藏所有可调参数', detail:'isPlaying 时 BPM/音色/八度等全部替换成只读 StatusPill。', fix:'播放时仍显示控制项，实时生效或标记下次生效。' },
+      { id:'A24', persona:'advanced', severity:'critical', area:'ui', title:'播放按钮的 isPlaying 状态通过字符串匹配来判断', detail:'state.playButtonLabel.contains("暂停") 是反模式，国际化或改文案会错乱。', fix:'PlaybackControlUiState 直接暴露 isPlaying: Boolean。' },
+      { id:'T1', persona:'tech', severity:'critical', area:'ear', title:'切换底部 Tab 会丢失整个训练进度', detail:'EarTrainingState 是普通 remember，LaunchedEffect(Unit) 每次进入都会 StartSession。', fix:'使用 rememberSaveable 或提升到 ViewModel。' },
+      { id:'T2', persona:'tech', severity:'critical', area:'ear', title:'wasPlaying 逻辑漏判 Pause→Stop 过渡', detail:'Effect key 只有 isPlaying，但内部读取 isPaused；Playing→Paused→Stopped 时 PlaybackFinished 永不派发。', fix:'key 改为 playbackSnapshot 整体，或 Service 直接派发完成事件。' },
+      { id:'T3', persona:'tech', severity:'critical', area:'ear', title:'配置变更后 wasPlaying 重置导致 PlaybackFinished 永远丢失', detail:'屏幕旋转后 remember 丢失，wasPlaying 恢复 false，条件不满足。', fix:'使用 rememberSaveable 保存 wasPlaying。' },
+      { id:'T4', persona:'tech', severity:'critical', area:'playback', title:'从 PRACTICE 切到 EAR_TRAINING 时音频被排队而非立即播放', detail:'MainScreen 只处理离开 EAR_TRAINING 时 stop；Practice 播放中切到 EarTraining 会听到旧音频。', fix:'EarTraining 启动前显式 stop 或强制打断。' },
+      { id:'T5', persona:'tech', severity:'critical', area:'ear', title:'EarTraining 答题后未停止音频，下一题可能提前结束', detail:'SelectAnswer 不改变 stage 为 RESULT 时未 stop；上一题音频结束会派发 PlaybackFinished 给新题。', fix:'SelectAnswer/NextQuestion 必须显式 stop。' },
+      { id:'T6', persona:'tech', severity:'warn', area:'ui', title:'配置变更后 selectedTab 重置回 PRACTICE', detail:'selectedTab 是普通 remember，旋转屏幕后恢复 PRACTICE。', fix:'改为 rememberSaveable 或持久化到 Repository。' },
+      { id:'T7', persona:'tech', severity:'critical', area:'analytics', title:'每一步播放时都写 SharedPreferences 导致主线程卡顿', detail:'playbackSnapshot.stepIndex 是 LaunchedEffect key，播放中每秒多次 apply()。', fix:'持久化下沉到 Service 或 UI 层做 500ms~1s 节流。' },
+      { id:'T8', persona:'tech', severity:'critical', area:'analytics', title:'配置变更后 pendingResumeStepIndex 导致播放跳回旧 Step', detail:'旋转屏幕时 Service 可能已播到 step 8，但恢复逻辑 seek 回 step 5。', fix:'仅在非配置变更/非播放中执行 resume seek。' },
+      { id:'T9', persona:'tech', severity:'warn', area:'analytics', title:'配置变更导致 recordPracticeStart 被重复调用', detail:'wasPlaybackPlaying 是普通 remember，旋转后重置为 false，再次触发 start。', fix:'提升到 ViewModel 或使用 Service 生命周期记录。' },
+      { id:'T10', persona:'tech', severity:'critical', area:'analytics', title:'进程被杀死时练习时长完全丢失，且短练习被忽略', detail:'recordPracticeStop 只在 UI LaunchedEffect 调用；进程杀死时永远不会调用。', fix:'将 startMs 清除下沉到 Service.onDestroy 或 ProcessLifecycleOwner。' },
+      { id:'T11', persona:'tech', severity:'warn', area:'analytics', title:'后台通过通知恢复播放时 analytics 可能漏记', detail:'XiyueApp Composable 可能尚未进入组合，LaunchedEffect 不触发。', fix:'Analytics 下沉到 PracticePlaybackService 内部。' },
+      { id:'T12', persona:'tech', severity:'critical', area:'playback', title:'AaudioPlayer 构造函数在库加载失败时会抛出异常，没有优雅回退', detail:'System.loadLibrary 异常被吞，但 init 调用 nativeCreate 会抛 UnsatisfiedLinkError，协程崩溃。', fix:'init 中 try/catch nativeCreate，失败置 nativeHandle=0。' },
+      { id:'T13', persona:'tech', severity:'critical', area:'playback', title:'AAudio 路径提前 stop，截断释放尾音', detail:'tryAaudioPath 在 durationMs 后 stop，而 AudioTrack 路径等待 renderDurationMs。', fix:'AAudio delay 使用 renderDurationMs + RELEASE_MARGIN_MS。' },
+      { id:'T14', persona:'tech', severity:'critical', area:'playback', title:'ToneSynth 的 aaudioPlayer 实例从未 release', detail:'stop() 只调 AaudioPlayer.stop()，从未 release()，导致原生资源泄漏。', fix:'ToneSynth 提供 release() 并在 Service.onDestroy 调用。' },
+      { id:'T15', persona:'tech', severity:'warn', area:'playback', title:'ToneSynth 的 releaseScope 协程作用域永不取消', detail:'没有任何 cancel() 调用，大量播放产生大量悬挂协程。', fix:'stop()/release() 中调用 releaseScope.cancel()。' },
+      { id:'T16', persona:'tech', severity:'critical', area:'playback', title:'playTone 创建 AudioTrack 时缺少 try-catch', detail:'内存不足或采样率不支持时直接抛异常，可能导致崩溃。', fix:'包裹 try/catch，失败时降级。' },
+      { id:'T17', persona:'tech', severity:'critical', area:'playback', title:'PracticePlaybackService 解析 Intent 时 PitchClass.valueOf 未做防护', detail:'其他枚举都有 runCatching，唯独 PitchClass 直接 valueOf，传错值会 crash Foreground Service。', fix:'使用 runCatching { PitchClass.valueOf(root) }.getOrNull() ?: PitchClass.C。' },
+      { id:'T18', persona:'tech', severity:'warn', area:'playback', title:'START_STICKY 导致 Service 空转耗电', detail:'进程被杀后以 null intent 重启，onStartCommand 不做任何事，空挂后台。', fix:'正常播放返回 START_NOT_STICKY；null intent 时 stopSelf。' },
+      { id:'T19', persona:'tech', severity:'warn', area:'playback', title:'resumePlayback 的 1 秒延迟与 stopPlayback 存在竞态', detail:'stopPlayback 只取消 playbackJob，不取消 serviceScope 内 delay 协程，1 秒后 handlePlay 又意外拉起音频。', fix:'将 delay 协程保存为 Job 变量并在 stop 中 cancel。' },
+      { id:'T20', persona:'tech', severity:'critical', area:'ear', title:'EarTraining 题库不足 4 条时用户永久卡在 PLAYING 阶段', detail:'pool.size<4 时只设 message，stage 仍是 PLAYING，不会触发播放也不会触发 Finished。', fix:'题库不足时将 stage 设为 FINISHED 或 IDLE，并给出可操作提示。' },
+      { id:'T21', persona:'tech', severity:'info', area:'build', title:'build.gradle.kts 硬编码 CMake 版本导致构建脆弱', detail:'version = "3.22.1" 在 CI/其他机器版本不同时会报错。', fix:'移除 version 声明让 AGP 自动选择。' },
+      { id:'T22', persona:'tech', severity:'warn', area:'build', title:'abiFilters 缺失 x86/x86_64 导致模拟器无法运行 AAudio', detail:'大量 Android 模拟器使用 x86_64，so 不会被打包。', fix:'增加 x86_64 到 abiFilters。' },
+      { id:'T23', persona:'tech', severity:'info', area:'build', title:'applicationVariants.all 使用内部已废弃 API', detail:'ApkVariantOutputImpl 在 AGP 8.0+ 可能编译报错。', fix:'改用 androidComponents.onVariants。' },
+      { id:'T24', persona:'tech', severity:'warn', area:'ear', title:'EarTrainingReducer 存在重复 ID 时可能生成不足 4 个选项', detail:'仅检查 pool.size<4，没去重；重复 id 会导致选项只有 2-3 项。', fix:'使用 pool.distinctBy { it.id } 预处理。' },
+      { id:'T25', persona:'tech', severity:'warn', area:'ui', title:'OnboardingScreen 完成后 MainScreen 的 remember 状态全部重置', detail:'MainScreen 第一次进入组合，内部 remember 状态使用初始值。', fix:'将 selectedTab 提升并持久化，或使用 rememberSaveable。' }
+    ];
+
+    let stateData = loadState();
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      const defaultMap = {};
+      ALL_ITEMS.forEach(it => {
+        defaultMap[it.id] = { decision: (it.severity==='critical'||it.severity==='warn') ? 'now' : 'later', note: '' };
+      });
+      return defaultMap;
+    }
+
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(stateData)); }
+
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('#filters .chip').forEach(el => el.classList.toggle('active', el.dataset.filter === f));
+      render();
+    }
+
+    function matchesFilter(item) {
+      if (currentFilter === 'all') return true;
+      if (currentFilter === 'critical') return item.severity === 'critical';
+      if (currentFilter === 'playback') return item.area === 'playback';
+      if (currentFilter === 'ear') return item.area === 'ear';
+      if (currentFilter === 'ui') return item.area === 'ui';
+      if (currentFilter === 'analytics') return item.area === 'analytics';
+      return item.persona === currentFilter;
+    }
+
+    function matchesSearch(item) {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return item.id.toLowerCase().includes(q) || item.title.toLowerCase().includes(q) || item.detail.toLowerCase().includes(q) || (stateData[item.id]?.note||'').toLowerCase().includes(q);
+    }
+
+    function setDecision(id, d) {
+      if (!stateData[id]) stateData[id] = { decision: 'later', note: '' };
+      stateData[id].decision = d;
+      saveState();
+      render();
+    }
+
+    function setNote(id, val) {
+      if (!stateData[id]) stateData[id] = { decision: 'later', note: '' };
+      stateData[id].note = val;
+      saveState();
+    }
+
+    function render() {
+      const list = document.getElementById('list');
+      const items = ALL_ITEMS.filter(it => matchesFilter(it) && matchesSearch(it));
+
+      let html = '';
+      if (!items.length) {
+        html = '<div class="empty-state">没有匹配项</div>';
+      } else {
+        items.forEach(it => {
+          const st = stateData[it.id] || { decision: 'later', note: '' };
+          const sevClass = it.severity==='critical'?'crit':(it.severity==='warn'?'warn':'info');
+          const personaLabel = it.persona==='novice'?'新手':(it.persona==='advanced'?'进阶':'技术');
+          const rowClass = st.decision==='now'?'now':(st.decision==='never'?'never':'later');
+          html += `
+            <div class="row ${rowClass}">
+              <div class="id-col">
+                <div class="id">${it.id}</div>
+                <div class="tag ${sevClass}">${it.severity==='critical'?'致命':(it.severity==='warn'?'严重':'建议')}</div>
+                <div class="tag">${personaLabel}</div>
+              </div>
+              <div class="content-col">
+                <div class="title">${escapeHtml(it.title)}</div>
+                <div class="detail">${escapeHtml(it.detail)}</div>
+                <div class="fix">修复：${escapeHtml(it.fix)}</div>
+              </div>
+              <div class="actions-col">
+                <button class="act-btn ${st.decision==='now'?'active-now':''}" onclick="setDecision('${it.id}','now')">立刻做</button>
+                <button class="act-btn ${st.decision==='later'?'active-later':''}" onclick="setDecision('${it.id}','later')">之后做</button>
+                <button class="act-btn ${st.decision==='never'?'active-never':''}" onclick="setDecision('${it.id}','never')">不要做</button>
+              </div>
+              <div class="note-col">
+                <textarea class="note" placeholder="输入补充意见…" oninput="setNote('${it.id}', this.value)">${escapeHtml(st.note)}</textarea>
+              </div>
+              <div class="del-col">
+                <span class="del" onclick="clearItem('${it.id}')" title="清空决策与备注">×</span>
+              </div>
+            </div>
+          `;
+        });
+      }
+      list.innerHTML = html;
+
+      const counts = { now:0, later:0, never:0, total:0 };
+      ALL_ITEMS.forEach(it => {
+        if (matchesFilter(it) && matchesSearch(it)) {
+          const d = (stateData[it.id]?.decision) || 'later';
+          counts[d]++;
+          counts.total++;
+        }
+      });
+      document.getElementById('stats').innerHTML = `
+        <div class="stat"><div class="n" style="color:var(--danger)">${counts.now}</div><div class="label">立刻做</div></div>
+        <div class="stat"><div class="n" style="color:var(--accent-2)">${counts.later}</div><div class="label">之后做</div></div>
+        <div class="stat"><div class="n" style="color:var(--text-2)">${counts.never}</div><div class="label">不要做</div></div>
+        <div class="stat"><div class="n" style="color:var(--accent)">${counts.total}</div><div class="label">当前筛选总数</div></div>
+      `;
+    }
+
+    function escapeHtml(t) {
+      return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    function clearItem(id) {
+      stateData[id] = { decision: 'later', note: '' };
+      saveState();
+      render();
+    }
+
+    function resetBoard() {
+      if (!confirm('确定重置所有决策和备注吗？')) return;
+      const defaultMap = {};
+      ALL_ITEMS.forEach(it => {
+        defaultMap[it.id] = { decision: (it.severity==='critical'||it.severity==='warn') ? 'now' : 'later', note: '' };
+      });
+      stateData = defaultMap;
+      saveState();
+      render();
+    }
+
+    document.getElementById('search').addEventListener('input', e => { searchQuery = e.target.value; render(); });
+
+    function openExport() {
+      document.getElementById('reportText').value = generateMarkdown();
+      document.getElementById('exportModal').classList.add('open');
+    }
+    function closeExport() { document.getElementById('exportModal').classList.remove('open'); }
+
+    function generateMarkdown() {
+      const now = new Date().toLocaleString('zh-CN');
+      let md = `# 习乐 (Xiyue) v0.2.0 全量审计报告\n\n生成时间：${now}\n\n`;
+      ['now','later','never'].forEach(col => {
+        const name = col==='now'?'立刻做':(col==='later'?'之后做':'不要做');
+        md += `## ${name}\n\n`;
+        const items = ALL_ITEMS.filter(it => (stateData[it.id]?.decision||'later')===col);
+        if (!items.length) md += '- 无\n\n';
+        items.forEach(it => {
+          const sev = it.severity==='critical'?'【致命】':(it.severity==='warn'?'【严重】':'【建议】');
+          const p = it.persona==='novice'?'新手':(it.persona==='advanced'?'进阶':'技术');
+          const note = (stateData[it.id]?.note||'').trim();
+          md += `- **${it.id}** ${sev}（${p}）${it.title}\n  - 问题：${it.detail}\n  - 修复方向：${it.fix}` + (note ? `\n  - 补充意见：${note}` : '') + `\n\n`;
+        });
+      });
+      return md;
+    }
+
+    function generateJSON() {
+      const cols = { now:[], later:[], never:[] };
+      ALL_ITEMS.forEach(it => {
+        const col = stateData[it.id]?.decision || 'later';
+        cols[col].push({ id: it.id, persona: it.persona, severity: it.severity, area: it.area, title: it.title, detail: it.detail, fix: it.fix, note: stateData[it.id]?.note||'' });
+      });
+      return JSON.stringify({ generatedAt: new Date().toISOString(), columns: cols }, null, 2);
+    }
+
+    function copyReport() {
+      const el = document.getElementById('reportText');
+      el.select();
+      document.execCommand('copy');
+      alert('已复制到剪贴板');
+    }
+
+    function downloadReport(ext) {
+      const blob = new Blob([ext==='json'?generateJSON():generateMarkdown()], { type: ext==='json'?'application/json':'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `xiyue-audit-report.${ext}`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    window.onclick = function(e) { if (e.target.id === 'exportModal') closeExport(); };
+
+    render();
+  </script>
+</body>
+</html>

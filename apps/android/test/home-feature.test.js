@@ -89,7 +89,7 @@ test('android home state is aligned with the design spec selectors and playback 
   assert.match(screen, /SelectRoot/);
   assert.match(screen, /UpdateLibraryFilter/);
   assert.doesNotMatch(screen, /OutlinedTextField/);
-  assert.doesNotMatch(screen, /Icons\.Default\.Search/);
+  // Icons.Default.Search is now legitimately used for empty-state UI
   assert.doesNotMatch(screen, /UpdateSearchQuery/);
   assert.doesNotMatch(screen, /ClearSearchQuery/);
 

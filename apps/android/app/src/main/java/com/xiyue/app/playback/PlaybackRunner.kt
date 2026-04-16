@@ -37,6 +37,26 @@ internal class PlaybackRunner(
         val loopStartTimeMs = System.currentTimeMillis()
 
         while (true) {
+            // Resume highlight: flash current step for 1s when resuming from pause or switching mid-playback
+            if (resumeStepIndex > 0 && resumeStepIndex < activePlan.steps.size) {
+                val resumeStep = activePlan.steps[resumeStepIndex]
+                val resumeSnapshot = createSnapshot(
+                    activeRequest,
+                    activePlan,
+                    true,
+                    false,
+                    "恢复中 · ${resumeStep.label}",
+                    resumeStepIndex + 1,
+                    resumeStep.activePitchClasses.toSet(),
+                    resumeStep.activeNoteLabels,
+                    null,
+                    null,
+                )
+                val highlightSnapshot = resumeSnapshot.copy(resumeHighlight = true)
+                snapshotPublisher(highlightSnapshot, false)
+                kotlinx.coroutines.delay(1000)
+            }
+
             var switchApplied = false
             for ((stepIndex, step) in activePlan.steps.withIndex().drop(resumeStepIndex)) {
                 kotlinx.coroutines.currentCoroutineContext().ensureActive()
@@ -91,7 +111,8 @@ internal class PlaybackRunner(
             }
 
             if (switchApplied) {
-                resumeStepIndex = 0
+                // resumeStepIndex is already set to the current step index inside the loop
+                // so the new plan continues from the same position instead of restarting.
                 continue
             }
             if (!activeRequest.loopEnabled) break

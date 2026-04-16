@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xiyue 项目驾驶舱</title>
+  <style>
+    :root {
+      --bg-primary: #0B0C15;
+      --bg-secondary: #0F111A;
+      --bg-card: rgba(16, 18, 28, 0.92);
+      --bg-glass: rgba(20, 22, 35, 0.65);
+      --border-glass: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.14);
+      --text-primary: #F0F2F5;
+      --text-secondary: #A3ADC2;
+      --text-tertiary: #5D657A;
+      --accent-cyan: #00D4AA;
+      --accent-blue: #3B82F6;
+      --accent-purple: #8B5CF6;
+      --accent-orange: #F59E0B;
+      --accent-red: #EF4444;
+      --accent-pink: #EC4899;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.55);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59, 130, 246, 0.10), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(139, 92, 246, 0.06), transparent),
+        var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 32px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(11, 12, 21, 0.80);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(139,92,246,0.25)); border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    .header-brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .version-badge { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); padding: 5px 12px; background: rgba(255,255,255,0.04); border-radius: 999px; border: 1px solid var(--border-glass); }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+
+    .status-pill { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); padding: 8px 14px; background: rgba(255,255,255,0.03); border-radius: 999px; border: 1px solid var(--border-glass); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; position: relative; }
+    .status-dot.online { background: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 212, 170, 0.55); }
+    .status-dot.online::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(0, 212, 170, 0.3); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.8); opacity: 0; } }
+    .status-dot.offline { background: var(--accent-red); }
+    .status-dot.warning { background: var(--accent-orange); }
+
+    .btn-header { padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition); }
+    .btn-header:hover { background: rgba(255,255,255,0.10); border-color: var(--border-hover); transform: translateY(-1px); }
+    .btn-header.primary { background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(139,92,246,0.85)); border-color: transparent; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25); }
+
+    /* KPI Bar */
+    .kpi-bar { padding: 22px 32px 0; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    @media (max-width: 900px) { .kpi-bar { grid-template-columns: repeat(2, 1fr); padding: 18px 20px 0; } }
+    @media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } }
+    .kpi-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 18px 20px; display: flex; align-items: center; gap: 14px; transition: var(--transition); }
+    .kpi-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
+    .kpi-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); }
+    .kpi-main { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .kpi-label { font-size: 0.85rem; color: var(--text-secondary); }
+
+    /* Main Layout */
+    .main-wrap { padding: 24px 32px 32px; max-width: 1600px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+    @media (max-width: 1100px) { .main-wrap { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .main-wrap { padding: 18px 20px 24px; } }
+
+    .col-left, .col-right { display: flex; flex-direction: column; gap: 24px; }
+
+    /* Panel */
+    .panel { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 26px 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; position: relative; overflow: hidden; transition: var(--transition); }
+    .panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.8; transition: opacity 0.3s; }
+    .panel:hover { border-color: var(--border-hover); }
+    .panel:hover::before { opacity: 1; }
+    .panel-cyan::before { background: linear-gradient(90deg, var(--accent-cyan), transparent); }
+    .panel-purple::before { background: linear-gradient(90deg, var(--accent-purple), transparent); }
+    .panel-blue::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+    .panel-green::before { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); }
+    .panel-orange::before { background: linear-gradient(90deg, var(--accent-orange), var(--accent-pink)); }
+    .panel-red::before { background: linear-gradient(90deg, var(--accent-red), var(--accent-orange)); }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .panel-title { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+    .panel-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); }
+    .panel-body { flex: 1; position: relative; }
+    .panel-footer { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-glass); font-size: 0.8rem; color: var(--text-tertiary); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Skeleton */
+    .skeleton-box { background: rgba(255,255,255,0.04); border-radius: 8px; position: relative; overflow: hidden; }
+    .skeleton-box::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); transform: translateX(-100%); animation: shimmer 1.6s infinite; }
+    @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    /* Focus Panel */
+    .focus-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-cyan); background: rgba(0, 212, 170, 0.08); padding: 5px 10px; border-radius: 6px; margin-bottom: 10px; }
+    .focus-title { font-size: 1.55rem; font-weight: 700; line-height: 1.35; color: var(--text-primary); margin-bottom: 20px; }
+    .focus-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 640px) { .focus-grid { grid-template-columns: 1fr; } }
+    .focus-tile { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 18px; }
+    .focus-tile-full { grid-column: 1 / -1; }
+    .focus-tile-title { font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .focus-tile-body { font-size: 1rem; color: var(--text-primary); line-height: 1.6; }
+    .focus-step { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-glass); font-size: 0.96rem; }
+    .focus-step:last-child { border-bottom: none; padding-bottom: 0; }
+    .focus-step-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(0, 212, 170, 0.12); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .focus-done { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--text-secondary); padding: 5px 0; }
+    .focus-done::before { content: '✓'; color: var(--accent-cyan); font-weight: 700; }
+    .focus-file { font-size: 0.92rem; color: var(--text-secondary); padding: 4px 0; font-family: 'SF Mono', monospace; }
+    .focus-file::before { content: '›'; color: var(--accent-purple); margin-right: 8px; font-weight: 700; }
+    .focus-blocker-box { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-sm); padding: 14px; display: flex; gap: 10px; align-items: flex-start; }
+    .focus-blocker-icon { width: 28px; height: 28px; border-radius: 7px; background: rgba(239, 68, 68, 0.15); color: #fca5a5; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+
+    /* Progress Bar */
+    .progress-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; position: relative; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+    .progress-fill::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 30px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); animation: barShimmer 2s infinite; }
+    @keyframes barShimmer { 0% { transform: translateX(0); } 100% { transform: translateX(200px); } }
+    .progress-gradient-blue { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+    .progress-gradient-green { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); }
+    .progress-gradient-orange { background: linear-gradient(90deg, var(--accent-orange), var(--accent-pink)); }
+
+    /* Plan Cards */
+    .plans-stack { display: flex; flex-direction: column; gap: 14px; }
+    .plan-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 20px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; }
+    .plan-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(139, 92, 246, 0.35); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .plan-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent-purple), var(--accent-blue)); opacity: 0; transition: opacity 0.3s; }
+    .plan-card:hover::before { opacity: 1; }
+    .plan-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .plan-title { font-size: 1.05rem; font-weight: 600; line-height: 1.4; padding-right: 12px; }
+    .plan-progress-text { font-size: 0.9rem; font-weight: 700; color: var(--accent-purple); white-space: nowrap; }
+    .plan-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-tertiary); }
+
+    .tag { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; }
+    .tag-pending { background: rgba(245, 158, 11, 0.1); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.15); }
+    .tag-done { background: rgba(0, 212, 170, 0.1); color: #5eead4; border: 1px solid rgba(0, 212, 170, 0.15); }
+
+    /* Todo */
+    .todo-summary { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .todo-summary-text { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+    .todo-list { display: flex; flex-direction: column; gap: 2px; }
+    .todo-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 0.95rem; transition: background 0.2s; }
+    .todo-item:hover { background: rgba(255,255,255,0.03); }
+    .todo-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border-hover); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; transition: var(--transition); }
+    .todo-check.done { background: var(--accent-cyan); border-color: var(--accent-cyan); color: #000; font-weight: 700; }
+    .todo-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .todo-text.done { text-decoration: line-through; color: var(--text-tertiary); }
+
+    /* Actions */
+    .actions-stack { display: flex; flex-direction: column; gap: 10px; }
+    .action-btn { padding: 14px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--text-primary); cursor: pointer; transition: var(--transition); font-size: 0.95rem; text-align: left; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+    .action-btn:hover { background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3); transform: translateX(4px); }
+    .action-btn:active { transform: scale(0.98); }
+    .action-btn.running { opacity: 0.6; cursor: wait; }
+    .action-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(245, 158, 11, 0.1); color: #fcd34d; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+
+    .output-box { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 16px; font-family: 'SF Mono', Monaco, monospace; font-size: 0.85rem; color: #cbd5e1; max-height: 220px; overflow: auto; margin-top: 14px; white-space: pre-wrap; display: none; line-height: 1.6; }
+    .output-box.active { display: block; }
+
+    /* Git */
+    .git-log { font-family: 'SF Mono', Monaco, monospace; font-size: 0.88rem; line-height: 2; }
+    .git-item { padding: 8px 10px; border-radius: 8px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.2s; }
+    .git-item:hover { background: rgba(255,255,255,0.03); }
+    .git-hash { color: var(--text-tertiary); font-size: 0.78rem; margin-right: 8px; font-family: monospace; }
+
+    .section-title-sm { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+    .section-title-sm::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-blue); }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-secondary); font-size: 0.95rem; }
+    .empty-state-icon { font-size: 2.2rem; margin-bottom: 12px; opacity: 0.5; }
+
+    /* Bottom Dock */
+    .dock-wrap { padding: 0 32px 32px; max-width: 1600px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    @media (max-width: 768px) { .dock-wrap { padding: 0 20px 24px; } }
+    .dock-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .dock-title { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+    .dock-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); font-size: 0.88rem; color: var(--text-primary); transition: var(--transition); }
+    .dock-pill:hover { background: rgba(255,255,255,0.08); border-color: var(--border-hover); }
+    .dock-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dock-btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); color: var(--text-primary); font-size: 0.9rem; cursor: pointer; transition: var(--transition); }
+    .dock-btn:hover { background: rgba(139, 92, 246, 0.12); border-color: rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
+    .dock-icon { width: 30px; height: 30px; border-radius: 8px; background: rgba(139, 92, 246, 0.1); color: #c4b5fd; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(139, 92, 246, 0.15); }
+
+    /* Overlays */
+    .overlay { position: fixed; inset: 0; background: rgba(11, 12, 21, 0.88); backdrop-filter: blur(10px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.25s ease; }
+    .overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .overlay-card { background: var(--bg-glass); backdrop-filter: blur(32px) saturate(180%); border: 1px solid var(--border-glass); border-radius: var(--radius); padding: 28px; max-width: 520px; width: 100%; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .detail-card { max-width: 920px; height: 85vh; max-height: 840px; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+    .detail-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 26px; border-bottom: 1px solid var(--border-glass); }
+    .detail-header h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+    .detail-close { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-glass); background: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 1.1rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+    .detail-close:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+    .detail-body { flex: 1; overflow: auto; padding: 26px; }
+    .detail-footer { padding: 16px 26px; border-top: 1px solid var(--border-glass); font-size: 0.8rem; color: var(--text-tertiary); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Markdown inside modal */
+    .md-content h1 { font-size: 1.7rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 14px; margin-bottom: 24px; background: linear-gradient(135deg,#fff,#a5b4fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .md-content h2 { font-size: 1.3rem; color: #c7d2fe; margin-top: 28px; margin-bottom: 14px; font-weight: 700; }
+    .md-content h3 { font-size: 1.1rem; color: #a5b4fc; margin-top: 20px; margin-bottom: 10px; font-weight: 600; }
+    .md-content p { margin-bottom: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .md-content code { background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px; font-family: 'SF Mono', Monaco, monospace; font-size: 0.88em; color: #fcd34d; }
+    .md-content pre { background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; overflow: auto; border: 1px solid var(--border-glass); margin-bottom: 18px; }
+    .md-content pre code { background: transparent; padding: 0; color: #86efac; }
+    .md-content ul, .md-content ol { padding-left: 22px; margin-bottom: 14px; }
+    .md-content li { margin-bottom: 8px; color: var(--text-secondary); }
+    .md-content a { color: #60a5fa; text-decoration: none; }
+    .md-content a:hover { text-decoration: underline; }
+    .md-content blockquote { border-left: 3px solid var(--accent-blue); padding-left: 16px; margin-left: 0; color: var(--text-secondary); margin-bottom: 14px; }
+    .md-content table { border-collapse: collapse; width: 100%; margin-bottom: 18px; }
+    .md-content th, .md-content td { border: 1px solid var(--border-glass); padding: 10px 14px; text-align: left; }
+    .md-content th { background: rgba(255,255,255,0.04); font-weight: 600; color: var(--text-primary); }
+    .md-content tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+    /* Plan markdown extras */
+    .plan-md h1 { font-size: 1.5rem; margin-bottom: 18px; }
+    .plan-md h2 { font-size: 1.15rem; margin-top: 22px; margin-bottom: 12px; color: #c7d2fe; }
+    .plan-md ul, .plan-md ol { padding-left: 0; list-style: none; margin-bottom: 12px; }
+    .plan-md li { margin-bottom: 6px; }
+    .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+    .task-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border-hover); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; flex-shrink: 0; margin-top: 3px; }
+    .task-item.done .task-check { background: var(--accent-cyan); border-color: var(--accent-cyan); color: #000; font-weight: 700; }
+    .task-item.done .task-check::before { content: '✓'; }
+    .task-text { flex: 1; font-size: 0.96rem; color: var(--text-primary); line-height: 1.55; }
+    .task-item.done .task-text { text-decoration: line-through; color: var(--text-secondary); }
+    .plan-md blockquote { background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; border-left: 3px solid var(--accent-blue); }
+    .plan-md p { margin-bottom: 10px; }
+
+    /* Drop zone */
+    .drop-zone { border: 2px dashed var(--border-glass); border-radius: var(--radius-sm); padding: 40px 24px; text-align: center; color: var(--text-secondary); transition: var(--transition); cursor: pointer; margin-bottom: 20px; background: rgba(255,255,255,0.02); }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.08); color: var(--text-primary); }
+
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { padding: 10px 18px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--border-glass); }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-brand">
+      <div class="logo">🎵</div>
+      <h1>Xiyue 项目驾驶舱</h1>
+      <span class="version-badge">v1.0</span>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill" id="connStatus">
+        <div class="status-dot offline" id="connDot"></div>
+        <span id="connText">离线模式</span>
+      </div>
+      <button class="btn-header" onclick="toggleOverlay('dataOverlay')">🔗 连接数据源</button>
+      <button class="btn-header primary" onclick="loadDemoData()">🎲 演示数据</button>
+    </div>
+  </header>
+
+  <!-- KPI Bar -->
+  <div class="kpi-bar" id="kpiBar">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(0,212,170,0.08);color:var(--accent-cyan)">●</div>
+      <div><div class="kpi-main" id="kpiStatus">--</div><div class="kpi-label">系统状态</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(139,92,246,0.08);color:#c4b5fd">📋</div>
+      <div><div class="kpi-main" id="kpiPlans">--</div><div class="kpi-label">活跃计划</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(245,158,11,0.08);color:#fcd34d">☑</div>
+      <div><div class="kpi-main" id="kpiTodos">--</div><div class="kpi-label">待办进度</div></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background:rgba(59,130,246,0.08);color:#60a5fa">🔄</div>
+      <div><div class="kpi-main" id="kpiGit">--</div><div class="kpi-label">最近提交</div></div>
+    </div>
+  </div>
+
+  <!-- Top Dock -->
+  <div class="dock-wrap" id="topDock" style="padding-top:18px;padding-bottom:0">
+    <div class="dock-row">
+      <div class="dock-title">模块健康度</div>
+      <div class="dock-pill"><span class="dock-dot" style="background:var(--accent-cyan)"></span>packages/music-core · 健康</div>
+      <div class="dock-pill"><span class="dock-dot" style="background:var(--accent-orange)"></span>apps/android · 待验证</div>
+      <div class="dock-pill"><span class="dock-dot" style="background:var(--accent-cyan)"></span>apps/html-sandbox · 健康</div>
+    </div>
+    <div class="dock-row">
+      <div class="dock-title">快速文档</div>
+      <button class="dock-btn" onclick="openDoc('../../AGENTS.md', 'AGENTS.md')">
+        <div class="dock-icon">AG</div><span>AGENTS.md</span>
+      </button>
+      <button class="dock-btn" onclick="openDoc('../../CONTRIBUTING.md', 'CONTRIBUTING.md')">
+        <div class="dock-icon">CO</div><span>CONTRIBUTING.md</span>
+      </button>
+      <button class="dock-btn" onclick="openDoc('../../COMPONENT_GUIDE.md', 'COMPONENT_GUIDE.md')">
+        <div class="dock-icon">CG</div><span>COMPONENT_GUIDE</span>
+      </button>
+      <button class="dock-btn" onclick="openDoc('../../ANIMATION_GUIDE.md', 'ANIMATION_GUIDE.md')">
+        <div class="dock-icon">AN</div><span>ANIMATION_GUIDE</span>
+      </button>
+      <button class="dock-btn" onclick="location.href='agents-explainer.html'">
+        <div class="dock-icon" style="background:rgba(34,197,94,0.1);color:#86efac;border-color:rgba(34,197,94,0.2)">🌐</div><span>AGENTS 设计解析</span>
+      </button>
+      <button class="dock-btn" onclick="location.href='dev-workflow-timeline.html'">
+        <div class="dock-icon" style="background:rgba(245,158,11,0.1);color:#fcd34d;border-color:rgba(245,158,11,0.2)">🌐</div><span>开发流程时间线</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Source Overlay -->
+  <div class="overlay" id="dataOverlay" onclick="if(event.target===this)toggleOverlay('dataOverlay')">
+    <div class="overlay-card">
+      <h2 style="margin-bottom:10px">连接项目数据源</h2>
+      <p style="color:var(--text-secondary);margin-bottom:24px">驾驶舱优先通过后端 API 自动读取项目文件。如果当前只有静态文件服务，可通过拖拽手动导入数据。</p>
+      <div class="drop-zone" id="dropZone">
+        <div style="font-size:1.5rem;margin-bottom:8px">📁</div>
+        <div style="font-weight:500">拖拽文件到此处</div>
+        <div style="font-size:0.85rem;margin-top:6px;opacity:0.7">支持 session-progress.md / plan-*.md / todos-improvements.json</div>
+      </div>
+      <input type="file" id="fileInput" multiple style="display:none" accept=".md,.json">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="tryAutoConnect()">🔄 尝试自动连接</button>
+        <button class="btn btn-secondary" onclick="loadDemoData()">🎲 加载演示</button>
+        <button class="btn btn-secondary" onclick="toggleOverlay('dataOverlay')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+    <div class="overlay-card detail-card">
+      <div class="detail-header">
+        <h2 id="detailTitle">详情</h2>
+        <button class="detail-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="detail-body md-content" id="detailBody"></div>
+      <div class="detail-footer" id="detailFooter"></div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-wrap">
+    <!-- Left Column -->
+    <div class="col-left">
+      <!-- Focus -->
+      <div class="panel panel-cyan">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">📝</div>当前进度</div>
+        </div>
+        <div class="panel-body" id="focusPanel">
+          <div class="skeleton-stack" style="display:flex;flex-direction:column;gap:14px">
+            <div class="skeleton-box" style="height:28px;width:60%;border-radius:6px"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+              <div class="skeleton-box" style="height:120px"></div>
+              <div class="skeleton-box" style="height:120px"></div>
+              <div class="skeleton-box" style="height:120px"></div>
+              <div class="skeleton-box" style="height:120px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">来源: .tmp/session-progress.md</div>
+      </div>
+
+      <!-- Activity -->
+      <div class="panel panel-red">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">📊</div>最近活动</div>
+        </div>
+        <div class="panel-body">
+          <div class="section-title-sm">最近提交</div>
+          <div class="git-log" id="gitLogPanel">
+            <div class="skeleton-box" style="height:20px;width:90%;margin-bottom:10px"></div>
+            <div class="skeleton-box" style="height:20px;width:80%;margin-bottom:10px"></div>
+            <div class="skeleton-box" style="height:20px;width:85%;margin-bottom:10px"></div>
+            <div class="skeleton-box" style="height:20px;width:75%"></div>
+          </div>
+        </div>
+        <div class="panel-footer">来源: git log</div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-right">
+      <!-- Plans -->
+      <div class="panel panel-purple">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">📋</div>活跃计划</div>
+        </div>
+        <div class="panel-body" id="plansPanel">
+          <div class="plans-stack">
+            <div class="skeleton-box" style="height:90px;border-radius:12px"></div>
+            <div class="skeleton-box" style="height:90px;border-radius:12px"></div>
+          </div>
+        </div>
+        <div class="panel-footer">来源: .tmp/plan-*.md</div>
+      </div>
+
+      <!-- Todos -->
+      <div class="panel panel-green">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">☑️</div>待办进度</div>
+        </div>
+        <div class="panel-body" id="todosPanel">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="skeleton-box" style="height:14px;width:40%"></div>
+            <div class="skeleton-box" style="height:8px;width:100%;border-radius:4px"></div>
+            <div style="height:8px"></div>
+            <div class="skeleton-box" style="height:18px;width:100%"></div>
+            <div class="skeleton-box" style="height:18px;width:100%"></div>
+            <div class="skeleton-box" style="height:18px;width:90%"></div>
+          </div>
+        </div>
+        <div class="panel-footer">来源: todos-improvements.json</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="panel panel-orange">
+        <div class="panel-header">
+          <div class="panel-title"><div class="panel-icon">⚡</div>快捷操作</div>
+        </div>
+        <div class="panel-body">
+          <div class="actions-stack">
+            <button class="action-btn" onclick="runCommand('test:music-core')"><div class="action-icon">🧪</div><span>test:music-core</span></button>
+            <button class="action-btn" onclick="runCommand('test:android')"><div class="action-icon">🧪</div><span>test:android</span></button>
+            <button class="action-btn" onclick="runCommand('lint')"><div class="action-icon">🔍</div><span>lint</span></button>
+            <button class="action-btn" onclick="runCommand('sandbox')"><div class="action-icon">🌐</div><span>sandbox</span></button>
+            <button class="action-btn" onclick="runCommand('build:android')"><div class="action-icon">📦</div><span>build:android</span></button>
+            <button class="action-btn" onclick="runCommand('typecheck')"><div class="action-icon">📘</div><span>typecheck</span></button>
+          </div>
+          <div class="output-box" id="cmdOutput"></div>
+        </div>
+        <div class="panel-footer">点击执行命令 · 输出显示在下方</div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    let appState = { connected: false, progress: null, plans: [], todos: null, gitLog: [] };
+
+    const demoProgress = `# Session Progress
+
+## Current Focus
+实现节拍器（Metronome）可视化指示器与音频 click 反馈
+
+## Completed
+- [x] music-core MetronomeEngine 核心逻辑
+- [x] HTML Sandbox 原型验证
+- [x] Android 状态与配置定义
+
+## In Progress
+- MetronomeViewModel 与 PlaybackService 集成
+- Compose UI 可视化指示器
+
+## Blockers
+暂无
+
+## Next Steps
+1. 修改 apps/android/.../MetronomeViewModel.kt 实现 onTick()
+2. 在 PlaybackService.kt 中注入 MetronomeEngine
+3. 在 PlaybackScreen.kt 中添加指示器 UI
+4. 运行 npm run test:android 验证
+
+## Modified Files
+- packages/music-core/src/metronome/MetronomeEngine.js
+- apps/android/app/src/main/java/com/xiyue/app/metronome/MetronomeViewModel.kt
+- apps/html-sandbox/metronome-demo.html
+
+## Notes for Next Session
+- BPM 必须与当前播放序列保持一致
+- UI 指示器使用 CircularProgressIndicator，颜色用主题 primary
+- Sandbox 动画时序已验证，Compose 实现可直接参考
+`;
+
+    const demoPlan = `# Plan: 节拍器（Metronome）功能
+
+## Goal
+在播放功能中增加可开关的节拍器，提供可视化节拍提示和可选的音频 click 反馈
+
+## Acceptance Criteria
+- [x] 用户在播放设置中可以打开/关闭节拍器
+- [x] 节拍器的 BPM 与当前练习的 BPM 保持一致
+- [ ] 播放页面有可视化节拍指示器
+- [x] music-core 中的节拍器逻辑有完整单元测试覆盖
+- [ ] Android 模拟器手动测试通过
+
+## Steps
+1. [x] 核心逻辑设计（packages/music-core/.../MetronomeEngine.js）
+2. [x] 核心逻辑测试
+3. [x] HTML Sandbox 原型验证
+4. [x] Android 状态与配置定义
+5. [ ] ViewModel 实现
+6. [ ] PlaybackService 集成
+7. [ ] Compose UI 实现
+8. [ ] 集成测试与验证
+
+## Dependencies
+PlaybackEngine 和 BPM 控制逻辑
+
+## Risks
+| 风险 | 影响 | 规避策略 |
+|------|------|---------|
+| tick 与音频不同步 | 高 | 使用同一时间基准 |
+| 高频 UI 刷新掉帧 | 中 | 使用 Compose animate API |
+`;
+
+    const demoTodos = {
+      "items": [
+        { "id": 1, "title": "实现 MetronomeEngine 核心逻辑", "status": "done", "priority": "high" },
+        { "id": 2, "title": "HTML Sandbox 原型验证", "status": "done", "priority": "high" },
+        { "id": 3, "title": "Android 状态与配置定义", "status": "done", "priority": "high" },
+        { "id": 4, "title": "MetronomeViewModel 实现", "status": "in_progress", "priority": "high" },
+        { "id": 5, "title": "PlaybackService 集成", "status": "pending", "priority": "high" },
+        { "id": 6, "title": "Compose UI 可视化指示器", "status": "pending", "priority": "medium" },
+        { "id": 7, "title": "真机/模拟器手动测试", "status": "pending", "priority": "medium" },
+        { "id": 8, "title": "更新相关文档", "status": "pending", "priority": "low" }
+      ]
+    };
+
+    const demoGitLog = [
+      "checkpoint(metronome): define MetronomeConfig and MetronomeState",
+      "wip(metronome): implement MetronomeEngine core logic",
+      "test(metronome): add MetronomeEngine unit tests",
+      "sandbox(metronome): prototype visual indicator timing",
+      "refactor(playback): extract BPM control to shared util"
+    ];
+
+    function toggleOverlay(id) { document.getElementById(id).classList.toggle('active'); }
+
+    function setKPI(id, value) {
+      const el = document.getElementById(id);
+      const final = String(value);
+      const start = parseInt(el.textContent) || 0;
+      const end = parseInt(final) || 0;
+      if (isNaN(start) || isNaN(end) || start === end) { el.textContent = final; return; }
+      const duration = 600, startTime = performance.now();
+      function step(now) {
+        const p = Math.min((now - startTime) / duration, 1);
+        const cur = Math.floor(start + (end - start) * p);
+        el.textContent = cur;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function updateKPIs() {
+      const statusText = document.getElementById('connText').textContent;
+      setKPI('kpiStatus', appState.connected ? '在线' : statusText.replace(/模式/, '').trim() || '离线');
+      setKPI('kpiPlans', appState.plans.length || 0);
+      const done = appState.todos && appState.todos.items ? appState.todos.items.filter(i => i.status === 'done').length : 0;
+      const total = appState.todos && appState.todos.items ? appState.todos.items.length : 0;
+      setKPI('kpiTodos', total > 0 ? Math.round((done / total) * 100) + '%' : '--');
+      setKPI('kpiGit', appState.gitLog.length || 0);
+    }
+
+    async function tryAutoConnect() {
+      const dot = document.getElementById('connDot'), text = document.getElementById('connText');
+      dot.className = 'status-dot warning'; text.textContent = '连接中...';
+      try {
+        const [progressRes, plansRes, todosRes, gitRes] = await Promise.all([
+          fetchWithTimeout('/api/progress'), fetchWithTimeout('/api/plans'),
+          fetchWithTimeout('/api/todos'), fetchWithTimeout('/api/git-log')
+        ]);
+        if (progressRes.ok) appState.progress = await progressRes.text();
+        if (plansRes.ok) appState.plans = await plansRes.json();
+        if (todosRes.ok) appState.todos = await todosRes.json();
+        if (gitRes.ok) appState.gitLog = await gitRes.json();
+        appState.connected = true; dot.className = 'status-dot online'; text.textContent = 'API 在线';
+        renderAll(); updateKPIs();
+      } catch (e) {
+        dot.className = 'status-dot offline'; text.textContent = '离线模式';
+      }
+    }
+
+    async function refreshData() {
+      if (!appState.connected) return;
+      try {
+        const [progressRes, plansRes, todosRes, gitRes] = await Promise.all([
+          fetchWithTimeout('/api/progress', 3000), fetchWithTimeout('/api/plans', 3000),
+          fetchWithTimeout('/api/todos', 3000), fetchWithTimeout('/api/git-log', 3000)
+        ]);
+        if (progressRes.ok) appState.progress = await progressRes.text();
+        if (plansRes.ok) appState.plans = await plansRes.json();
+        if (todosRes.ok) appState.todos = await todosRes.json();
+        if (gitRes.ok) appState.gitLog = await gitRes.json();
+        renderAll(); updateKPIs();
+      } catch (e) {
+        appState.connected = false;
+        document.getElementById('connDot').className = 'status-dot offline';
+        document.getElementById('connText').textContent = '离线模式';
+        updateKPIs();
+      }
+    }
+
+    async function fetchWithTimeout(url, timeout = 2000) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      try { const res = await fetch(url, { signal: controller.signal }); clearTimeout(id); return res; }
+      catch (e) { clearTimeout(id); throw e; }
+    }
+
+    function loadDemoData() {
+      appState.progress = demoProgress;
+      appState.plans = [parsePlan(demoPlan)];
+      appState.todos = demoTodos;
+      appState.gitLog = demoGitLog;
+      appState.connected = false;
+      document.getElementById('connDot').className = 'status-dot warning';
+      document.getElementById('connText').textContent = '演示模式';
+      renderAll(); updateKPIs();
+    }
+
+    function renderAll() { renderFocus(); renderPlans(); renderTodos(); renderGitLog(); }
+
+    function renderFocus() {
+      const el = document.getElementById('focusPanel');
+      if (!appState.progress) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📂</div>暂无进度数据</div>'; return; }
+
+      const lines = appState.progress.split('\n');
+      let currentFocus = '', completed = [], inProgress = '', blockers = '', nextSteps = [], modifiedFiles = [];
+      let section = '', inModified = false;
+
+      for (const line of lines) {
+        if (line.startsWith('## ')) {
+          section = line.replace('## ', '').trim(); inModified = false; continue;
+        }
+        if (!line.trim()) { if (section === 'Modified Files') inModified = true; continue; }
+        if (section === 'Current Focus') currentFocus = line;
+        if (section === 'Completed' && line.startsWith('- [x]')) completed.push(line.replace('- [x]', '').trim());
+        if (section === 'In Progress') inProgress = line;
+        if (section === 'Blockers') blockers = line;
+        if (section === 'Next Steps' && /^\d+\./.test(line)) nextSteps.push(line.replace(/^\d+\./, '').trim());
+        if (section === 'Modified Files' && line.startsWith('- ')) modifiedFiles.push(line.replace('- ', '').trim());
+        if (inModified && (line.startsWith('- ') || line.startsWith('  - ') || line.startsWith('    - '))) {
+          const cleaned = line.replace(/^[\s\-]+/, '').trim();
+          if (cleaned) modifiedFiles.push(cleaned);
+        }
+      }
+
+      let html = `<div class="focus-badge">Current Focus</div>`;
+      html += `<div class="focus-title">${escapeHtml(currentFocus || '未指定当前焦点')}</div>`;
+      html += `<div class="focus-grid">`;
+
+      if (blockers && blockers !== '暂无' && blockers !== '...') {
+        html += `<div class="focus-tile focus-tile-full"><div class="focus-blocker-box"><div class="focus-blocker-icon">⚠</div><div style="font-size:0.95rem;color:#fecaca;line-height:1.5">${escapeHtml(blockers)}</div></div></div>`;
+      }
+
+      if (inProgress && inProgress !== '...') {
+        html += `<div class="focus-tile"><div class="focus-tile-title">进行中</div><div class="focus-tile-body">${escapeHtml(inProgress)}</div></div>`;
+      }
+
+      if (nextSteps.length) {
+        html += `<div class="focus-tile"><div class="focus-tile-title">下一步</div><div class="step-list">`;
+        nextSteps.slice(0, 3).forEach((step, i) => { html += `<div class="focus-step"><div class="focus-step-num">${i+1}</div><div>${escapeHtml(step)}</div></div>`; });
+        html += '</div></div>';
+      }
+
+      if (modifiedFiles.length) {
+        html += `<div class="focus-tile"><div class="focus-tile-title">已修改文件</div><div>`;
+        modifiedFiles.slice(0, 5).forEach(f => { html += `<div class="focus-file">${escapeHtml(f)}</div>`; });
+        if (modifiedFiles.length > 5) html += `<div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:4px">+ ${modifiedFiles.length - 5} 更多...</div>`;
+        html += '</div></div>';
+      }
+
+      if (completed.length) {
+        html += `<div class="focus-tile"><div class="focus-tile-title">最近完成</div><div class="done-list">`;
+        completed.slice(-3).forEach(c => { html += `<div class="focus-done">${escapeHtml(c)}</div>`; });
+        html += '</div></div>';
+      }
+
+      html += '</div>';
+      el.innerHTML = html;
+    }
+
+    function parsePlan(text) {
+      const lines = text.split('\n');
+      const plan = { title: '未命名计划', criteria: [], steps: [], raw: text };
+      let section = '', total = 0, done = 0;
+      for (const line of lines) {
+        if (line.startsWith('# Plan:')) plan.title = line.replace('# Plan:', '').trim();
+        if (line.startsWith('## ')) section = line.replace('## ', '').trim();
+        if (section === 'Acceptance Criteria' || section === 'Steps') {
+          if (line.startsWith('- [')) { total++; if (line.includes('[x]')) done++; plan.criteria.push(line); }
+          else if (/^\d+\. \[/.test(line)) { total++; if (line.includes('[x]')) done++; plan.steps.push(line); }
+        }
+      }
+      plan.progress = total > 0 ? Math.round((done / total) * 100) : 0;
+      return plan;
+    }
+
+    function renderPlans() {
+      const el = document.getElementById('plansPanel');
+      if (!appState.plans.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📂</div>暂无活跃计划</div>'; return; }
+      el.innerHTML = '<div class="plans-stack">' + appState.plans.map((plan, idx) => `
+        <div class="plan-card" data-idx="${idx}">
+          <div class="plan-header"><div class="plan-title">${escapeHtml(plan.title)}</div><div class="plan-progress-text">${plan.progress}%</div></div>
+          <div class="progress-bar" style="margin-bottom:10px"><div class="progress-fill progress-gradient-blue" style="width:${plan.progress}%"></div></div>
+          <div class="plan-meta">
+            <span>${plan.progress === 100 ? '全部完成' : (plan.progress === 0 ? '尚未开始' : `已完成 ${plan.progress}%`)}</span>
+            <span class="tag ${plan.progress === 100 ? 'tag-done' : 'tag-pending'}">${plan.progress === 100 ? '已完成' : '进行中'}</span>
+          </div>
+        </div>
+      `).join('') + '</div>';
+      el.querySelectorAll('.plan-card').forEach(card => {
+        card.addEventListener('click', () => showPlanDetail(Number(card.dataset.idx)));
+      });
+    }
+
+    function showPlanDetail(idx) {
+      const plan = appState.plans[idx]; if (!plan) return;
+      document.getElementById('detailTitle').textContent = '📋 ' + plan.title;
+      document.getElementById('detailBody').innerHTML = '<div class="md-content plan-md">' + markdownToHtml(plan.raw || plan.content || '') + '</div>';
+      document.getElementById('detailFooter').innerHTML = '<span>计划详情</span><span>' + plan.progress + '% 完成</span>';
+      toggleOverlay('detailOverlay');
+    }
+
+    function renderTodos() {
+      const el = document.getElementById('todosPanel');
+      if (!appState.todos || !appState.todos.items) { el.innerHTML = '<div class="empty-state" style="padding:24px"><div class="empty-state-icon">📂</div>暂无待办数据</div>'; return; }
+      const done = appState.todos.items.filter(i => i.status === 'done').length;
+      const total = appState.todos.items.length;
+      const pct = Math.round((done / total) * 100);
+      let html = `<div class="todo-summary"><div class="todo-summary-text">完成度 ${done}/${total}</div><div style="font-size:0.85rem;font-weight:600;color:${pct===100?'var(--accent-cyan)':'var(--text-secondary)'}">${pct}%</div></div>`;
+      html += `<div class="progress-bar" style="margin-bottom:14px"><div class="progress-fill progress-gradient-green" style="width:${pct}%"></div></div>`;
+      html += `<div class="todo-list">`;
+      appState.todos.items.slice(0, 6).forEach(item => {
+        const isDone = item.status === 'done';
+        html += `<div class="todo-item"><div class="todo-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div><div class="todo-text ${isDone ? 'done' : ''}">${escapeHtml(item.title)}</div></div>`;
+      });
+      html += '</div>';
+      el.innerHTML = html;
+    }
+
+    function renderGitLog() {
+      const el = document.getElementById('gitLogPanel');
+      if (!appState.gitLog.length) { el.innerHTML = '<div class="git-item" style="opacity:0.5">暂无提交记录</div>'; return; }
+      el.innerHTML = appState.gitLog.slice(0, 5).map(msg => {
+        const hashMatch = msg.match(/^([a-f0-9]+)\s+/);
+        const hash = hashMatch ? hashMatch[1] : '';
+        const message = hash ? msg.replace(hash, '').trim() : msg;
+        return `<div class="git-item" title="${escapeHtml(msg)}"><span class="git-hash">${hash ? hash.substring(0, 7) : '•'}</span>${escapeHtml(message)}</div>`;
+      }).join('');
+    }
+
+    async function openDoc(url, title) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        document.getElementById('detailTitle').textContent = '📄 ' + title;
+        document.getElementById('detailBody').innerHTML = '<div class="md-content">' + markdownToHtml(text) + '</div>';
+        document.getElementById('detailFooter').innerHTML = `<span>${title}</span><a href="${url}" target="_blank" style="color:#60a5fa;text-decoration:none">在新标签页打开 →</a>`;
+        toggleOverlay('detailOverlay');
+      } catch (e) {
+        window.open(url, '_blank');
+      }
+    }
+
+    function closeDetail() { toggleOverlay('detailOverlay'); }
+
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function markdownToHtml(md) {
+      let html = '', inPre = false, inList = false, listType = null, tableRows = [];
+      const flushList = () => { if (inList) { html += listType === 'ol' ? '</ol>' : '</ul>'; inList = false; listType = null; } };
+      const flushTable = () => { if (tableRows.length) { html += parseTable(tableRows); tableRows = []; } };
+      const lines = md.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (line.startsWith('```')) { flushList(); flushTable(); html += inPre ? '</code></pre>' : '<pre><code>'; inPre = !inPre; continue; }
+        if (inPre) { html += escapeHtml(line) + '\n'; continue; }
+        if (line.trim().startsWith('|')) { tableRows.push(line); continue; } else if (tableRows.length) { flushTable(); }
+        if (line.startsWith('# ')) { flushList(); html += `<h1>${inlineMd(line.slice(2))}</h1>`; continue; }
+        if (line.startsWith('## ')) { flushList(); html += `<h2>${inlineMd(line.slice(3))}</h2>`; continue; }
+        if (line.startsWith('### ')) { flushList(); html += `<h3>${inlineMd(line.slice(4))}</h3>`; continue; }
+        if (line.startsWith('> ')) { flushList(); html += `<blockquote>${inlineMd(line.slice(2))}</blockquote>`; continue; }
+        if (line.startsWith('- ')) {
+          const body = line.slice(2);
+          const taskMatch = body.match(/^(\[x\]|\[ \])\s*(.*)/i);
+          if (taskMatch) {
+            const isDone = taskMatch[1].toLowerCase() === '[x]';
+            if (!inList || listType !== 'ul') { flushList(); html += '<ul>'; inList = true; listType = 'ul'; }
+            html += `<li class="task-item ${isDone ? 'done' : ''}"><span class="task-check"></span><span class="task-text">${inlineMd(taskMatch[2])}</span></li>`;
+          } else {
+            if (!inList || listType !== 'ul') { flushList(); html += '<ul>'; inList = true; listType = 'ul'; }
+            html += `<li>${inlineMd(body)}</li>`;
+          }
+          continue;
+        }
+        if (/^\d+\.\s/.test(line)) {
+          const body = line.replace(/^\d+\.\s/, '');
+          const taskMatch = body.match(/^(\[x\]|\[ \])\s*(.*)/i);
+          if (taskMatch) {
+            const isDone = taskMatch[1].toLowerCase() === '[x]';
+            if (!inList || listType !== 'ol') { flushList(); html += '<ol>'; inList = true; listType = 'ol'; }
+            html += `<li class="task-item ${isDone ? 'done' : ''}"><span class="task-check"></span><span class="task-text">${inlineMd(taskMatch[2])}</span></li>`;
+          } else {
+            if (!inList || listType !== 'ol') { flushList(); html += '<ol>'; inList = true; listType = 'ol'; }
+            html += `<li>${inlineMd(body)}</li>`;
+          }
+          continue;
+        }
+        if (!line.trim()) { flushList(); continue; }
+        flushList(); html += `<p>${inlineMd(line)}</p>`;
+      }
+      flushList(); flushTable(); if (inPre) html += '</code></pre>';
+      return html;
+    }
+
+    function inlineMd(text) {
+      return text.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>').replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    }
+
+    function parseTable(rows) {
+      if (rows.length < 2) return '<pre>' + escapeHtml(rows.join('\n')) + '</pre>';
+      let html = '<table><thead><tr>';
+      const headers = rows[0].split('|').map(c => c.trim()).filter(c => c !== '');
+      headers.forEach(h => html += `<th>${inlineMd(h)}</th>`);
+      html += '</tr></thead><tbody>';
+      for (let i = 2; i < rows.length; i++) {
+        const cells = rows[i].split('|').map(c => c.trim()).filter(c => c !== '');
+        if (cells.length) html += '<tr>' + cells.map(c => `<td>${inlineMd(c)}</td>`).join('') + '</tr>';
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+
+    // File drop
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', e => { handleFiles(e.target.files); });
+
+    async function handleFiles(files) {
+      for (const file of files) {
+        const text = await file.text();
+        if (file.name.includes('session-progress')) appState.progress = text;
+        else if (file.name.startsWith('plan-')) {
+          const plan = parsePlan(text);
+          const idx = appState.plans.findIndex(p => p.title === plan.title);
+          idx >= 0 ? appState.plans[idx] = plan : appState.plans.push(plan);
+        } else if (file.name.includes('todos')) { try { appState.todos = JSON.parse(text); } catch(e) {} }
+      }
+      document.getElementById('connDot').className = 'status-dot warning';
+      document.getElementById('connText').textContent = '本地导入';
+      renderAll(); updateKPIs(); toggleOverlay('dataOverlay');
+    }
+
+    async function runCommand(cmd) {
+      const out = document.getElementById('cmdOutput');
+      const btn = event.currentTarget;
+      const originalHTML = btn.innerHTML;
+      btn.classList.add('running');
+      btn.innerHTML = `<div class="action-icon">⏳</div><span>${cmd}</span>`;
+      out.classList.add('active');
+      out.textContent = `$ npm run ${cmd}\n正在执行，请稍候...\n`;
+      try {
+        const res = await fetchWithTimeout(`/api/run?cmd=${encodeURIComponent(cmd)}`, 15000);
+        if (res.ok) { const data = await res.text(); out.textContent = `$ npm run ${cmd}\n\n${data}`; }
+        else throw new Error('API ' + res.status);
+      } catch (e) {
+        out.textContent = `$ npm run ${cmd}\n\n⚠️ 无法通过 API 执行。\n原因: ${e.message}\n\n请在终端运行:\n  npm run ${cmd}`;
+      } finally { btn.classList.remove('running'); btn.innerHTML = originalHTML; }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { tryAutoConnect().catch(() => {}); setInterval(refreshData, 8000); });
+  </script>
+</body>
+</html>

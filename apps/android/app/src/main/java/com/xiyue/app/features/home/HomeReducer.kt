@@ -20,10 +20,14 @@ class HomeReducer(
             loopDurationMs: Long = state.loopDurationMs,
             isPlaying: Boolean = state.isPlaying,
             isPaused: Boolean = state.isPaused,
-            bpm: Int = state.bpm,
+            bpm: Float = state.bpm,
             isLibraryOverlayVisible: Boolean = state.isLibraryOverlayVisible,
             displayMode: PlaybackDisplayMode = state.displayMode,
             showHints: Boolean = state.showHints,
+            selectedInversion: Int = state.selectedInversion,
+            selectedOctave: Int = state.selectedOctave,
+            selectedDifficultyLabel: String? = state.selectedDifficultyLabel,
+            selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = state.selectedRhythmPattern,
             playbackSnapshot: com.xiyue.app.playback.PlaybackSnapshot = com.xiyue.app.playback.PlaybackSnapshot(),
         ) = stateFactory.create(
             libraryFilter = libraryFilter,
@@ -44,6 +48,10 @@ class HomeReducer(
             isLibraryOverlayVisible = isLibraryOverlayVisible,
             displayMode = displayMode,
             showHints = showHints,
+            selectedInversion = selectedInversion,
+            selectedOctave = selectedOctave,
+            selectedDifficultyLabel = selectedDifficultyLabel,
+            selectedRhythmPattern = selectedRhythmPattern,
             playbackSnapshot = playbackSnapshot,
         )
 
@@ -124,6 +132,26 @@ class HomeReducer(
                 isPaused = state.isPaused,
             )
 
+            is HomeAction.UpdateInversion -> nextState(
+                selectedInversion = action.inversion,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.UpdateOctave -> nextState(
+                selectedOctave = action.octave,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.SelectDifficulty -> nextState(
+                selectedDifficultyLabel = action.difficultyLabel,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.UpdateRhythmPattern -> nextState(
+                selectedRhythmPattern = action.pattern,
+                isPaused = state.isPaused,
+            )
+
             is HomeAction.UpdateLoopDuration -> nextState(
                 loopDurationMs = action.durationMs,
                 isPaused = state.isPaused,
@@ -158,6 +186,8 @@ class HomeReducer(
             HomeAction.StartPlaybackWithCountdown -> state.copy(isCountdownVisible = true)
             HomeAction.DismissCountdown -> state.copy(isCountdownVisible = false)
             HomeAction.ToggleCountdown -> state.copy(enableCountdown = !state.enableCountdown)
+
+            is HomeAction.SeekToStep -> state
 
             is HomeAction.SyncPlaybackSnapshot -> nextState(
                 isPlaying = action.snapshot.isPlaying,

@@ -16,6 +16,26 @@ enum class TonePreset(
         label = "Clear Wood",
         shortLabel = "Wood",
     ),
+    STRING_ENSEMBLE(
+        label = "Strings",
+        shortLabel = "Str",
+    ),
+    WOODWIND(
+        label = "Woodwind",
+        shortLabel = "Wind",
+    ),
+    BRASS(
+        label = "Brass",
+        shortLabel = "Brass",
+    ),
+    SYNTH_PAD(
+        label = "Synth Pad",
+        shortLabel = "Pad",
+    ),
+    PLUCKED(
+        label = "Plucked",
+        shortLabel = "Pluck",
+    ),
 }
 
 enum class PlaybackSoundMode(

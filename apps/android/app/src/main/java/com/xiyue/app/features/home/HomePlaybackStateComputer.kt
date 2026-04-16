@@ -63,7 +63,7 @@ internal class HomePlaybackStateComputer {
     fun computeStatusLabel(
         effectiveTonePreset: TonePreset,
         resolvedPlaybackMode: com.xiyue.app.domain.PlaybackMode,
-        clampedBpm: Int,
+        clampedBpm: Float,
         loopEnabled: Boolean,
     ): String = buildList {
         add(effectiveTonePreset.shortLabel)

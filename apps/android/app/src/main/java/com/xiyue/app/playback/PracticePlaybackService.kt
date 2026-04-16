@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
+import com.xiyue.app.data.AnalyticsRepository
 import com.xiyue.app.domain.PitchClass
 import com.xiyue.app.domain.PracticePlaybackPlan
 import com.xiyue.app.domain.PracticeSessionFactory
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,17 +24,21 @@ class PracticePlaybackService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val sessionFactory = PracticeSessionFactory()
     private val toneSynth = ToneSynth()
+    private lateinit var analyticsRepository: AnalyticsRepository
     private lateinit var notificationManager: PlaybackNotificationManager
     private lateinit var audioFocusManager: PlaybackAudioFocusManager
     private lateinit var playbackRunner: PlaybackRunner
     private lateinit var snapshotManager: PlaybackSnapshotManager
     private var playbackJob: Job? = null
+    private var resumeJob: Job? = null
+    private var isSeeking = false
     private var currentRequest: PlaybackRequest? = null
     private var resumableRequest: PlaybackRequest? = null
     private var pendingSwitchRequest: PlaybackRequest? = null
 
     override fun onCreate() {
         super.onCreate()
+        analyticsRepository = AnalyticsRepository(this)
         notificationManager = PlaybackNotificationManager(this)
         audioFocusManager = PlaybackAudioFocusManager(this)
         snapshotManager = PlaybackSnapshotManager(
@@ -77,7 +83,11 @@ class PracticePlaybackService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
+        if (intent == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        when (intent.action) {
             ACTION_PLAY -> {
                 val request = intentToPlaybackRequest(intent) ?: return START_NOT_STICKY
                 if (currentRequest != null && playbackJob != null) {
@@ -93,12 +103,17 @@ class PracticePlaybackService : Service() {
             PlaybackNotificationManager.ACTION_PAUSE -> pausePlayback()
             PlaybackNotificationManager.ACTION_RESUME -> resumePlayback()
             PlaybackNotificationManager.ACTION_STOP -> stopPlayback(removeNotification = true, shouldStopSelf = true)
+            ACTION_SEEK -> {
+                val stepIndex = intent.getIntExtra(EXTRA_SEEK_STEP_INDEX, 0)
+                seekToStep(stepIndex)
+            }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
         stopPlayback(removeNotification = true, shouldStopSelf = false)
+        toneSynth.release()
         serviceScope.cancel()
         super.onDestroy()
     }
@@ -116,9 +131,14 @@ class PracticePlaybackService : Service() {
 
     private fun handlePlay(request: PlaybackRequest, startStepIndex: Int = 0) {
         val plan = sessionFactory.createPlan(request.toSelection()) ?: return
+        analyticsRepository.recordPracticeStart()
         notificationManager.createChannel()
         audioFocusManager.requestFocus(
-            onGain = {},
+            onGain = {
+                if (_state.value.isPaused) {
+                    resumePlayback()
+                }
+            },
             onDuck = {},
             onPause = { pausePlayback() },
             onStop = { stopPlayback(removeNotification = true, shouldStopSelf = true) }
@@ -133,6 +153,7 @@ class PracticePlaybackService : Service() {
         snapshotManager.publishInitial(request, plan, safeStartStepIndex)
 
         playbackJob = serviceScope.launch {
+            val jobRequest = request
             try {
                 playbackRunner.run(
                     request = request,
@@ -144,8 +165,9 @@ class PracticePlaybackService : Service() {
                     updateCurrentRequest = { currentRequest = it },
                     updateResumableRequest = { resumableRequest = it },
                 )
+                _state.value = _state.value.copy(completedAt = System.currentTimeMillis())
             } finally {
-                if (currentRequest != null) {
+                if (currentRequest == jobRequest) {
                     stopPlayback(
                         removeNotification = true,
                         shouldStopSelf = true,
@@ -164,8 +186,11 @@ class PracticePlaybackService : Service() {
         currentRequest = null
         playbackJob?.cancel()
         playbackJob = null
+        resumeJob?.cancel()
+        resumeJob = null
         toneSynth.stop()
         audioFocusManager.abandonFocus()
+        analyticsRepository.recordPracticeStop()
 
         snapshotManager.publishPaused(
             request = request,
@@ -199,13 +224,42 @@ class PracticePlaybackService : Service() {
     private fun resumePlayback() {
         val request = resumableRequest ?: currentRequest ?: return
         val currentSnapshot = _state.value
+        val plan = sessionFactory.createPlan(request.toSelection()) ?: return
         val startStepIndex = currentSnapshot.stepIndex
             .coerceAtLeast(1)
             .minus(1)
-        handlePlay(
+        snapshotManager.publishResumeHighlight(
             request = request,
-            startStepIndex = startStepIndex,
+            plan = plan,
+            subtitle = "Resuming...",
+            stepIndex = currentSnapshot.stepIndex,
+            activePitchClasses = currentSnapshot.activePitchClasses,
+            activeNoteLabels = currentSnapshot.activeNoteLabels,
         )
+        resumeJob?.cancel()
+        resumeJob = serviceScope.launch {
+            handlePlay(
+                request = request,
+                startStepIndex = startStepIndex,
+            )
+        }
+    }
+
+    private fun seekToStep(stepIndex: Int) {
+        if (isSeeking) return
+        isSeeking = true
+        serviceScope.launch {
+            try {
+                playbackJob?.cancelAndJoin()
+                val request = currentRequest ?: resumableRequest ?: return@launch
+                handlePlay(
+                    request = request,
+                    startStepIndex = stepIndex,
+                )
+            } finally {
+                isSeeking = false
+            }
+        }
     }
 
     private fun stopPlayback(
@@ -217,6 +271,8 @@ class PracticePlaybackService : Service() {
         if (cancelJob) {
             playbackJob?.cancel()
         }
+        resumeJob?.cancel()
+        resumeJob = null
         playbackJob = null
         currentRequest = null
         if (clearResumable) {
@@ -226,6 +282,7 @@ class PracticePlaybackService : Service() {
         toneSynth.stop()
         audioFocusManager.abandonFocus()
         snapshotManager.publishStopped()
+        analyticsRepository.recordPracticeStop()
         if (removeNotification) {
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
@@ -237,7 +294,7 @@ class PracticePlaybackService : Service() {
     private fun intentToPlaybackRequest(intent: Intent): PlaybackRequest? {
         val itemId = intent.getStringExtra(EXTRA_ITEM_ID) ?: return null
         val root = intent.getStringExtra(EXTRA_ROOT) ?: return null
-        val bpm = intent.getIntExtra(EXTRA_BPM, 96)
+        val bpm = intent.getFloatExtra(EXTRA_BPM, 96f)
         val loopEnabled = intent.getBooleanExtra(EXTRA_LOOP_ENABLED, false)
         val loopDurationMs = intent.getLongExtra(EXTRA_LOOP_DURATION_MS, 0L)
         val playbackMode = intent.getStringExtra(EXTRA_PLAYBACK_MODE) ?: return null
@@ -245,13 +302,17 @@ class PracticePlaybackService : Service() {
         val chordBlockEnabled = intent.getBooleanExtra(EXTRA_CHORD_BLOCK_ENABLED, true)
         val chordArpeggioEnabled = intent.getBooleanExtra(EXTRA_CHORD_ARPEGGIO_ENABLED, false)
         val soundModeName = intent.getStringExtra(EXTRA_SOUND_MODE)
+        val inversion = intent.getIntExtra(EXTRA_INVERSION, 0)
+        val octave = intent.getIntExtra(EXTRA_OCTAVE, 4)
+        val rhythmPatternName = intent.getStringExtra(EXTRA_RHYTHM_PATTERN)
         return PlaybackRequest(
             itemId = itemId,
-            root = PitchClass.valueOf(root),
+            root = runCatching { PitchClass.valueOf(root) }.getOrNull() ?: PitchClass.C,
             bpm = bpm,
             loopEnabled = loopEnabled,
             loopDurationMs = loopDurationMs,
-            playbackMode = com.xiyue.app.domain.PlaybackMode.valueOf(playbackMode),
+            playbackMode = runCatching { com.xiyue.app.domain.PlaybackMode.valueOf(playbackMode) }.getOrNull()
+                ?: com.xiyue.app.domain.PlaybackMode.SCALE_ASCENDING,
             tonePreset = tonePreset
                 ?.let { runCatching { TonePreset.valueOf(it) }.getOrNull() }
                 ?: TonePreset.WARM_PRACTICE,
@@ -260,12 +321,18 @@ class PracticePlaybackService : Service() {
             soundMode = soundModeName
                 ?.let { runCatching { PlaybackSoundMode.valueOf(it) }.getOrNull() }
                 ?: PlaybackSoundMode.PITCH,
+            inversion = inversion,
+            octave = octave,
+            rhythmPattern = rhythmPatternName
+                ?.let { runCatching { com.xiyue.app.domain.RhythmPattern.valueOf(it) }.getOrNull() }
+                ?: com.xiyue.app.domain.RhythmPattern.STRAIGHT,
         )
     }
 
     companion object {
         const val ACTION_PLAY = "com.xiyue.app.action.PLAY"
         const val ACTION_PREPARE_PAUSED = "com.xiyue.app.action.PREPARE_PAUSED"
+        const val ACTION_SEEK = "com.xiyue.app.action.SEEK"
         private const val EXTRA_ITEM_ID = "item_id"
         private const val EXTRA_ROOT = "root"
         private const val EXTRA_BPM = "bpm"
@@ -276,6 +343,10 @@ class PracticePlaybackService : Service() {
         private const val EXTRA_CHORD_BLOCK_ENABLED = "chord_block_enabled"
         private const val EXTRA_CHORD_ARPEGGIO_ENABLED = "chord_arpeggio_enabled"
         private const val EXTRA_SOUND_MODE = "sound_mode"
+        private const val EXTRA_INVERSION = "inversion"
+        private const val EXTRA_OCTAVE = "octave"
+        private const val EXTRA_RHYTHM_PATTERN = "rhythm_pattern"
+        private const val EXTRA_SEEK_STEP_INDEX = "seek_step_index"
         private val _state = MutableStateFlow(PlaybackSnapshot())
         val state: StateFlow<PlaybackSnapshot> = _state.asStateFlow()
 
@@ -292,6 +363,9 @@ class PracticePlaybackService : Service() {
                 putExtra(EXTRA_CHORD_BLOCK_ENABLED, request.chordBlockEnabled)
                 putExtra(EXTRA_CHORD_ARPEGGIO_ENABLED, request.chordArpeggioEnabled)
                 putExtra(EXTRA_SOUND_MODE, request.soundMode.name)
+                putExtra(EXTRA_INVERSION, request.inversion)
+                putExtra(EXTRA_OCTAVE, request.octave)
+                putExtra(EXTRA_RHYTHM_PATTERN, request.rhythmPattern.name)
             }
             ContextCompat.startForegroundService(context, intent)
         }
@@ -309,6 +383,9 @@ class PracticePlaybackService : Service() {
                 putExtra(EXTRA_CHORD_BLOCK_ENABLED, request.chordBlockEnabled)
                 putExtra(EXTRA_CHORD_ARPEGGIO_ENABLED, request.chordArpeggioEnabled)
                 putExtra(EXTRA_SOUND_MODE, request.soundMode.name)
+                putExtra(EXTRA_INVERSION, request.inversion)
+                putExtra(EXTRA_OCTAVE, request.octave)
+                putExtra(EXTRA_RHYTHM_PATTERN, request.rhythmPattern.name)
             }
             context.startService(intent)
         }
@@ -330,6 +407,14 @@ class PracticePlaybackService : Service() {
         fun stop(context: Context) {
             val intent = Intent(context, PracticePlaybackService::class.java).apply {
                 action = PlaybackNotificationManager.ACTION_STOP
+            }
+            context.startService(intent)
+        }
+
+        fun seekToStep(context: Context, stepIndex: Int) {
+            val intent = Intent(context, PracticePlaybackService::class.java).apply {
+                action = ACTION_SEEK
+                putExtra(EXTRA_SEEK_STEP_INDEX, stepIndex)
             }
             context.startService(intent)
         }

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 test('android build script keeps latest apk versioned and records it in metadata', () => {
   const script = readFileSync('scripts/build-android.ps1', 'utf8');
 
-  assert.match(script, /xiyue-android-v\$versionName-\$timestamp-debug\.apk/);
+  assert.match(script, /xiyue-android-v\$versionName-\$timestamp-release\.apk/);
   assert.match(script, /latestApk/);
   assert.match(script, /archiveApk/);
   assert.match(script, /GRADLE_USER_HOME/);

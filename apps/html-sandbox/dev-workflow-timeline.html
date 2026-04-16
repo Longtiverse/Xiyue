@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>科学开发流程时间线 — Xiyue</title>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #13131a;
+      --bg-card: #1a1a24;
+      --bg-hover: #252532;
+      --accent-plan: #3b82f6;
+      --accent-arch: #8b5cf6;
+      --accent-exec: #22c55e;
+      --accent-check: #f59e0b;
+      --accent-persist: #06b6d4;
+      --accent-archive: #64748b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #2a2a3a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      --radius: 16px;
+      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+      background: linear-gradient(180deg, rgba(59,130,246,0.08) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #60a5fa 0%, #22c55e 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Timeline Container */
+    .timeline-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      position: relative;
+    }
+
+    /* Central Line */
+    .timeline-line {
+      position: absolute;
+      left: 32px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(
+        180deg,
+        var(--accent-plan) 0%,
+        var(--accent-arch) 15%,
+        var(--accent-exec) 45%,
+        var(--accent-check) 70%,
+        var(--accent-persist) 85%,
+        var(--accent-archive) 100%
+      );
+      border-radius: 3px;
+      opacity: 0.4;
+    }
+
+    @media (min-width: 640px) {
+      .timeline-line { left: 50%; transform: translateX(-50%); }
+    }
+
+    /* Timeline Item */
+    .timeline-item {
+      position: relative;
+      margin-bottom: 32px;
+      padding-left: 72px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .timeline-item:nth-child(1) { animation-delay: 0.05s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.1s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.15s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.2s; }
+    .timeline-item:nth-child(5) { animation-delay: 0.25s; }
+    .timeline-item:nth-child(6) { animation-delay: 0.3s; }
+    .timeline-item:nth-child(7) { animation-delay: 0.35s; }
+    .timeline-item:nth-child(8) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 640px) {
+      .timeline-item {
+        padding-left: 0;
+        width: 50%;
+      }
+      .timeline-item:nth-child(odd) {
+        margin-left: 0;
+        padding-right: 48px;
+        text-align: right;
+      }
+      .timeline-item:nth-child(even) {
+        margin-left: 50%;
+        padding-left: 48px;
+        text-align: left;
+      }
+    }
+
+    /* Dot */
+    .timeline-dot {
+      position: absolute;
+      left: 20px;
+      top: 8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 3px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      z-index: 10;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .timeline-dot:hover {
+      transform: scale(1.15);
+    }
+
+    @media (min-width: 640px) {
+      .timeline-dot {
+        left: auto;
+        right: -13px;
+      }
+      .timeline-item:nth-child(even) .timeline-dot {
+        right: auto;
+        left: -13px;
+      }
+    }
+
+    .dot-plan { border-color: var(--accent-plan); color: var(--accent-plan); }
+    .dot-arch { border-color: var(--accent-arch); color: var(--accent-arch); }
+    .dot-exec { border-color: var(--accent-exec); color: var(--accent-exec); }
+    .dot-check { border-color: var(--accent-check); color: var(--accent-check); }
+    .dot-persist { border-color: var(--accent-persist); color: var(--accent-persist); }
+    .dot-archive { border-color: var(--accent-archive); color: var(--accent-archive); }
+
+    /* Card */
+    .timeline-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      text-align: left;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .timeline-card:hover {
+      border-color: var(--bg-hover);
+      transform: translateY(-2px);
+    }
+
+    .timeline-card.active {
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .card-summary {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .card-content {
+      display: none;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color);
+      animation: expand 0.3s ease;
+    }
+
+    .timeline-card.active .card-content {
+      display: block;
+    }
+
+    @keyframes expand {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .content-section {
+      margin-bottom: 16px;
+    }
+
+    .content-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .content-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .content-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .content-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    .content-list li::before {
+      content: "›";
+      position: absolute;
+      left: 0;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .check-item:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .check-item input {
+      margin-top: 3px;
+      accent-color: #22c55e;
+      cursor: pointer;
+    }
+
+    .check-item.checked {
+      opacity: 0.5;
+    }
+
+    .check-item.checked span {
+      text-decoration: line-through;
+    }
+
+    .highlight-box {
+      background: rgba(59, 130, 246, 0.08);
+      border-left: 3px solid var(--accent-plan);
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin: 10px 0;
+    }
+
+    .warning-box {
+      background: rgba(239, 68, 68, 0.08);
+      border-left: 3px solid #ef4444;
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.9rem;
+      color: #fca5a5;
+      margin: 10px 0;
+    }
+
+    .success-box {
+      background: rgba(34, 197, 94, 0.08);
+      border-left: 3px solid #22c55e;
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.9rem;
+      color: #86efac;
+      margin: 10px 0;
+    }
+
+    code {
+      background: #0f0f14;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85em;
+      color: #fcd34d;
+    }
+
+    .branch-label {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .branch-yes { background: rgba(34, 197, 94, 0.15); color: #86efac; }
+    .branch-no { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+
+    /* Progress Bar */
+    .progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-plan), var(--accent-exec), var(--accent-check));
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.2s ease;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+    }
+
+    /* Connector icons between items */
+    .connector {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      opacity: 0.3;
+      margin: -8px 0 8px 20px;
+    }
+
+    @media (min-width: 640px) {
+      .connector {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-track" id="progressBar"></div>
+
+  <header class="hero">
+    <h1>科学开发流程时间线</h1>
+    <p>基于 AGENTS.md 的完整 SOP：从会话恢复到任务归档，每一步都有章可循</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>规划</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>架构</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>执行</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>检查</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>持久化</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#64748b"></div>归档</div>
+    </div>
+  </header>
+
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
+
+    <!-- Stage 1 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-plan" onclick="toggleCard(1)">1</div>
+      <div class="timeline-card" id="card-1" onclick="toggleCard(1)">
+        <div class="card-header">
+          <div class="card-title">📡 会话启动与上下文恢复</div>
+          <span class="card-badge">Plan</span>
+        </div>
+        <div class="card-summary">用户说"继续"时，不要从零猜测。按协议读取进度文件、计划文件和 Git 历史。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">标准恢复协议</div>
+            <ul class="content-list">
+              <li>读取 <code>.tmp/session-progress.md</code></li>
+              <li>扫描 <code>.tmp/plan-*.md</code> 找出未完成的计划</li>
+              <li>查看最近 3-5 条 git commit</li>
+              <li>向用户汇报状态并确认下一步</li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <strong>黄金法则：</strong>如果进度文件不存在，就基于计划文件；如果连计划文件也没有，就基于 git log；如果三者都没有，明确告知用户"没有找到可接续的上下文"。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 2 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-arch" onclick="toggleCard(2)">2</div>
+      <div class="timeline-card" id="card-2" onclick="toggleCard(2)">
+        <div class="card-header">
+          <div class="card-title">🏗️ 架构与影响面分析</div>
+          <span class="card-badge">Arch</span>
+        </div>
+        <div class="card-summary">写代码前先回答三个问题：状态存在哪？配置变更后会丢失吗？生命周期边界是什么？</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">架构先于实现检查清单</div>
+            <div class="checklist">
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>状态保存在哪里？（<code>remember</code> / <code>rememberSaveable</code> / <code>ViewModel</code> / <code>Service</code>）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>屏幕旋转后状态会丢失吗？</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>生命周期边界是否清晰？（Composable / Service / 进程被杀）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>如果现有架构无法承载，是否先提出调整方案？</span></div>
+            </div>
+          </div>
+          <div class="warning-box">
+            <strong>禁止：</strong>在状态管理方案未确定前，先写「看起来完整」的 UI。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 3 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-plan" onclick="toggleCard(3)">3</div>
+      <div class="timeline-card" id="card-3" onclick="toggleCard(3)">
+        <div class="card-header">
+          <div class="card-title">📝 制定计划（Plan-First）</div>
+          <span class="card-badge">Plan</span>
+        </div>
+        <div class="card-summary">超过 3 个步骤、涉及多模块、或预计跨会话的任务，必须写 <code>.tmp/plan-{task}.md</code>。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">必须写计划的情况（满足任意一条）</div>
+            <ul class="content-list">
+              <li>预计超过 <strong>3 个步骤</strong></li>
+              <li>涉及 <strong>2 个及以上模块/目录</strong></li>
+              <li>预计耗时超过 <strong>1 个完整会话</strong></li>
+              <li>存在需要明确的 <strong>验收标准</strong></li>
+            </ul>
+          </div>
+          <div class="content-section">
+            <div class="content-label">计划文件必备字段</div>
+            <ul class="content-list">
+              <li><code>Goal</code>：一句话描述目标</li>
+              <li><code>Acceptance Criteria</code>：验收标准 checklist</li>
+              <li><code>Steps</code>：按顺序列出，标注涉及文件</li>
+              <li><code>Dependencies</code>：前置依赖或阻塞点</li>
+              <li><code>Risks</code>：风险点及规避策略</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 4 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-exec" onclick="toggleCard(4)">4</div>
+      <div class="timeline-card" id="card-4" onclick="toggleCard(4)">
+        <div class="card-header">
+          <div class="card-title">🛠️ 科学编码执行</div>
+          <span class="card-badge">Exec</span>
+        </div>
+        <div class="card-summary">遵循效率原则：最小改动、Sandbox 优先、批量处理、独立任务并行化。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">效率原则</div>
+            <ul class="content-list">
+              <li><strong>最小改动：</strong>只改与任务直接相关的文件</li>
+              <li><strong>Sandbox 优先：</strong>UI/动画先在 <code>apps/html-sandbox</code> 验证</li>
+              <li><strong>精准测试：</strong>优先跑相关子测试，最后才全量</li>
+              <li><strong>批量处理：</strong>同主题文件一次性修改，减少往返</li>
+              <li><strong>避免过度工程：</strong>简单方案优先，需要时再抽象</li>
+            </ul>
+          </div>
+          <div class="content-section">
+            <div class="content-label">并行化决策</div>
+            <div style="margin:10px 0">
+              <span class="branch-label branch-yes">YES</span>相互独立的搜索、验证、文件生成 → 使用子代理并行
+            </div>
+            <div>
+              <span class="branch-label branch-no">NO</span>有数据依赖、修改同一文件、需先统一接口 → 串行执行
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 5 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-check" onclick="toggleCard(5)">5</div>
+      <div class="timeline-card" id="card-5" onclick="toggleCard(5)">
+        <div class="card-header">
+          <div class="card-title">🛡️ 敏感子系统敬畏清单</div>
+          <span class="card-badge">Check</span>
+        </div>
+        <div class="card-summary">涉及音频、Service、Native 资源时，主路径编译通过只是开始，边界情况才是第一优先级。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">音频 / Service / JNI 强制检查项</div>
+            <div class="checklist">
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>资源是否正确释放？（<code>release()</code> / <code>close()</code> / <code>unregister()</code>）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>是否存在竞态条件？（start/stop/cancel 时序、快速连点）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>异常路径是否有降级方案？（try-catch + fallback）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>配置变更后是否会导致重复初始化或资源泄漏？</span></div>
+            </div>
+          </div>
+          <div class="warning-box">
+            <strong>禁止：</strong>仅在「主路径编译通过」时就认为敏感子系统任务完成。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 6 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-check" onclick="toggleCard(6)">6</div>
+      <div class="timeline-card" id="card-6" onclick="toggleCard(6)">
+        <div class="card-header">
+          <div class="card-title">✅ 真实场景验证</div>
+          <span class="card-badge">Check</span>
+        </div>
+        <div class="card-summary">编译通过 ≠ 可用。必须在模拟器/真机上验证生命周期和边界场景。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">真实场景验证清单（至少选 3 项）</div>
+            <div class="checklist">
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>屏幕旋转 / 配置变更（状态是否丢失？音频是否中断？）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>切到后台再返回（Service 是否还在？UI 是否同步？）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>进程被系统杀死后恢复（数据是否蒸发？）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>低内存 / 音频焦点被抢占（是否有优雅降级？）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>快速重复操作（按钮连点、Tab 快速切换）</span></div>
+              <div class="check-item" onclick="toggleCheck(this, event)"><input type="checkbox"><span>冷启动路径（首次安装用户是否能正确进入？）</span></div>
+            </div>
+          </div>
+          <div class="success-box">
+            验证结果必须记录在 <code>session-progress.md</code> 或 plan 文件中。如因环境限制无法验证，必须<strong>明确说明并评估风险</strong>。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 7 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-persist" onclick="toggleCard(7)">7</div>
+      <div class="timeline-card" id="card-7" onclick="toggleCard(7)">
+        <div class="card-header">
+          <div class="card-title">💾 状态持久化与 Git 断点</div>
+          <span class="card-badge">Persist</span>
+        </div>
+        <div class="card-summary">每完成一个关键步骤，或每次会话结束前，必须更新进度文件并提交代码。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">必须做的两件事</div>
+            <ul class="content-list">
+              <li>更新 <code>.tmp/session-progress.md</code>：Completed / In Progress / Next Steps / Modified Files</li>
+              <li>用 <code>wip(scope): ...</code> 或 <code>checkpoint(scope): ...</code> 提交当前代码</li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <strong>状态外化原则：</strong>所有超过当前会话可能保留时间的关键信息，都必须写入文件。代码注释、plan 文件、progress 文件、Git commit，是 AI 的四个外置硬盘。
+          </div>
+          <div class="warning-box">
+            <strong>禁止</strong>在 WIP 提交中使用 <code>feat:</code> 或 <code>fix:</code>，避免混淆正式版本历史。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↓</div>
+
+    <!-- Stage 8 -->
+    <div class="timeline-item">
+      <div class="timeline-dot dot-archive" onclick="toggleCard(8)">8</div>
+      <div class="timeline-card" id="card-8" onclick="toggleCard(8)">
+        <div class="card-header">
+          <div class="card-title">📦 任务完成与归档</div>
+          <span class="card-badge">Archive</span>
+        </div>
+        <div class="card-summary">所有验收标准通过、代码合并、相关文档更新后，将计划文件归档到 <code>.tmp/archive/</code>。</div>
+        <div class="card-content">
+          <div class="content-section">
+            <div class="content-label">归档流程</div>
+            <ul class="content-list">
+              <li>确认 plan 中所有 <code>Acceptance Criteria</code> 和 <code>Steps</code> 已勾选</li>
+              <li>运行最终检查：<code>npm test</code>、<code>npm run lint</code>、<code>npm run format</code></li>
+              <li>将 plan 文件移动到 <code>.tmp/archive/done-{task}-{YYYY-MM-DD}.md</code></li>
+              <li>更新 <code>session-progress.md</code> 标记当前任务完成，并写下下一个任务的启动信息</li>
+            </ul>
+          </div>
+          <div class="success-box">
+            归档不是删除历史，而是为下一个任务腾出清晰的桌面。归档后的 plan 文件仍可作为项目 retrospectives 和最佳实践沉淀的素材。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer-cta">
+    <p>这套流程的核心只有一句话：</p>
+    <p style="margin-top: 8px; font-size: 1.1rem; color: var(--text-primary); font-weight: 600;">
+      "把 AI 的大脑从对话窗口迁移到文件系统 + Git 历史 + 标准协议上。"
+    </p>
+    <a href="agents-explainer.html" class="btn-primary">← 查看 AGENTS.md 栏目解析</a>
+  </footer>
+
+  <script>
+    function toggleCard(id) {
+      const card = document.getElementById('card-' + id);
+      const wasActive = card.classList.contains('active');
+
+      // Close all
+      document.querySelectorAll('.timeline-card').forEach(c => c.classList.remove('active'));
+
+      // Open clicked if it wasn't active
+      if (!wasActive) {
+        card.classList.add('active');
+      }
+
+      updateProgress();
+    }
+
+    function toggleCheck(el, event) {
+      event.stopPropagation();
+      const cb = el.querySelector('input');
+      cb.checked = !cb.checked;
+      el.classList.toggle('checked', cb.checked);
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const totalChecks = document.querySelectorAll('.check-item').length;
+      const checked = document.querySelectorAll('.check-item.checked').length;
+      const expanded = document.querySelectorAll('.timeline-card.active').length;
+      const totalCards = 8;
+
+      // Weight: 50% cards expanded, 50% checkboxes checked
+      const progress = ((expanded / totalCards) * 50) + ((checked / totalChecks) * 50);
+      document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+    }
+
+    // Intersection Observer for entrance animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.timeline-item').forEach(item => {
+      observer.observe(item);
+    });
+
+    // Open first card by default
+    window.addEventListener('DOMContentLoaded', () => {
+      toggleCard(1);
+    });
+  </script>
+</body>
+</html>

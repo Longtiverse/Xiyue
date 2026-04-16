@@ -4,221 +4,725 @@
       "id": "Major",
       "label": "Major",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 5, 7, 9, 11, 12],
-      "aliases": ["ionian", "major scale", "maj"],
+      "intervals": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11,
+        12
+      ],
+      "aliases": [
+        "ionian",
+        "major scale",
+        "maj"
+      ],
       "category": "diatonic",
       "difficulty": "初级",
-      "description": "最基础的音阶，适合初学者入门"
+      "description": "最基础的音阶，适合初学者入门",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "由全全半全全全半的音程构成，是大调音乐的基础，具有明亮、稳定、积极的听觉特征。适合所有音乐风格的入门练习。"
     },
     {
       "id": "NaturalMinor",
       "label": "Natural Minor",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 5, 7, 8, 10, 12],
-      "aliases": ["aeolian", "minor scale", "nat minor"],
+      "intervals": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10,
+        12
+      ],
+      "aliases": [
+        "aeolian",
+        "minor scale",
+        "nat minor"
+      ],
       "category": "diatonic",
       "difficulty": "初级",
-      "description": "自然小调，大调的关系小调"
+      "description": "自然小调，大调的关系小调",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "全半全全半全全的结构，又称爱奥尼亚调式。小三度带来忧郁、内敛的色彩，是摇滚和流行乐中常用的调式。"
     },
     {
       "id": "HarmonicMinor",
       "label": "Harmonic Minor",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 5, 7, 8, 11, 12],
-      "aliases": ["harmonic minor scale", "harm minor"],
+      "intervals": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        11,
+        12
+      ],
+      "aliases": [
+        "harmonic minor scale",
+        "harm minor"
+      ],
       "category": "diatonic",
       "difficulty": "中级",
-      "description": "和声小调，升高第七级，常用于古典音乐"
+      "description": "和声小调，升高第七级，常用于古典音乐",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "在自然小调基础上升高第七级，形成增二度音程。常用于古典音乐和金属乐，具有强烈的东方神秘感。"
     },
     {
       "id": "MelodicMinor",
       "label": "Melodic Minor",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 5, 7, 9, 11, 12],
-      "aliases": ["melodic minor scale", "mel minor"],
+      "intervals": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        11,
+        12
+      ],
+      "aliases": [
+        "melodic minor scale",
+        "mel minor"
+      ],
       "category": "diatonic",
       "difficulty": "中级",
-      "description": "旋律小调（上行形式），升高六七级，爵士乐中常用"
+      "description": "旋律小调（上行形式），升高六七级，爵士乐中常用",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "上行时升高第六、七级，下行时还原。爵士乐中常以上行形式使用，具有独特的大调色彩与小调底色交织感。"
     },
     {
       "id": "PentatonicMajor",
       "label": "Pentatonic Major",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 7, 9, 12],
-      "aliases": ["major pentatonic", "pentatonic", "penta major"],
+      "intervals": [
+        0,
+        2,
+        4,
+        7,
+        9,
+        12
+      ],
+      "aliases": [
+        "major pentatonic",
+        "pentatonic",
+        "penta major"
+      ],
       "category": "pentatonic",
       "difficulty": "初级",
-      "description": "大调五声音阶，简单悦耳，广泛用于流行音乐"
+      "description": "大调五声音阶，简单悦耳，广泛用于流行音乐",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2
+      ],
+      "theory": "由五个音组成，去掉四度音和七度音。简单悦耳，广泛用于流行音乐、民谣和中国传统音乐。"
     },
     {
       "id": "PentatonicMinor",
       "label": "Pentatonic Minor",
       "kind": "SCALE",
-      "intervals": [0, 3, 5, 7, 10, 12],
-      "aliases": ["minor pentatonic", "penta minor"],
+      "intervals": [
+        0,
+        3,
+        5,
+        7,
+        10,
+        12
+      ],
+      "aliases": [
+        "minor pentatonic",
+        "penta minor"
+      ],
       "category": "pentatonic",
       "difficulty": "初级",
-      "description": "小调五声音阶，摇滚和蓝调的基础"
+      "description": "小调五声音阶，摇滚和蓝调的基础",
+      "fingerings": [
+        1,
+        3,
+        1,
+        2,
+        1
+      ],
+      "theory": "小调五声音阶，去掉二度和六度音。是摇滚、蓝调和重金属的基石，即兴演奏时非常安全。"
     },
     {
       "id": "MajorBlues",
       "label": "Major Blues",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 4, 7, 9, 12],
-      "aliases": ["blues major", "major blues scale", "major blues"],
+      "intervals": [
+        0,
+        2,
+        3,
+        4,
+        7,
+        9,
+        12
+      ],
+      "aliases": [
+        "blues major",
+        "major blues scale",
+        "major blues"
+      ],
       "category": "blues",
       "difficulty": "初级",
-      "description": "大调布鲁斯，明亮欢快的蓝调色彩"
+      "description": "大调布鲁斯，明亮欢快的蓝调色彩",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3
+      ],
+      "theory": "在大调五声基础上加入降三度（蓝调音），形成大调布鲁斯色彩，明亮中带有微妙的忧郁。"
     },
     {
       "id": "MinorBlues",
       "label": "Minor Blues",
       "kind": "SCALE",
-      "intervals": [0, 3, 5, 6, 7, 10, 12],
-      "aliases": ["blues scale", "blues minor", "minor blues scale", "minor blues", "blues"],
+      "intervals": [
+        0,
+        3,
+        5,
+        6,
+        7,
+        10,
+        12
+      ],
+      "aliases": [
+        "blues scale",
+        "blues minor",
+        "minor blues scale",
+        "minor blues",
+        "blues"
+      ],
       "category": "blues",
       "difficulty": "初级",
-      "description": "小调布鲁斯，经典的蓝调音阶（即通常所说的"布鲁斯音阶"）"
+      "description": "小调布鲁斯，经典的蓝调音阶（即通常所说的'布鲁斯音阶'）",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3
+      ],
+      "theory": "经典的布鲁斯音阶，包含小三度、纯四度、降五度（蓝调音）、纯五度和小七度，是蓝调与摇滚的灵魂。"
     },
     {
       "id": "Dorian",
       "label": "Dorian",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 5, 7, 9, 10, 12],
-      "aliases": ["dorian mode"],
+      "intervals": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10,
+        12
+      ],
+      "aliases": [
+        "dorian mode"
+      ],
       "category": "jazz",
       "difficulty": "中级",
-      "description": "多利亚调式，小调色彩但升高的六级带来特殊风味"
+      "description": "多利亚调式，小调色彩但升高的六级带来特殊风味",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "自然小调升高第六级，具有小调底色但带有明亮感。爵士乐、Fusion 和凯尔特音乐中广泛使用。"
     },
     {
       "id": "Mixolydian",
       "label": "Mixolydian",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 5, 7, 9, 10, 12],
-      "aliases": ["mixolydian mode", "dominant scale"],
+      "intervals": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10,
+        12
+      ],
+      "aliases": [
+        "mixolydian mode",
+        "dominant scale"
+      ],
       "category": "jazz",
       "difficulty": "中级",
-      "description": "混合利底亚调式，大调色彩但降七级，常用于爵士"
+      "description": "混合利底亚调式，大调色彩但降七级，常用于爵士",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "大调降低第七级，与属七和弦天然匹配。具有欢快、民谣般的色彩，摇滚和爵士乐中常见。"
     },
     {
       "id": "Lydian",
       "label": "Lydian",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 6, 7, 9, 11, 12],
-      "aliases": ["lydian mode"],
+      "intervals": [
+        0,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11,
+        12
+      ],
+      "aliases": [
+        "lydian mode"
+      ],
       "category": "jazz",
       "difficulty": "高级",
-      "description": "利底亚调式，升高的四级带来梦幻般的明亮感"
+      "description": "利底亚调式，升高的四级带来梦幻般的明亮感",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "大调升高第四级，带来梦幻、飘渺的明亮感。常用于电影配乐和前卫摇滚，具有未来感。"
     },
     {
       "id": "LydianDominant",
       "label": "Lydian Dominant",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 6, 7, 9, 10, 12],
-      "aliases": ["lydian dominant mode", "lydian b7"],
+      "intervals": [
+        0,
+        2,
+        4,
+        6,
+        7,
+        9,
+        10,
+        12
+      ],
+      "aliases": [
+        "lydian dominant mode",
+        "lydian b7"
+      ],
       "category": "jazz",
       "difficulty": "高级",
-      "description": "利底亚属音阶，融合了利底亚和属音的特征"
+      "description": "利底亚属音阶，融合了利底亚和属音的特征",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "利底亚音阶与属音色彩的结合，升高四级同时降低七级。爵士乐中作为属和弦的替代音阶使用。"
     },
     {
       "id": "Phrygian",
       "label": "Phrygian",
       "kind": "SCALE",
-      "intervals": [0, 1, 3, 5, 7, 8, 10, 12],
-      "aliases": ["phrygian mode"],
+      "intervals": [
+        0,
+        1,
+        3,
+        5,
+        7,
+        8,
+        10,
+        12
+      ],
+      "aliases": [
+        "phrygian mode"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "弗里吉亚调式，降二级带来西班牙风情"
+      "description": "弗里吉亚调式，降二级带来西班牙风情",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "自然小调降低第二级，具有强烈的西班牙和弗拉门戈风情，金属乐中常用于营造黑暗氛围。"
     },
     {
       "id": "PhrygianDominant",
       "label": "Phrygian Dominant",
       "kind": "SCALE",
-      "intervals": [0, 1, 4, 5, 7, 8, 10, 12],
-      "aliases": ["spanish phrygian", "phrygian major", "freygish"],
+      "intervals": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        8,
+        10,
+        12
+      ],
+      "aliases": [
+        "spanish phrygian",
+        "phrygian major",
+        "freygish"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "弗里吉亚属音阶，弗拉门戈和犹太音乐常用"
+      "description": "弗里吉亚属音阶，弗拉门戈和犹太音乐常用",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "在和声小调基础上降低二级，包含两个增二度。是犹太、阿拉伯和弗拉门戈音乐的特色音阶。"
     },
     {
       "id": "Locrian",
       "label": "Locrian",
       "kind": "SCALE",
-      "intervals": [0, 1, 3, 5, 6, 8, 10, 12],
-      "aliases": ["locrian mode"],
+      "intervals": [
+        0,
+        1,
+        3,
+        5,
+        6,
+        8,
+        10,
+        12
+      ],
+      "aliases": [
+        "locrian mode"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "洛克里亚调式，减五度带来不稳定感，较少单独使用"
+      "description": "洛克里亚调式，减五度带来不稳定感，较少单独使用",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "自然小调降低第二级和第五级，减五度带来极度不稳定感。较少单独使用，但爵士乐中用于半减七和弦。"
     },
     {
       "id": "WholeTone",
       "label": "Whole Tone",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 6, 8, 10, 12],
-      "aliases": ["whole tone scale"],
+      "intervals": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12
+      ],
+      "aliases": [
+        "whole tone scale"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "全音阶，全部由全音组成，德彪西常用"
+      "description": "全音阶，全部由全音组成，德彪西常用",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4
+      ],
+      "theory": "全部由全音组成，具有朦胧、漂浮的印象派色彩。德彪西和拉威尔常用，爵士乐中用于营造神秘感。"
     },
     {
       "id": "Chromatic",
       "label": "Chromatic",
       "kind": "SCALE",
-      "intervals": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      "aliases": ["chromatic scale", "twelve tone"],
+      "intervals": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "aliases": [
+        "chromatic scale",
+        "twelve tone"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "半音阶，包含所有十二个半音，用于练习和过渡"
+      "description": "半音阶，包含所有十二个半音，用于练习和过渡",
+      "fingerings": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        5,
+        1,
+        1,
+        2
+      ],
+      "theory": "包含全部十二个半音，是练习手指独立性和耳朵辨音的重要工具，常用于过渡和装饰。"
     },
     {
       "id": "HungarianMinor",
       "label": "Hungarian Minor",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 6, 7, 8, 11, 12],
-      "aliases": ["hungarian minor scale", "gypsy minor"],
+      "intervals": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        8,
+        11,
+        12
+      ],
+      "aliases": [
+        "hungarian minor scale",
+        "gypsy minor"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "匈牙利小调，增四度和增二度带来浓郁的东欧色彩"
+      "description": "匈牙利小调，增四度和增二度带来浓郁的东欧色彩",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "在自然小调基础上升高第四级和第七级，形成独特的增四度和增二度。吉普赛音乐的灵魂。"
     },
     {
       "id": "Byzantine",
       "label": "Byzantine",
       "kind": "SCALE",
-      "intervals": [0, 1, 4, 5, 7, 8, 11, 12],
-      "aliases": ["byzantine scale", "arabic", "double harmonic major"],
+      "intervals": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        8,
+        11,
+        12
+      ],
+      "aliases": [
+        "byzantine scale",
+        "arabic",
+        "double harmonic major"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "拜占庭音阶/双调和声大调，充满东方神秘色彩"
+      "description": "拜占庭音阶/双调和声大调，充满东方神秘色彩",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "又称双调和声大调，包含两个增二度。充满中东和阿拉伯音乐的神秘色彩。"
     },
     {
       "id": "Octatonic",
       "label": "Octatonic",
       "kind": "SCALE",
-      "intervals": [0, 2, 3, 5, 6, 8, 9, 11, 12],
-      "aliases": ["diminished scale", "whole-half", "octatonic diminished"],
+      "intervals": [
+        0,
+        2,
+        3,
+        5,
+        6,
+        8,
+        9,
+        11,
+        12
+      ],
+      "aliases": [
+        "diminished scale",
+        "whole-half",
+        "octatonic diminished"
+      ],
       "category": "jazz",
       "difficulty": "高级",
-      "description": "八声音阶/减音阶，半音全音交替，爵士乐常用"
+      "description": "八声音阶/减音阶，半音全音交替，爵士乐常用",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5,
+        1
+      ],
+      "theory": "半音与全音交替的八声音阶，又称减音阶。具有强烈的张力感，爵士乐和现代古典乐中广泛使用。"
     },
     {
       "id": "Prometheus",
       "label": "Prometheus",
       "kind": "SCALE",
-      "intervals": [0, 2, 4, 6, 9, 10, 12],
-      "aliases": ["prometheus scale"],
+      "intervals": [
+        0,
+        2,
+        4,
+        6,
+        9,
+        10,
+        12
+      ],
+      "aliases": [
+        "prometheus scale"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "普罗米修斯音阶，现代音乐中使用的对称音阶"
+      "description": "普罗米修斯音阶，现代音乐中使用的对称音阶",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2,
+        3
+      ],
+      "theory": "由斯克里亚宾创造，包含增四度而缺少纯五度。具有现代、神秘的音响效果。"
     },
     {
       "id": "Enigmatic",
       "label": "Enigmatic",
       "kind": "SCALE",
-      "intervals": [0, 1, 4, 6, 8, 10, 11, 12],
-      "aliases": ["enigmatic scale", "verdi's scale"],
+      "intervals": [
+        0,
+        1,
+        4,
+        6,
+        8,
+        10,
+        11,
+        12
+      ],
+      "aliases": [
+        "enigmatic scale",
+        "verdi's scale"
+      ],
       "category": "exotic",
       "difficulty": "高级",
-      "description": "谜之音阶，由威尔第发明，神秘的现代音阶"
+      "description": "谜之音阶，由威尔第发明，神秘的现代音阶",
+      "fingerings": [
+        1,
+        2,
+        3,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "威尔第使用的神秘音阶，以小二度开始，包含大跳音程。具有独特的戏剧性和张力。"
     }
   ],
   "chords": [
@@ -226,291 +730,778 @@
       "id": "MajorTriad",
       "label": "Major Triad",
       "kind": "CHORD",
-      "intervals": [0, 4, 7],
-      "aliases": ["maj triad", "major", "M"],
+      "intervals": [
+        0,
+        4,
+        7
+      ],
+      "aliases": [
+        "maj triad",
+        "major",
+        "M"
+      ],
       "category": "triad",
       "difficulty": "初级",
-      "description": "大三和弦，明亮稳定的色彩"
+      "description": "大三和弦，明亮稳定的色彩",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "大三度+纯五度，音响效果明亮、稳定、协和，是所有流行音乐的基础。"
     },
     {
       "id": "MinorTriad",
       "label": "Minor Triad",
       "kind": "CHORD",
-      "intervals": [0, 3, 7],
-      "aliases": ["min triad", "minor", "m"],
+      "intervals": [
+        0,
+        3,
+        7
+      ],
+      "aliases": [
+        "min triad",
+        "minor",
+        "m"
+      ],
       "category": "triad",
       "difficulty": "初级",
-      "description": "小三和弦，忧伤内敛的色彩"
+      "description": "小三和弦，忧伤内敛的色彩",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "小三度+纯五度，音响柔和、忧郁、内敛，与大三和弦形成鲜明色彩对比。"
     },
     {
       "id": "DiminishedTriad",
       "label": "Diminished",
       "kind": "CHORD",
-      "intervals": [0, 3, 6],
-      "aliases": ["dim", "diminished triad", "diminished"],
+      "intervals": [
+        0,
+        3,
+        6
+      ],
+      "aliases": [
+        "dim",
+        "diminished triad",
+        "diminished"
+      ],
       "category": "triad",
       "difficulty": "初级",
-      "description": "减三和弦，紧张的减五度带来不稳定性"
+      "description": "减三和弦，紧张的减五度带来不稳定性",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "小三度+减五度，极度紧张、不稳定，常用于过渡和制造悬念。"
     },
     {
       "id": "AugmentedTriad",
       "label": "Augmented",
       "kind": "CHORD",
-      "intervals": [0, 4, 8],
-      "aliases": ["aug", "augmented triad", "augmented"],
+      "intervals": [
+        0,
+        4,
+        8
+      ],
+      "aliases": [
+        "aug",
+        "augmented triad",
+        "augmented"
+      ],
       "category": "triad",
       "difficulty": "初级",
-      "description": "增三和弦，紧张的增五度，漂浮不定的感觉"
+      "description": "增三和弦，紧张的增五度，漂浮不定的感觉",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "大三度+增五度，没有纯五度，具有漂浮、神秘的色彩，印象派音乐常用。"
     },
     {
       "id": "Sus2",
       "label": "Sus2",
       "kind": "CHORD",
-      "intervals": [0, 2, 7],
-      "aliases": ["suspended 2", "sus2"],
+      "intervals": [
+        0,
+        2,
+        7
+      ],
+      "aliases": [
+        "suspended 2",
+        "sus2"
+      ],
       "category": "suspended",
       "difficulty": "初级",
-      "description": "挂二和弦，用二度代替三度，开放悬浮"
+      "description": "挂二和弦，用二度代替三度，开放悬浮",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "用大二度代替三度，音响开放、空灵，常用于流行前奏和副歌的解决。"
     },
     {
       "id": "Sus4",
       "label": "Sus4",
       "kind": "CHORD",
-      "intervals": [0, 5, 7],
-      "aliases": ["suspended 4", "sus4"],
+      "intervals": [
+        0,
+        5,
+        7
+      ],
+      "aliases": [
+        "suspended 4",
+        "sus4"
+      ],
       "category": "suspended",
       "difficulty": "初级",
-      "description": "挂四和弦，用四度代替三度，期待解决"
+      "description": "挂四和弦，用四度代替三度，期待解决",
+      "fingerings": [
+        1,
+        3,
+        5
+      ],
+      "theory": "用纯四度代替三度，音响悬置、期待解决，摇滚和流行乐中极其常见。"
     },
     {
       "id": "Sus2Add9",
       "label": "Sus2(add9)",
       "kind": "CHORD",
-      "intervals": [0, 2, 7, 14],
-      "aliases": ["sus2 add9", "suspended 2 add 9"],
+      "intervals": [
+        0,
+        2,
+        7,
+        14
+      ],
+      "aliases": [
+        "sus2 add9",
+        "suspended 2 add 9"
+      ],
       "category": "suspended",
       "difficulty": "高级",
-      "description": "挂二加九和弦，双层二度音，空灵梦幻"
+      "description": "挂二加九和弦，双层二度音，空灵梦幻",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "在 Sus2 基础上添加高八度的大九度音，强化空灵的现代流行色彩。"
     },
     {
       "id": "Sus4Add9",
       "label": "Sus4(add9)",
       "kind": "CHORD",
-      "intervals": [0, 5, 7, 14],
-      "aliases": ["sus4 add9", "suspended 4 add 9"],
+      "intervals": [
+        0,
+        5,
+        7,
+        14
+      ],
+      "aliases": [
+        "sus4 add9",
+        "suspended 4 add 9"
+      ],
       "category": "suspended",
       "difficulty": "高级",
-      "description": "挂四加九和弦，现代流行音乐常用"
+      "description": "挂四加九和弦，现代流行音乐常用",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "在 Sus4 基础上添加高九度音，是现代流行和摇滚中极具特色的和弦。"
     },
     {
       "id": "Maj7",
       "label": "Maj7",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 11],
-      "aliases": ["major 7", "maj 7", "M7"],
+      "intervals": [
+        0,
+        4,
+        7,
+        11
+      ],
+      "aliases": [
+        "major 7",
+        "maj 7",
+        "M7"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "大七和弦，明亮优雅的大调色彩"
+      "description": "大七和弦，明亮优雅的大调色彩",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "大三和弦+大七度，音响华丽、优雅，是爵士乐标准曲（Standards）中最常见的大调和弦。"
     },
     {
       "id": "Min7",
       "label": "Minor 7",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 10],
-      "aliases": ["minor 7", "min 7", "m7"],
+      "intervals": [
+        0,
+        3,
+        7,
+        10
+      ],
+      "aliases": [
+        "minor 7",
+        "min 7",
+        "m7"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "小七和弦，柔和的爵士和声基础"
+      "description": "小七和弦，柔和的爵士和声基础",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "小三和弦+小七度，音响柔和、松弛，是爵士乐 ii-V-I 进行中的 ii 级和弦。"
     },
     {
       "id": "Dom7",
       "label": "Dom7",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10],
-      "aliases": ["7", "dominant 7", "dom 7"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10
+      ],
+      "aliases": [
+        "7",
+        "dominant 7",
+        "dom 7"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "属七和弦，强烈的解决倾向，蓝调和爵士的核心"
+      "description": "属七和弦，强烈的解决倾向，蓝调和爵士的核心",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "大三和弦+小七度，具有强烈的解决倾向，是蓝调、爵士和古典音乐中功能和声的核心。"
     },
     {
       "id": "MinMaj7",
       "label": "Minor Major 7",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 11],
-      "aliases": ["mM7", "minor major 7", "min maj 7"],
+      "intervals": [
+        0,
+        3,
+        7,
+        11
+      ],
+      "aliases": [
+        "mM7",
+        "minor major 7",
+        "min maj 7"
+      ],
       "category": "seventh",
       "difficulty": "高级",
-      "description": "小大七和弦，小三和弦加大七度，神秘色彩"
+      "description": "小大七和弦，小三和弦加大七度，神秘色彩",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "小三和弦+大七度，兼具小调的忧郁和大七度的明亮，具有神秘、电影感的色彩。"
     },
     {
       "id": "Min7b5",
       "label": "Half-Diminished 7",
       "kind": "CHORD",
-      "intervals": [0, 3, 6, 10],
-      "aliases": ["half diminished", "m7b5", "half-dim", "HalfDim7"],
+      "intervals": [
+        0,
+        3,
+        6,
+        10
+      ],
+      "aliases": [
+        "half diminished",
+        "m7b5",
+        "half-dim",
+        "HalfDim7"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "半减七和弦，常用于ii-V-I进行中的ii级"
+      "description": "半减七和弦，常用于ii-V-I进行中的ii级",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "减三和弦+小七度，又称半减七和弦。爵士乐 ii-V-I 中 ii 级的经典替代，具有柔和的张力。"
     },
     {
       "id": "Dim7",
       "label": "Dim7",
       "kind": "CHORD",
-      "intervals": [0, 3, 6, 9],
-      "aliases": ["diminished 7", "dim7"],
+      "intervals": [
+        0,
+        3,
+        6,
+        9
+      ],
+      "aliases": [
+        "diminished 7",
+        "dim7"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "减七和弦，完全对称，可自由转位"
+      "description": "减七和弦，完全对称，可自由转位",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "小三度连续叠加，形成完全对称结构。具有极强的紧张感和解决倾向，等和弦可自由转位。"
     },
     {
       "id": "Aug7",
       "label": "Augmented 7",
       "kind": "CHORD",
-      "intervals": [0, 4, 8, 10],
-      "aliases": ["aug7", "augmented 7", "+7"],
+      "intervals": [
+        0,
+        4,
+        8,
+        10
+      ],
+      "aliases": [
+        "aug7",
+        "augmented 7",
+        "+7"
+      ],
       "category": "seventh",
       "difficulty": "高级",
-      "description": "增七和弦，大三和弦加小七度，色彩丰富"
+      "description": "增七和弦，大三和弦加小七度，色彩丰富",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "增三和弦+小七度，是属和弦的替代形式，爵士乐中用于创造意外的和声色彩。"
     },
     {
       "id": "Maj6",
       "label": "Major 6",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 9],
-      "aliases": ["6", "major 6th", "M6"],
+      "intervals": [
+        0,
+        4,
+        7,
+        9
+      ],
+      "aliases": [
+        "6",
+        "major 6th",
+        "M6"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "大六和弦，明亮欢快，常用于爵士"
+      "description": "大六和弦，明亮欢快，常用于爵士",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "大三和弦+大六度，音响明亮、活泼，常用于爵士摇摆乐和拉丁音乐。"
     },
     {
       "id": "Min6",
       "label": "Minor 6",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 9],
-      "aliases": ["m6", "minor 6th", "min 6"],
+      "intervals": [
+        0,
+        3,
+        7,
+        9
+      ],
+      "aliases": [
+        "m6",
+        "minor 6th",
+        "min 6"
+      ],
       "category": "seventh",
       "difficulty": "中级",
-      "description": "小六和弦，小调和声中常用"
+      "description": "小六和弦，小调和声中常用",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "小三和弦+大六度，音响独特，带有拉丁和吉普赛音乐的风情。"
     },
     {
       "id": "Add9",
       "label": "Add9",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 14],
-      "aliases": ["add 9", "add9"],
+      "intervals": [
+        0,
+        4,
+        7,
+        14
+      ],
+      "aliases": [
+        "add 9",
+        "add9"
+      ],
       "category": "extended",
       "difficulty": "中级",
-      "description": "加九和弦，增添九度音的扩展色彩"
+      "description": "加九和弦，增添九度音的扩展色彩",
+      "fingerings": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "theory": "大三和弦+大九度音，不使用七音，音响清澈、开阔，是流行乐中常用的扩展和弦。"
     },
     {
       "id": "Maj9",
       "label": "Major 9",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 11, 14],
-      "aliases": ["maj9", "major 9th", "M9"],
+      "intervals": [
+        0,
+        4,
+        7,
+        11,
+        14
+      ],
+      "aliases": [
+        "maj9",
+        "major 9th",
+        "M9"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "大九和弦，五音和弦，华丽丰满"
+      "description": "大九和弦，五音和弦，华丽丰满",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "大七和弦+大九度，五音和弦，音响丰满华丽，是现代爵士和 R&B 的灵魂。"
     },
     {
       "id": "Min9",
       "label": "Minor 9",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 10, 14],
-      "aliases": ["m9", "minor 9th", "min 9"],
+      "intervals": [
+        0,
+        3,
+        7,
+        10,
+        14
+      ],
+      "aliases": [
+        "m9",
+        "minor 9th",
+        "min 9"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "小九和弦，忧郁而丰富的爵士色彩"
+      "description": "小九和弦，忧郁而丰富的爵士色彩",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "小七和弦+大九度，具有忧郁而丰富的色彩，是爵士 ballad 中常用的和声。"
     },
     {
       "id": "Dom9",
       "label": "Dominant 9",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10, 14],
-      "aliases": ["9", "dominant 9th", "dom 9"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10,
+        14
+      ],
+      "aliases": [
+        "9",
+        "dominant 9th",
+        "dom 9"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "属九和弦，Funk和爵士的灵魂"
+      "description": "属九和弦，Funk和爵士的灵魂",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "属七和弦+大九度， funk 和爵士乐中的标志性音响，色彩丰富而有张力。"
     },
     {
       "id": "Maj11",
       "label": "Major 11",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 11, 14, 17],
-      "aliases": ["maj11", "major 11th", "M11"],
+      "intervals": [
+        0,
+        4,
+        7,
+        11,
+        14,
+        17
+      ],
+      "aliases": [
+        "maj11",
+        "major 11th",
+        "M11"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "大十一和弦，六音和弦，现代感十足"
+      "description": "大十一和弦，六音和弦，现代感十足",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1
+      ],
+      "theory": "大九和弦+纯十一度，现代感十足，但通常省略三音以避免与十一度冲突。"
     },
     {
       "id": "Min11",
       "label": "Minor 11",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 10, 14, 17],
-      "aliases": ["m11", "minor 11th", "min 11"],
+      "intervals": [
+        0,
+        3,
+        7,
+        10,
+        14,
+        17
+      ],
+      "aliases": [
+        "m11",
+        "minor 11th",
+        "min 11"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "小十一和弦，深情的现代爵士和声"
+      "description": "小十一和弦，深情的现代爵士和声",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1
+      ],
+      "theory": "小九和弦+纯十一度，深情而复杂，是现代流行和爵士乐中常用的扩展和声。"
     },
     {
       "id": "Dom11",
       "label": "Dominant 11",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10, 14, 17],
-      "aliases": ["11", "dominant 11th", "dom 11"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10,
+        14,
+        17
+      ],
+      "aliases": [
+        "11",
+        "dominant 11th",
+        "dom 11"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "属十一和弦，复杂而丰富的属功能和声"
+      "description": "属十一和弦，复杂而丰富的属功能和声",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1
+      ],
+      "theory": "属九和弦+纯十一度，具有强烈的属功能和声色彩，爵士 fusion 中广泛使用。"
     },
     {
       "id": "Maj13",
       "label": "Major 13",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 11, 14, 17, 21],
-      "aliases": ["maj13", "major 13th", "M13"],
+      "intervals": [
+        0,
+        4,
+        7,
+        11,
+        14,
+        17,
+        21
+      ],
+      "aliases": [
+        "maj13",
+        "major 13th",
+        "M13"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "大十三和弦，七音和弦，最丰富的大调和声"
+      "description": "大十三和弦，七音和弦，最丰富的大调和声",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1,
+        2
+      ],
+      "theory": "大十一和弦+大十三度，七音和弦，是大调中最丰富的扩展和弦，音响极其华丽。"
     },
     {
       "id": "Min13",
       "label": "Minor 13",
       "kind": "CHORD",
-      "intervals": [0, 3, 7, 10, 14, 17, 21],
-      "aliases": ["m13", "minor 13th", "min 13"],
+      "intervals": [
+        0,
+        3,
+        7,
+        10,
+        14,
+        17,
+        21
+      ],
+      "aliases": [
+        "m13",
+        "minor 13th",
+        "min 13"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "小十三和弦，复杂的小调和声"
+      "description": "小十三和弦，复杂的小调和声",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1,
+        2
+      ],
+      "theory": "小十一和弦+大十三度，复杂的小调扩展和声，具有深厚的爵士色彩。"
     },
     {
       "id": "Dom13",
       "label": "Dominant 13",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10, 14, 17, 21],
-      "aliases": ["13", "dominant 13th", "dom 13"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10,
+        14,
+        17,
+        21
+      ],
+      "aliases": [
+        "13",
+        "dominant 13th",
+        "dom 13"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "属十三和弦，爵士乐中最复杂的属和弦"
+      "description": "属十三和弦，爵士乐中最复杂的属和弦",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        1,
+        2
+      ],
+      "theory": "属十一和弦+大十三度，爵士乐中最复杂的属和弦之一，包含属功能的所有张力音。"
     },
     {
       "id": "Dom7b9",
       "label": "Dominant 7(b9)",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10, 13],
-      "aliases": ["7b9", "dominant 7 flat 9", "dom 7 b9"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10,
+        13
+      ],
+      "aliases": [
+        "7b9",
+        "dominant 7 flat 9",
+        "dom 7 b9"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "属七降九和弦，神秘诡异，常用于电影配乐"
+      "description": "属七降九和弦，神秘诡异，常用于电影配乐",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "属七和弦+降九度，音响神秘、诡异，常用于电影配乐和前卫爵士中。"
     },
     {
       "id": "Dom7Sharp9",
       "label": "Dominant 7(#9)",
       "kind": "CHORD",
-      "intervals": [0, 4, 7, 10, 15],
-      "aliases": ["7#9", "dominant 7 sharp 9", "hendrix chord"],
+      "intervals": [
+        0,
+        4,
+        7,
+        10,
+        15
+      ],
+      "aliases": [
+        "7#9",
+        "dominant 7 sharp 9",
+        "hendrix chord"
+      ],
       "category": "extended",
       "difficulty": "高级",
-      "description": "属七升九和弦/亨德里克斯和弦，摇滚和蓝调的经典"
+      "description": "属七升九和弦/亨德里克斯和弦，摇滚和蓝调的经典",
+      "fingerings": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theory": "属七和弦+升九度，又称亨德里克斯和弦。摇滚和蓝调的经典音响，具有强烈的布鲁斯色彩。"
     }
   ]
 }

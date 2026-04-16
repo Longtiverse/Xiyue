@@ -15,7 +15,7 @@ internal data class HomeSelectionResolution(
     val resolvedSelectedId: String?,
     val supportedModes: List<PlaybackMode>,
     val resolvedPlaybackMode: PlaybackMode,
-    val clampedBpm: Int,
+    val clampedBpm: Float,
     val previewPlan: com.xiyue.app.domain.PracticePlaybackPlan?,
 )
 
@@ -29,9 +29,13 @@ internal class HomeSelectionResolver(
         selectedRoot: PitchClass,
         selectedPlaybackMode: PlaybackMode?,
         loopEnabled: Boolean,
-        bpm: Int,
+        bpm: Float,
         chordBlockEnabled: Boolean,
         chordArpeggioEnabled: Boolean,
+        inversion: Int = 0,
+        octave: Int = 4,
+        selectedDifficultyLabel: String? = null,
+        selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = com.xiyue.app.domain.RhythmPattern.STRAIGHT,
     ): HomeSelectionResolution {
         val filterKind = when (libraryFilter) {
             LibraryFilter.ALL, LibraryFilter.FAVORITES -> null
@@ -39,7 +43,11 @@ internal class HomeSelectionResolver(
             LibraryFilter.CHORD -> PracticeKind.CHORD
         }
 
-        val filteredItems = repository.searchLibraryItems("", filterKind)
+        val filteredItems = repository.searchLibraryItems("", filterKind).let { items ->
+            selectedDifficultyLabel?.let { label ->
+                items.filter { it.difficulty.label == label }
+            } ?: items
+        }
         val resolvedSelectedItem = repository.findLibraryItem(selectedLibraryItemId ?: filteredItems.firstOrNull()?.id.orEmpty())
             ?: filteredItems.firstOrNull()
             ?: repository.getLibraryItems().firstOrNull()
@@ -51,19 +59,21 @@ internal class HomeSelectionResolver(
         val resolvedPlaybackMode = selectedPlaybackMode
             ?.takeIf { it in supportedModes }
             ?: supportedModes.first()
-        val clampedBpm = bpm.coerceIn(40, 220)
+        val clampedBpm = bpm.coerceIn(40f, 240f)
 
         val previewPlan = resolvedSelectedItem?.let {
             sessionFactory.createPlan(
                 PracticeSelection(
                     libraryItemId = it.id,
                     root = selectedRoot,
-                    octave = 4,
+                    octave = octave,
                     bpm = clampedBpm,
                     loopEnabled = loopEnabled,
                     playbackMode = resolvedPlaybackMode,
                     chordBlockEnabled = chordBlockEnabled,
                     chordArpeggioEnabled = chordArpeggioEnabled,
+                    inversion = inversion,
+                    rhythmPattern = selectedRhythmPattern,
                 ),
             )
         }

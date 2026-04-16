@@ -27,6 +27,7 @@ fun FavoritesScreen(
     favorites: List<LibraryUiItem>,
     onToggleFavorite: (String) -> Unit,
     onSelectItem: (String) -> Unit,
+    onBrowseLibrary: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -41,6 +42,8 @@ fun FavoritesScreen(
                 icon = Icons.Default.Favorite,
                 title = "暂无收藏",
                 subtitle = "在练习界面点击收藏按钮来添加",
+                actionLabel = "去浏览曲库",
+                onAction = onBrowseLibrary,
                 modifier = modifier
                     .fillMaxSize()
                     .padding(padding),

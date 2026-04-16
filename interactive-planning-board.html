@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xiyue 项目决策规划板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            p0: '#ef4444',
+            p1: '#f59e0b',
+            p2: '#3b82f6',
+            done: '#22c55e',
+            doNow: '#8b5cf6',
+            doLater: '#06b6d4',
+            wontDo: '#64748b',
+            pending: '#475569',
+            dark: '#0f172a',
+            card: '#1e293b',
+            surface: '#334155'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+    }
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .card-hover {
+      transition: all 0.2s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+    .column-scroll {
+      max-height: calc(100vh - 240px);
+      overflow-y: auto;
+    }
+    .column-scroll::-webkit-scrollbar { width: 6px; }
+    .column-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+    .column-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    .column-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    .task-card { cursor: grab; position: relative; }
+    .task-card:active { cursor: grabbing; }
+    .task-card.dragging { opacity: 0.5; transform: rotate(2deg); }
+    .column.drag-over { background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.2); }
+    .modal-overlay {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+    }
+    .priority-badge-p0 { background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .priority-badge-p1 { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .priority-badge-p2 { background: rgba(59,130,246,0.2); color: #93c5fd; border: 1px solid rgba(59,130,246,0.3); }
+    .priority-badge-done { background: rgba(34,197,94,0.2); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .decision-badge-doNow { background: rgba(139,92,246,0.2); color: #ddd6fe; border: 1px solid rgba(139,92,246,0.4); }
+    .decision-badge-doLater { background: rgba(6,182,212,0.2); color: #a5f3fc; border: 1px solid rgba(6,182,212,0.4); }
+    .decision-badge-wontDo { background: rgba(100,116,139,0.2); color: #cbd5e1; border: 1px solid rgba(100,116,139,0.4); }
+    .decision-badge-pending { background: rgba(71,85,105,0.2); color: #94a3b8; border: 1px solid rgba(71,85,105,0.4); }
+    .search-highlight { background: rgba(99,102,241,0.5); padding: 0 2px; border-radius: 2px; }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(239,68,68,0.3); }
+      50% { box-shadow: 0 0 20px rgba(239,68,68,0.6); }
+    }
+    .p0-glow { animation: pulse-glow 2s infinite; }
+    .filter-chip {
+      transition: all 0.2s;
+    }
+    .filter-chip.active {
+      background: rgba(99,102,241,0.3);
+      border-color: rgba(99,102,241,0.6);
+      color: #c7d2fe;
+    }
+    .decision-btn {
+      transition: all 0.15s;
+    }
+    .decision-btn:hover {
+      transform: scale(1.05);
+    }
+    .decision-btn:active {
+      transform: scale(0.95);
+    }
+    .has-note::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 6px;
+      height: 6px;
+      background: #f59e0b;
+      border-radius: 50%;
+    }
+    /* Column specific backgrounds */
+    .col-doNow { border-top: 3px solid #8b5cf6; }
+    .col-doLater { border-top: 3px solid #06b6d4; }
+    .col-wontDo { border-top: 3px solid #64748b; }
+    .col-pending { border-top: 3px solid #475569; }
+    .col-done { border-top: 3px solid #22c55e; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-40 glass border-b border-slate-700/50">
+    <div class="px-6 py-4">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+            <i class="fas fa-gavel"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">Xiyue 项目决策规划板</h1>
+            <p class="text-xs text-slate-400">做 or 不做 · 立刻做 or 之后做 · 记录你的决策</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3 text-sm">
+          <div class="px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-600">
+            <span class="text-slate-400">总任务:</span>
+            <strong class="text-white ml-1" id="stat-total">0</strong>
+          </div>
+          <button onclick="openStatsModal()" class="px-4 py-2 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-sm hover:bg-indigo-600/30 transition-colors">
+            <i class="fas fa-chart-pie mr-2"></i>统计
+          </button>
+          <button onclick="openExportModal()" class="px-4 py-2 rounded-lg bg-emerald-600/20 border border-emerald-500/30 text-emerald-300 text-sm hover:bg-emerald-600/30 transition-colors">
+            <i class="fas fa-file-export mr-2"></i>导出
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div class="mt-4 flex items-center gap-3 flex-wrap">
+        <div class="relative flex-1 min-w-[240px] max-w-md">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+          <input type="text" id="searchInput" placeholder="搜索任务、来源文档、标签..." 
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-slate-800/80 border border-slate-700 text-sm focus:outline-none focus:border-indigo-500 transition-colors text-white">
+        </div>
+        
+        <div class="flex items-center gap-2 flex-wrap">
+          <button class="filter-chip active px-3 py-1.5 rounded-full text-xs border border-slate-600 text-slate-300 hover:bg-slate-700/50" data-filter="all">全部</button>
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs border border-slate-600 text-slate-300 hover:bg-slate-700/50" data-filter="pending">待决策</button>
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/20" data-filter="doNow">立刻做</button>
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs border border-cyan-500/30 text-cyan-300 hover:bg-cyan-600/20" data-filter="doLater">之后做</button>
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs border border-slate-500/30 text-slate-300 hover:bg-slate-600/20" data-filter="wontDo">不做</button>
+          <button class="filter-chip px-3 py-1.5 rounded-full text-xs border border-green-500/30 text-green-300 hover:bg-green-600/20" data-filter="done">已完成</button>
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+          <span class="text-xs text-slate-500">按优先级:</span>
+          <select id="priorityFilter" class="bg-slate-800/80 border border-slate-700 text-white text-xs rounded-lg px-2 py-1.5 focus:outline-none">
+            <option value="all">全部</option>
+            <option value="p0">P0</option>
+            <option value="p1">P1</option>
+            <option value="p2">P2</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Board -->
+  <main class="pt-40 pb-8 px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-full">
+      
+      <!-- Pending Column -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-slate-500"></div>
+            <h2 class="font-bold text-white">待决策</h2>
+            <span class="text-xs text-slate-500" id="count-pending">0</span>
+          </div>
+        </div>
+        <div class="column column-scroll glass rounded-xl p-3 flex-1 min-h-[400px] col-pending" data-status="pending" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+          <div id="tasks-pending" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Do Now Column -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-violet-500 p0-glow"></div>
+            <h2 class="font-bold text-white">立刻做</h2>
+            <span class="text-xs text-slate-500" id="count-doNow">0</span>
+          </div>
+        </div>
+        <div class="column column-scroll glass rounded-xl p-3 flex-1 min-h-[400px] col-doNow" data-status="doNow" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+          <div id="tasks-doNow" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Do Later Column -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-cyan-500"></div>
+            <h2 class="font-bold text-white">之后做</h2>
+            <span class="text-xs text-slate-500" id="count-doLater">0</span>
+          </div>
+        </div>
+        <div class="column column-scroll glass rounded-xl p-3 flex-1 min-h-[400px] col-doLater" data-status="doLater" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+          <div id="tasks-doLater" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Won't Do Column -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-slate-500"></div>
+            <h2 class="font-bold text-slate-400">不做</h2>
+            <span class="text-xs text-slate-500" id="count-wontDo">0</span>
+          </div>
+        </div>
+        <div class="column column-scroll glass rounded-xl p-3 flex-1 min-h-[400px] col-wontDo bg-slate-800/30" data-status="wontDo" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+          <div id="tasks-wontDo" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Done Column -->
+      <div class="flex flex-col">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <h2 class="font-bold text-white">已完成</h2>
+            <span class="text-xs text-slate-500" id="count-done">0</span>
+          </div>
+        </div>
+        <div class="column column-scroll glass rounded-xl p-3 flex-1 min-h-[400px] col-done" data-status="done" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+          <div id="tasks-done" class="space-y-2"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Task Detail / Decision Modal -->
+  <div id="taskModal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+    <div class="glass rounded-2xl max-w-lg w-full p-0 transform transition-all scale-95 opacity-0 overflow-hidden" id="taskModalContent">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-700/50 bg-slate-800/50">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2">
+            <span id="modalPriority" class="px-2 py-1 rounded text-xs font-medium"></span>
+            <span id="modalDecision" class="px-2 py-1 rounded text-xs font-medium"></span>
+          </div>
+          <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <h3 id="modalTitle" class="text-xl font-bold text-white mt-3"></h3>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="px-6 py-4 space-y-4 text-sm text-slate-300 max-h-[60vh] overflow-y-auto">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-800/30 rounded-lg p-3">
+            <div class="text-xs text-slate-500 mb-1"><i class="fas fa-file-alt mr-1"></i>来源</div>
+            <div class="text-white font-medium" id="modalSource"></div>
+          </div>
+          <div class="bg-slate-800/30 rounded-lg p-3">
+            <div class="text-xs text-slate-500 mb-1"><i class="fas fa-clock mr-1"></i>预估工时</div>
+            <div class="text-white font-medium" id="modalHours"></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/30 rounded-lg p-3">
+          <div class="text-xs text-slate-500 mb-1"><i class="fas fa-tag mr-1"></i>标签</div>
+          <div class="text-white" id="modalTags"></div>
+        </div>
+
+        <div id="modalDesc" class="text-slate-400 leading-relaxed bg-slate-800/20 rounded-lg p-3"></div>
+
+        <!-- Decision Buttons -->
+        <div>
+          <div class="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">你的决策</div>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setDecision('pending')" class="decision-btn py-2 rounded-lg bg-slate-700/50 border border-slate-600 text-slate-300 text-xs font-medium hover:bg-slate-700" id="btn-dec-pending">
+              <i class="fas fa-question block mb-1 text-sm"></i>待决策
+            </button>
+            <button onclick="setDecision('doNow')" class="decision-btn py-2 rounded-lg bg-violet-600/20 border border-violet-500/40 text-violet-300 text-xs font-medium hover:bg-violet-600/30" id="btn-dec-doNow">
+              <i class="fas fa-bolt block mb-1 text-sm"></i>立刻做
+            </button>
+            <button onclick="setDecision('doLater')" class="decision-btn py-2 rounded-lg bg-cyan-600/20 border border-cyan-500/40 text-cyan-300 text-xs font-medium hover:bg-cyan-600/30" id="btn-dec-doLater">
+              <i class="fas fa-hourglass-half block mb-1 text-sm"></i>之后做
+            </button>
+            <button onclick="setDecision('wontDo')" class="decision-btn py-2 rounded-lg bg-slate-600/20 border border-slate-500/40 text-slate-400 text-xs font-medium hover:bg-slate-600/30" id="btn-dec-wontDo">
+              <i class="fas fa-ban block mb-1 text-sm"></i>不做
+            </button>
+          </div>
+        </div>
+
+        <!-- Note Input -->
+        <div>
+          <div class="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider">决策备注 / 意见</div>
+          <textarea id="modalNote" rows="3" placeholder="写下你的决策理由、想法或需要补充的信息..."
+            class="w-full px-3 py-2 rounded-lg bg-slate-800/80 border border-slate-700 text-sm focus:outline-none focus:border-indigo-500 transition-colors text-white resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-700/50 bg-slate-800/30 flex justify-between">
+        <button onclick="setDecision('done')" class="px-4 py-2 rounded-lg bg-green-600/20 border border-green-500/40 text-green-300 text-sm font-medium hover:bg-green-600/30 transition-colors">
+          <i class="fas fa-check mr-2"></i>标记为已完成
+        </button>
+        <div class="flex gap-2">
+          <button onclick="saveNoteAndClose()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors">
+            保存备注并关闭
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Modal -->
+  <div id="statsModal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+    <div class="glass rounded-2xl max-w-2xl w-full p-6 transform transition-all scale-95 opacity-0" id="statsModalContent">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-white"><i class="fas fa-chart-pie mr-2 text-indigo-400"></i>决策统计概览</h3>
+        <button onclick="closeStatsModal()" class="text-slate-400 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+        <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+          <div class="text-2xl font-bold text-slate-400" id="stats-pending">0</div>
+          <div class="text-[10px] text-slate-500 mt-1 uppercase">待决策</div>
+        </div>
+        <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+          <div class="text-2xl font-bold text-violet-400" id="stats-doNow">0</div>
+          <div class="text-[10px] text-slate-500 mt-1 uppercase">立刻做</div>
+        </div>
+        <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+          <div class="text-2xl font-bold text-cyan-400" id="stats-doLater">0</div>
+          <div class="text-[10px] text-slate-500 mt-1 uppercase">之后做</div>
+        </div>
+        <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+          <div class="text-2xl font-bold text-slate-400" id="stats-wontDo">0</div>
+          <div class="text-[10px] text-slate-500 mt-1 uppercase">不做</div>
+        </div>
+        <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+          <div class="text-2xl font-bold text-green-400" id="stats-done">0</div>
+          <div class="text-[10px] text-slate-500 mt-1 uppercase">已完成</div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-slate-300">决策完成率 (非待决策 / 总任务)</span>
+            <span class="text-white font-medium" id="decision-rate">0%</span>
+          </div>
+          <div class="h-3 bg-slate-700 rounded-full overflow-hidden">
+            <div id="decision-bar" class="h-full bg-gradient-to-r from-violet-500 via-cyan-500 to-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="bg-slate-800/30 rounded-lg p-3">
+            <div class="text-slate-400 mb-1">优先级分布 (待做)</div>
+            <div class="text-white font-medium" id="priority-dist">-</div>
+          </div>
+          <div class="bg-slate-800/30 rounded-lg p-3">
+            <div class="text-slate-400 mb-1">带备注的任务</div>
+            <div class="text-white font-medium" id="notes-count">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="exportModal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+    <div class="glass rounded-2xl max-w-2xl w-full p-0 transform transition-all scale-95 opacity-0 overflow-hidden" id="exportModalContent">
+      <div class="px-6 py-4 border-b border-slate-700/50 bg-slate-800/50 flex items-center justify-between">
+        <h3 class="text-lg font-bold text-white"><i class="fas fa-file-export mr-2 text-emerald-400"></i>导出决策结果</h3>
+        <button onclick="closeExportModal()" class="text-slate-400 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <div class="px-6 py-4 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <button onclick="exportMarkdown()" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800 transition-all text-left">
+            <div class="text-emerald-400 mb-2"><i class="fas fa-file-alt text-xl"></i></div>
+            <div class="text-white font-medium text-sm">Markdown 报告</div>
+            <div class="text-xs text-slate-500 mt-1">适合发给我或贴进文档</div>
+          </button>
+          <button onclick="exportJSON()" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800 transition-all text-left">
+            <div class="text-emerald-400 mb-2"><i class="fas fa-code text-xl"></i></div>
+            <div class="text-white font-medium text-sm">JSON 数据</div>
+            <div class="text-xs text-slate-500 mt-1">适合备份或导入</div>
+          </button>
+          <button onclick="exportPlainText()" class="group p-4 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800 transition-all text-left">
+            <div class="text-emerald-400 mb-2"><i class="fas fa-align-left text-xl"></i></div>
+            <div class="text-white font-medium text-sm">纯文本清单</div>
+            <div class="text-xs text-slate-500 mt-1">最简洁的只读格式</div>
+          </button>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="text-xs text-slate-400 font-medium uppercase tracking-wider">导出内容预览</label>
+            <div class="flex gap-2">
+              <button onclick="copyExportContent()" class="text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600 transition-colors">
+                <i class="fas fa-copy mr-1"></i>复制
+              </button>
+              <button onclick="downloadExport()" class="text-xs px-2 py-1 rounded bg-emerald-700 text-emerald-100 hover:bg-emerald-600 transition-colors">
+                <i class="fas fa-download mr-1"></i>下载
+              </button>
+            </div>
+          </div>
+          <textarea id="exportPreview" readonly rows="8" class="w-full px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-700 text-xs font-mono text-slate-300 resize-none focus:outline-none"></textarea>
+        </div>
+      </div>
+      <div class="px-6 py-3 border-t border-slate-700/50 bg-slate-800/30 flex justify-end">
+        <button onclick="closeExportModal()" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm transition-colors">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300">
+    <div class="glass px-4 py-3 rounded-lg border border-slate-600 text-white text-sm flex items-center gap-3 shadow-xl">
+      <i class="fas fa-info-circle text-indigo-400"></i>
+      <span id="toastMsg">操作成功</span>
+    </div>
+  </div>
+
+  <script>
+    // localStorage key
+    const STORAGE_KEY = 'xiyue-planning-board-v1';
+
+    // 默认任务数据
+    const defaultTasks = [
+      // === P0 必须做 (默认待决策) ===
+      { id: 'p0-1', title: '新用户引导流程 - 首次使用引导', priority: 'p0', source: 'todos-improvements.json', hours: '2-3天', tags: ['UX', 'Onboarding'], desc: '设计3-5步引导流程，首次打开时自动播放C Major上行示例，添加帮助按钮随时查看指引。', decision: 'pending', note: '' },
+      { id: 'p0-2', title: '指法标注 - 琴键上显示指法数字', priority: 'p0', source: 'todos-improvements.json', hours: '2-3天', tags: ['教学', '键盘'], desc: '在琴键上叠加指法数字（白键显示1-5），支持右手/左手切换，添加指法模式开关。', decision: 'pending', note: '' },
+      { id: 'p0-3', title: '练习进度自动保存 - 状态持久化', priority: 'p0', source: 'todos-improvements.json', hours: '1-2天', tags: ['数据', '体验'], desc: '自动保存当前练习状态（音阶、BPM、进度stepIndex），App重启后恢复上次状态，添加"继续练习"快捷入口。', decision: 'pending', note: '' },
+      { id: 'p0-4', title: '播放中允许实时调 BPM', priority: 'p0', source: 'ux-iteration-plan.md', hours: '1天', tags: ['播放', '核心'], desc: '播放中拖动BPM滑块立即生效，无需停止。PlaybackRunner响应BPM变化重算beatDurationMs。', decision: 'pending', note: '' },
+      { id: 'p0-5', title: '播放中支持热切换方向', priority: 'p0', source: 'ux-iteration-plan.md', hours: '1天', tags: ['播放', '核心'], desc: '播放中切换方向（升/降/升降），自动从当前位置重建steps并继续。', decision: 'pending', note: '' },
+      { id: 'p0-6', title: '根音切换时键盘预览立即更新', priority: 'p0', source: 'ux-iteration-plan.md', hours: '4h', tags: ['UI', '键盘'], desc: '切换根音后previewPitchClasses立即重算，键盘高亮实时变化。', decision: 'pending', note: '' },
+      { id: 'p0-7', title: '播放时节拍器视觉提示', priority: 'p0', source: 'ux-iteration-plan.md', hours: '4h', tags: ['动效', '播放'], desc: '播放中屏幕边缘随节拍脉冲发光，播放按钮随节拍轻微缩放呼吸。', decision: 'pending', note: '' },
+      { id: 'p0-8', title: '暂停恢复时位置提示', priority: 'p0', source: 'ux-iteration-plan.md', hours: '4h', tags: ['UX', '播放'], desc: '恢复播放时，当前音符先闪烁高亮1秒再继续播放。', decision: 'pending', note: '' },
+      { id: 'p0-9', title: '播放/非播放界面平滑过渡', priority: 'p0', source: 'ux-iteration-plan.md', hours: '2h', tags: ['动效', 'UI'], desc: 'Ready→Playing控制区用AnimatedVisibility/Crossfade实现300ms淡入淡出过渡。', decision: 'pending', note: '' },
+      { id: 'p0-10', title: '当前音符视觉强调', priority: 'p0', source: 'ux-iteration-plan.md', hours: '2h', tags: ['UI', '动效'], desc: '当前播放音符chip有放大动画（1.15x）+发光阴影效果。', decision: 'pending', note: '' },
+      { id: 'p0-11', title: '和弦键盘预览分层颜色', priority: 'p0', source: 'ux-iteration-plan.md', hours: '4h', tags: ['UI', '和弦'], desc: '齐奏时根音用最深色，三音中等，五音浅色，七音最浅。', decision: 'pending', note: '' },
+      { id: 'p0-12', title: '和弦转位支持', priority: 'p0', source: 'ux-iteration-plan.md', hours: '1天', tags: ['音乐理论', '和弦'], desc: '增加转位选项（原位/第一转位/第二转位），根据inversion重排intervals。', decision: 'pending', note: '' },
+      { id: 'p0-13', title: '无障碍支持 - contentDescription和焦点顺序', priority: 'p0', source: 'design-review-and-plan.md', hours: '4h', tags: ['A11y', '规范'], desc: '为所有交互组件添加TalkBack描述，确保焦点顺序合理。', decision: 'pending', note: '' },
+      { id: 'p0-14', title: 'BPM滑块热区扩大 + 触觉反馈', priority: 'p0', source: 'design-review-and-plan.md', hours: '2h', tags: ['交互', '体验'], desc: '滑块轨道高度从4dp增至8dp，滑块半径从12dp增至18dp，滑动时添加短促震动。', decision: 'pending', note: '' },
+
+      // === P1 想做 ===
+      { id: 'p1-1', title: '听力训练模式 - 盲听和测试', priority: 'p1', source: 'todos-improvements.json', hours: '4-5天', tags: ['教育', '核心功能'], desc: '盲听模式隐藏键盘高亮，只听声音；听音识别测试播放音阶让用户选择答案；成绩统计和进步曲线。', decision: 'pending', note: '' },
+      { id: 'p1-2', title: '底部Tab导航 - 简化操作路径', priority: 'p1', source: 'todos-improvements.json', hours: '2-3天', tags: ['导航', 'UX'], desc: '添加底部Tab栏：首页/收藏/历史/设置；首页增加"最近使用"和"收藏"快捷入口；减少从选择到播放的操作步骤。', decision: 'pending', note: '' },
+      { id: 'p1-3', title: '手势操作支持 - 滑动和长按', priority: 'p1', source: 'todos-improvements.json', hours: '3-4天', tags: ['交互', '移动端'], desc: '左滑/右滑切换上一个/下一个音阶；双指捏合缩放键盘视图；长按琴键试听单音；上下滑动快速调节BPM。', decision: 'pending', note: '' },
+      { id: 'p1-4', title: '游戏化元素 - 分数和成就', priority: 'p1', source: 'todos-improvements.json', hours: '5-7天', tags: ['留存', '游戏化'], desc: '准确率打分系统、连击（Combo）计数、成就系统（如"C Major大师"）、每日练习目标。', decision: 'pending', note: '' },
+      { id: 'p1-5', title: '乐理知识卡片 - 音阶理论', priority: 'p1', source: 'todos-improvements.json', hours: '3-4天', tags: ['教育', '内容'], desc: '每个音阶/和弦附带知识卡片，显示音程结构、应用场景说明、链接到相关曲目示例。', decision: 'pending', note: '' },
+      { id: 'p1-6', title: 'BPM精度自定义 - 精确输入', priority: 'p1', source: 'todos-improvements.json', hours: '1-2天', tags: ['专业', '播放'], desc: 'BPM输入框支持手动输入任意值，滑块步进可调（1/5/10），添加常用速度标记（Andante/Allegro等）。', decision: 'pending', note: '' },
+      { id: 'p1-7', title: '播放按钮呼吸动画', priority: 'p1', source: 'ux-iteration-plan.md', hours: '1h', tags: ['动效', 'UI'], desc: '首次打开或空闲3秒后，播放按钮有微弱呼吸动画暗示"点我"。', decision: 'pending', note: '' },
+      { id: 'p1-8', title: '曲库显示中文描述', priority: 'p1', source: 'ux-iteration-plan.md', hours: '2h', tags: ['本地化', 'UI'], desc: '列表卡片主显示中文名（如"多利亚调式"），英文名为副标题。', decision: 'pending', note: '' },
+      { id: 'p1-9', title: '难度分级UI展示', priority: 'p1', source: 'ux-iteration-plan.md', hours: '2h', tags: ['UI', '内容'], desc: '列表项显示难度星级（1-3星），颜色区分初/中/高级。', decision: 'pending', note: '' },
+      { id: 'p1-10', title: '曲库分组显示', priority: 'p1', source: 'ux-iteration-plan.md', hours: '1天', tags: ['UI', '重构'], desc: '曲库不再纯横向滚动，改为按类型分组（音阶类型/和弦类型）纵向列表。', decision: 'pending', note: '' },
+      { id: 'p1-11', title: '选完音阶自动音频预览', priority: 'p1', source: 'ux-iteration-plan.md', hours: '2h', tags: ['UX', '音频'], desc: '点选音阶后自动播放2-3秒上行片段预览。', decision: 'pending', note: '' },
+      { id: 'p1-12', title: '八度选择器', priority: 'p1', source: 'ux-iteration-plan.md', hours: '4h', tags: ['功能', '播放'], desc: '新增八度选择器（范围2-6，默认4），取代硬编码的octave=4。', decision: 'pending', note: '' },
+      { id: 'p1-13', title: '回到上一步', priority: 'p1', source: 'ux-iteration-plan.md', hours: '4h', tags: ['播放', '控制'], desc: '支持点击序列中已播放的音符跳转到该位置。', decision: 'pending', note: '' },
+      { id: 'p1-14', title: '浅色主题对比度修复', priority: 'p1', source: 'design-review-and-plan.md', hours: '3h', tags: ['视觉', '主题'], desc: '浅色主题下部分文字（如#94a3b8）可读性差，需提升至#334155以上满足WCAG AA。', decision: 'pending', note: '' },
+      { id: 'p1-15', title: '播放模式切换过渡动画', priority: 'p1', source: 'design-review-and-plan.md', hours: '4h', tags: ['动效', 'UI'], desc: '播放模式切换（上行/下行/上下行）增加0.2s淡入淡出指示器动画。', decision: 'pending', note: '' },
+      { id: 'p1-16', title: '根音选择器滑动反馈增强', priority: 'p1', source: 'design-review-and-plan.md', hours: '3h', tags: ['交互', '震动'], desc: '根音选择器增加触觉反馈（VibrationEffect），滑动时更明确。', decision: 'pending', note: '' },
+      { id: 'p1-17', title: '空状态设计 - 收藏历史为空', priority: 'p1', source: 'todos-improvements.json', hours: '1-2天', tags: ['UI', '体验'], desc: '设计空状态插画，添加引导文案（如"去探索音阶库"），添加CTA按钮跳转到对应页面。', decision: 'pending', note: '' },
+      { id: 'p1-18', title: 'Sprint 1 验收项集合', priority: 'p1', source: 'iteration-plan-parallel.md', hours: '1周', tags: ['Sprint', '批量'], desc: '包含：滑动根音选择器震动+参考音、BPM滑块震动+双击恢复120、长按卡片菜单、两指缩放键盘、4拍倒计时、边缘BPM闪烁、30秒录音、3步引导页、难度筛选。', decision: 'pending', note: '' },
+
+      // === P2 规划 ===
+      { id: 'p2-1', title: '高级和弦库扩展 - Dim7/Aug', priority: 'p2', source: 'todos-improvements.json', hours: '3-4天', tags: ['音乐理论', '内容'], desc: '增加减七和弦（Diminished 7th）、增和弦（Augmented）、挂留和弦（Sus2/Sus4），和弦分类筛选（Triads/7ths/Extended）。', decision: 'pending', note: '' },
+      { id: 'p2-2', title: '多种音色选择 - 弦乐管乐等', priority: 'p2', source: 'todos-improvements.json', hours: '4-5天', tags: ['音频', '体验'], desc: '增加弦乐、管乐、合成器音色；不同音色帮助理解音阶色彩；音色切换实时预览。', decision: 'pending', note: '' },
+      { id: 'p2-3', title: '节奏型变体 - Swing/三连音', priority: 'p2', source: 'todos-improvements.json', hours: '5-7天', tags: ['播放', '专业'], desc: '增加Swing节奏、附点节奏、三连音、节奏型预设选择。', decision: 'pending', note: '' },
+      { id: 'p2-4', title: '录音回放功能 - 麦克风录音', priority: 'p2', source: 'todos-improvements.json', hours: '5-7天', tags: ['功能', '硬件'], desc: '录音功能（麦克风权限）、波形对比显示、音准偏差分析、保存录音到本地。', decision: 'pending', note: '' },
+      { id: 'p2-5', title: '低延迟路径优化 - AAudio', priority: 'p2', source: 'todos-improvements.json', hours: '3-4天', tags: ['性能', 'NDK'], desc: '配置AUDIO_OUTPUT_FLAG_FAST，Android 8.0+使用AAudio路径，降低10-30ms延迟。', decision: 'pending', note: '' },
+      { id: 'p2-6', title: '社交元素 - 分享和排行榜', priority: 'p2', source: 'todos-improvements.json', hours: '5-7天', tags: ['社交', '运营'], desc: '分享练习成绩到微信/朋友圈、排行榜（周榜/月榜）、练习打卡功能。', decision: 'pending', note: '' },
+      { id: 'p2-7', title: '数据分析埋点 - 用户行为', priority: 'p2', source: 'todos-improvements.json', hours: '3-4天', tags: ['数据', '增长'], desc: '接入友盟/神策等分析平台，埋点：音阶使用频率、功能使用率、流失节点，数据看板搭建。', decision: 'pending', note: '' },
+      { id: 'p2-8', title: '动态Logo/启动动画设计', priority: 'p2', source: 'design-review-and-plan.md', hours: '8h', tags: ['品牌', '视觉'], desc: '设计动态品牌Logo（五线谱+音符融合），添加启动动画提升品牌感。', decision: 'pending', note: '' },
+      { id: 'p2-9', title: '音频-UI同步优化', priority: 'p2', source: 'design-review-and-plan.md', hours: '6h', tags: ['性能', '同步'], desc: '使用Choreographer对齐音频回调与UI渲染，优化键盘高亮与音频播放的微小延迟。', decision: 'pending', note: '' },
+      { id: 'p2-10', title: '卡片间距调整', priority: 'p2', source: 'design-review-and-plan.md', hours: '2h', tags: ['视觉', 'UI'], desc: '音阶/和弦卡片信息密度高，间距可再优化，卡片内边距从14px增至18px。', decision: 'pending', note: '' },
+      { id: 'p2-11', title: 'P2 UX Backlog (18项)', priority: 'p2', source: 'ux-iteration-plan.md', hours: '持续', tags: ['规划', 'Backlog'], desc: '包含：预备拍、渐进速度、键盘缩放、静音模式、音量控制UI、收藏一键操作、最近记录UI、练习统计、成就系统、练习提醒、横屏支持、锁屏控制、分享卡片、MIDI同步、自定义音阶、今日推荐等。', decision: 'pending', note: '' },
+      { id: 'p2-12', title: 'Sprint 2-3 高级功能', priority: 'p2', source: 'iteration-plan-parallel.md', hours: '2周+', tags: ['Sprint', '批量'], desc: '边缘滑动返回、触摸键盘发声、浮动播放球、实时频谱、力度控制、16分音符节拍器、练习时长统计、自适应速度、成就徽章、3D Touch、滚动乐谱、AB循环、Google登录、每日挑战。', decision: 'pending', note: '' },
+
+      // === 已完成 ===
+      { id: 'done-1', title: '中文本地化 - 音阶和弦名称翻译', priority: 'done', source: 'todos-improvements.json', hours: '已完成', tags: ['本地化'], desc: '界面文案已全面中文化。', decision: 'done', note: '' },
+      { id: 'done-2', title: '音频焦点处理 - Android音频规范', priority: 'done', source: 'todos-improvements.json', hours: '已完成', tags: ['稳定性'], desc: '实现了AudioFocusRequest，来电/通知打断后恢复焦点自动继续播放。', decision: 'done', note: '' },
+      { id: 'done-3', title: '内存泄漏修复 - AudioTrack并发保护', priority: 'done', source: 'todos-improvements.json', hours: '已完成', tags: ['稳定性'], desc: '限制了同时存在的AudioTrack数量，修复了快速操作导致的资源泄漏。', decision: 'done', note: '' },
+      { id: 'done-4', title:'空状态设计 - 收藏历史为空', priority: 'done', source: 'todos-improvements.json', hours: '已完成', tags: ['UI'], desc: 'FavoritesScreen已实现空状态展示。', decision: 'done', note: '' },
+      { id: 'done-5', title: '编译生成新APK', priority: 'done', source: 'todos-improvements.json', hours: '已完成', tags: ['构建'], desc: '最新APK已生成并通过测试。', decision: 'done', note: '' },
+      { id: 'done-6', title: 'ComboScreen播放功能补全', priority: 'done', source: '本次开发', hours: '已完成', tags: ['功能'], desc: 'ComboScreen的音符选择/和弦进行已接入PracticePlaybackService，支持真实播放和动态和弦预设转调。', decision: 'done', note: '' },
+      { id: 'done-7', title: 'UI中文化与规范对齐', priority: 'done', source: '本次开发', hours: '已完成', tags: ['UI'], desc: 'HomeScreen、PlaybackControls、KeyboardPreview、BPM选择器等已对齐设计文档V2.2。', decision: 'done', note: '' },
+      { id: 'done-8', title: 'AudioTrack闪退修复', priority: 'done', source: '本次开发', hours: '已完成', tags: ['稳定性'], desc: 'MODE_STATIC降级为MODE_STREAM，添加try-catch和并发保护。', decision: 'done', note: '' },
+      { id: 'done-9', title: 'Android 13+通知权限修复', priority: 'done', source: '本次开发', hours: '已完成', tags: ['稳定性'], desc: 'MainActivity已添加POST_NOTIFICATIONS运行时权限申请。', decision: 'done', note: '' },
+      { id: 'done-10', title: 'App Icon精修', priority: 'done', source: '本次开发', hours: '已完成', tags: ['视觉'], desc: '补齐12音级环，accent色从#7CF6C8校准为#73D3B5。', decision: 'done', note: '' },
+    ];
+
+    let allTasks = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
+    let currentPriorityFilter = 'all';
+    let draggedTask = null;
+    let selectedTaskId = null;
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (Array.isArray(saved) && saved.length > 0) {
+            // Merge saved decisions/notes into default tasks to handle schema updates
+            const taskMap = new Map(saved.map(t => [t.id, t]));
+            allTasks = defaultTasks.map(def => {
+              const savedTask = taskMap.get(def.id);
+              return savedTask
+                ? { ...def, decision: savedTask.decision || def.decision, note: savedTask.note || '' }
+                : def;
+            });
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load from localStorage', e);
+      }
+      allTasks = JSON.parse(JSON.stringify(defaultTasks));
+    }
+
+    function saveTasks() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allTasks));
+      } catch (e) {
+        console.error('Failed to save to localStorage', e);
+      }
+    }
+
+    function init() {
+      loadTasks();
+      renderBoard();
+      updateStats();
+      setupEventListeners();
+    }
+
+    function getFilteredTasks() {
+      return allTasks.filter(task => {
+        const matchesFilter = currentFilter === 'all' || task.decision === currentFilter;
+        const matchesPriority = currentPriorityFilter === 'all' || task.priority === currentPriorityFilter;
+        const searchLower = currentSearch.toLowerCase();
+        const matchesSearch = !searchLower || 
+          task.title.toLowerCase().includes(searchLower) ||
+          task.tags.some(t => t.toLowerCase().includes(searchLower)) ||
+          task.source.toLowerCase().includes(searchLower) ||
+          task.desc.toLowerCase().includes(searchLower) ||
+          task.note.toLowerCase().includes(searchLower);
+        return matchesFilter && matchesPriority && matchesSearch;
+      });
+    }
+
+    function renderBoard() {
+      const columns = { pending: [], doNow: [], doLater: [], wontDo: [], done: [] };
+      const tasks = getFilteredTasks();
+      
+      tasks.forEach(task => {
+        columns[task.decision].push(task);
+      });
+
+      Object.keys(columns).forEach(decision => {
+        const container = document.getElementById(`tasks-${decision}`);
+        container.innerHTML = columns[decision].map(task => createTaskCard(task)).join('');
+        document.getElementById(`count-${decision}`).textContent = columns[decision].length;
+      });
+
+      document.getElementById('stat-total').textContent = allTasks.length;
+    }
+
+    function createTaskCard(task) {
+      const priorityLabels = { p0: 'P0', p1: 'P1', p2: 'P2', done: 'Done' };
+      const highlightTitle = highlightText(task.title, currentSearch);
+      const hasNoteClass = task.note.trim() ? 'has-note' : '';
+      
+      // 快捷决策按钮：根据当前状态显示可转移的目标
+      const quickActions = [];
+      if (task.decision !== 'doNow') quickActions.push(`<button onclick="event.stopPropagation(); quickDecide('${task.id}', 'doNow')" class="w-6 h-6 rounded bg-violet-600/30 text-violet-300 hover:bg-violet-600/50 text-[10px]" title="立刻做"><i class="fas fa-bolt"></i></button>`);
+      if (task.decision !== 'doLater') quickActions.push(`<button onclick="event.stopPropagation(); quickDecide('${task.id}', 'doLater')" class="w-6 h-6 rounded bg-cyan-600/30 text-cyan-300 hover:bg-cyan-600/50 text-[10px]" title="之后做"><i class="fas fa-hourglass-half"></i></button>`);
+      if (task.decision !== 'wontDo') quickActions.push(`<button onclick="event.stopPropagation(); quickDecide('${task.id}', 'wontDo')" class="w-6 h-6 rounded bg-slate-600/30 text-slate-400 hover:bg-slate-600/50 text-[10px]" title="不做"><i class="fas fa-ban"></i></button>`);
+      if (task.decision !== 'pending') quickActions.push(`<button onclick="event.stopPropagation(); quickDecide('${task.id}', 'pending')" class="w-6 h-6 rounded bg-slate-700/50 text-slate-300 hover:bg-slate-700 text-[10px]" title="重置为待决策"><i class="fas fa-undo"></i></button>`);
+
+      return `
+        <div class="task-card card-hover glass rounded-lg p-3 border border-slate-700/50 ${task.priority === 'p0' ? 'border-l-4 border-l-red-500' : ''} ${hasNoteClass}"
+          draggable="true"
+          ondragstart="dragStart(event, '${task.id}')"
+          onclick="openTaskModal('${task.id}')">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <span class="priority-badge-${task.priority} px-1.5 py-0.5 rounded text-[10px] font-bold">${priorityLabels[task.priority]}</span>
+            <div class="flex gap-1 opacity-70 hover:opacity-100 transition-opacity">
+              ${quickActions.join('')}
+            </div>
+          </div>
+          <h4 class="text-sm font-medium text-slate-200 mb-1 leading-snug">${highlightTitle}</h4>
+          ${task.note.trim() ? `<div class="text-[10px] text-amber-400/90 bg-amber-500/10 rounded px-1.5 py-1 mb-1.5 line-clamp-2">${highlightText(task.note, currentSearch)}</div>` : ''}
+          <div class="flex items-center justify-between text-xs text-slate-500">
+            <span><i class="fas fa-clock mr-1"></i>${task.hours}</span>
+            <span class="truncate max-w-[80px]">${task.source.replace('.md','').replace('.json','')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function highlightText(text, search) {
+      if (!search) return text;
+      const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    // Quick decide from card buttons
+    function quickDecide(taskId, decision) {
+      const task = allTasks.find(t => t.id === taskId);
+      if (task) {
+        task.decision = decision;
+        saveTasks();
+        renderBoard();
+        updateStats();
+        showToast(`"${task.title.substring(0, 20)}..." 已移到 ${getDecisionLabel(decision)}`);
+      }
+    }
+
+    function getDecisionLabel(decision) {
+      const map = { pending: '待决策', doNow: '立刻做', doLater: '之后做', wontDo: '不做', done: '已完成' };
+      return map[decision] || decision;
+    }
+
+    // Drag & Drop
+    function dragStart(e, taskId) {
+      draggedTask = allTasks.find(t => t.id === taskId);
+      e.target.classList.add('dragging');
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function dragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+      
+      if (!draggedTask) return;
+      const newDecision = e.currentTarget.dataset.status;
+      if (newDecision && draggedTask.decision !== newDecision) {
+        draggedTask.decision = newDecision;
+        saveTasks();
+        renderBoard();
+        updateStats();
+        showToast(`"${draggedTask.title.substring(0, 20)}..." 已移到 ${getDecisionLabel(newDecision)}`);
+      }
+      draggedTask = null;
+    }
+
+    // Modal
+    function openTaskModal(taskId) {
+      selectedTaskId = taskId;
+      const task = allTasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      document.getElementById('modalTitle').innerHTML = highlightText(task.title, currentSearch);
+      document.getElementById('modalSource').textContent = task.source;
+      document.getElementById('modalHours').textContent = task.hours;
+      document.getElementById('modalTags').textContent = task.tags.join(' · ');
+      document.getElementById('modalDesc').textContent = task.desc;
+      document.getElementById('modalNote').value = task.note;
+      
+      const pBadge = document.getElementById('modalPriority');
+      pBadge.className = `px-2 py-1 rounded text-xs font-medium priority-badge-${task.priority}`;
+      pBadge.textContent = task.priority.toUpperCase();
+
+      const dBadge = document.getElementById('modalDecision');
+      dBadge.className = `px-2 py-1 rounded text-xs font-medium decision-badge-${task.decision}`;
+      dBadge.textContent = getDecisionLabel(task.decision);
+
+      // Highlight active decision button
+      document.querySelectorAll('[id^="btn-dec-"]').forEach(btn => btn.classList.remove('ring-2', 'ring-white'));
+      const activeBtn = document.getElementById(`btn-dec-${task.decision}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-white');
+
+      const modal = document.getElementById('taskModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('taskModalContent').classList.remove('scale-95', 'opacity-0');
+        document.getElementById('taskModalContent').classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const content = document.getElementById('taskModalContent');
+      content.classList.remove('scale-100', 'opacity-100');
+      content.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        document.getElementById('taskModal').classList.add('hidden');
+        selectedTaskId = null;
+      }, 200);
+    }
+
+    function setDecision(decision) {
+      if (!selectedTaskId) return;
+      const task = allTasks.find(t => t.id === selectedTaskId);
+      task.decision = decision;
+      task.note = document.getElementById('modalNote').value;
+      saveTasks();
+      
+      // Update badges in modal
+      const dBadge = document.getElementById('modalDecision');
+      dBadge.className = `px-2 py-1 rounded text-xs font-medium decision-badge-${decision}`;
+      dBadge.textContent = getDecisionLabel(decision);
+      
+      document.querySelectorAll('[id^="btn-dec-"]').forEach(btn => btn.classList.remove('ring-2', 'ring-white'));
+      const activeBtn = document.getElementById(`btn-dec-${decision}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-white');
+
+      renderBoard();
+      updateStats();
+      showToast(`已标记为 ${getDecisionLabel(decision)}`);
+    }
+
+    function saveNoteAndClose() {
+      if (!selectedTaskId) return;
+      const task = allTasks.find(t => t.id === selectedTaskId);
+      task.note = document.getElementById('modalNote').value;
+      saveTasks();
+      renderBoard();
+      updateStats();
+      closeModal();
+      showToast('备注已保存');
+    }
+
+    // Stats
+    function updateStats() {
+      const counts = { pending: 0, doNow: 0, doLater: 0, wontDo: 0, done: 0 };
+      allTasks.forEach(t => counts[t.decision]++);
+      
+      Object.keys(counts).forEach(k => {
+        const el = document.getElementById(`stats-${k}`);
+        if (el) el.textContent = counts[k];
+      });
+
+      const total = allTasks.length;
+      const decided = total - counts.pending;
+      const rate = Math.round((decided / total) * 100);
+      document.getElementById('decision-rate').textContent = rate + '%';
+      document.getElementById('decision-bar').style.width = rate + '%';
+
+      // Priority distribution among active work (doNow + doLater + pending)
+      const activeP0 = allTasks.filter(t => ['pending','doNow','doLater'].includes(t.decision) && t.priority==='p0').length;
+      const activeP1 = allTasks.filter(t => ['pending','doNow','doLater'].includes(t.decision) && t.priority==='p1').length;
+      const activeP2 = allTasks.filter(t => ['pending','doNow','doLater'].includes(t.decision) && t.priority==='p2').length;
+      document.getElementById('priority-dist').textContent = `P0:${activeP0} · P1:${activeP1} · P2:${activeP2}`;
+
+      // Notes count
+      const notesCount = allTasks.filter(t => t.note.trim()).length;
+      document.getElementById('notes-count').textContent = `${notesCount} 个任务有备注`;
+    }
+
+    function openStatsModal() {
+      updateStats();
+      const modal = document.getElementById('statsModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('statsModalContent').classList.remove('scale-95', 'opacity-0');
+        document.getElementById('statsModalContent').classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeStatsModal() {
+      const content = document.getElementById('statsModalContent');
+      content.classList.remove('scale-100', 'opacity-100');
+      content.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        document.getElementById('statsModal').classList.add('hidden');
+      }, 200);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Export functions
+    let lastExportContent = '';
+    let lastExportFilename = 'export.txt';
+
+    function openExportModal() {
+      exportMarkdown(); // default preview
+      const modal = document.getElementById('exportModal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('exportModalContent').classList.remove('scale-95', 'opacity-0');
+        document.getElementById('exportModalContent').classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeExportModal() {
+      const content = document.getElementById('exportModalContent');
+      content.classList.remove('scale-100', 'opacity-100');
+      content.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        document.getElementById('exportModal').classList.add('hidden');
+      }, 200);
+    }
+
+    function setExportPreview(text, filename) {
+      lastExportContent = text;
+      lastExportFilename = filename;
+      document.getElementById('exportPreview').value = text;
+    }
+
+    function exportMarkdown() {
+      const now = new Date().toLocaleString('zh-CN');
+      let md = `# Xiyue 项目决策报告\\n\\n> 生成时间：${now}\\n> 任务总数：${allTasks.length}\\n\\n`;
+      
+      const sections = [
+        { key: 'doNow', title: '立刻做', emoji: '⚡' },
+        { key: 'doLater', title: '之后做', emoji: '⏳' },
+        { key: 'wontDo', title: '不做', emoji: '🚫' },
+        { key: 'pending', title: '待决策', emoji: '❓' },
+        { key: 'done', title: '已完成', emoji: '✅' }
+      ];
+
+      sections.forEach(sec => {
+        const items = allTasks.filter(t => t.decision === sec.key);
+        md += `## ${sec.emoji} ${sec.title}（${items.length} 项）\\n\\n`;
+        if (items.length === 0) {
+          md += '_无_\\n\\n';
+        } else {
+          items.forEach(t => {
+            md += `- **${t.title}** \`[${t.priority.toUpperCase()}]\`\\n`;
+            md += `  - 来源：${t.source}｜工时：${t.hours}｜标签：${t.tags.join('/')}\\n`;
+            if (t.note.trim()) {
+              md += `  - 备注：${t.note.trim()}\\n`;
+            }
+            md += `\\n`;
+          });
+        }
+      });
+
+      setExportPreview(md, `xiyue-decisions-${new Date().toISOString().slice(0,10)}.md`);
+    }
+
+    function exportJSON() {
+      const payload = {
+        generatedAt: new Date().toISOString(),
+        total: allTasks.length,
+        tasks: allTasks.map(t => ({
+          id: t.id,
+          title: t.title,
+          priority: t.priority,
+          decision: t.decision,
+          note: t.note,
+          source: t.source,
+          hours: t.hours,
+          tags: t.tags,
+          desc: t.desc
+        }))
+      };
+      setExportPreview(JSON.stringify(payload, null, 2), `xiyue-decisions-${new Date().toISOString().slice(0,10)}.json`);
+    }
+
+    function exportPlainText() {
+      let txt = `Xiyue 项目决策清单\\n生成时间：${new Date().toLocaleString('zh-CN')}\\n\\n`;
+      const labels = { doNow: '【立刻做】', doLater: '【之后做】', wontDo: '【不做】', pending: '【待决策】', done: '【已完成】' };
+      
+      Object.keys(labels).forEach(key => {
+        const items = allTasks.filter(t => t.decision === key);
+        txt += `${labels[key]} ${items.length} 项\\n`;
+        txt += '─'.repeat(40) + '\\n';
+        items.forEach(t => {
+          txt += `[${t.priority.toUpperCase()}] ${t.title}`;
+          if (t.note.trim()) txt += ` // ${t.note.trim()}`;
+          txt += '\\n';
+        });
+        txt += '\\n';
+      });
+      
+      setExportPreview(txt, `xiyue-decisions-${new Date().toISOString().slice(0,10)}.txt`);
+    }
+
+    function copyExportContent() {
+      const textarea = document.getElementById('exportPreview');
+      textarea.select();
+      try {
+        navigator.clipboard.writeText(lastExportContent).then(() => {
+          showToast('已复制到剪贴板');
+        }).catch(() => {
+          document.execCommand('copy');
+          showToast('已复制到剪贴板');
+        });
+      } catch (e) {
+        showToast('复制失败');
+      }
+    }
+
+    function downloadExport() {
+      const blob = new Blob([lastExportContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = lastExportFilename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`已下载 ${lastExportFilename}`);
+    }
+
+    // Event Listeners
+    function setupEventListeners() {
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        currentSearch = e.target.value.trim();
+        renderBoard();
+      });
+
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentFilter = chip.dataset.filter;
+          renderBoard();
+        });
+      });
+
+      document.getElementById('priorityFilter').addEventListener('change', (e) => {
+        currentPriorityFilter = e.target.value;
+        renderBoard();
+      });
+
+      document.getElementById('taskModal').addEventListener('click', (e) => {
+        if (e.target.id === 'taskModal') closeModal();
+      });
+      document.getElementById('statsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'statsModal') closeStatsModal();
+      });
+      document.getElementById('exportModal').addEventListener('click', (e) => {
+        if (e.target.id === 'exportModal') closeExportModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeModal();
+          closeStatsModal();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

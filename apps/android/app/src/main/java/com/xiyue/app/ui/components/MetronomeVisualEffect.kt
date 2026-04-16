@@ -34,14 +34,14 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MetronomeEdgeGlow(
     isPlaying: Boolean,
-    bpm: Int,
+    bpm: Float,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     intensity: Float = 0.6f,
 ) {
     if (!isPlaying) return
 
-    val beatDurationMs = 60000 / bpm.coerceIn(40, 240)
+    val beatDurationMs = (60000f / bpm.coerceIn(40f, 240f)).toInt()
 
     // 闪烁动画，与 BPM 同步
     val infiniteTransition = rememberInfiniteTransition(label = "metronome_glow")
@@ -229,13 +229,13 @@ private fun DrawScope.drawEdgeGlow(
 @Composable
 fun MetronomePulseRing(
     isPlaying: Boolean,
-    bpm: Int,
+    bpm: Float,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
 ) {
     if (!isPlaying) return
 
-    val beatDurationMs = 60000 / bpm.coerceIn(40, 240)
+    val beatDurationMs = (60000f / bpm.coerceIn(40f, 240f)).toInt()
 
     val infiniteTransition = rememberInfiniteTransition(label = "pulse_ring")
     val ringScale by infiniteTransition.animateFloat(
@@ -285,7 +285,7 @@ fun MetronomePulseRing(
 @Composable
 fun BeatIndicator(
     isPlaying: Boolean,
-    bpm: Int,
+    bpm: Float,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
 ) {
@@ -303,7 +303,7 @@ fun BeatIndicator(
         return
     }
 
-    val beatDurationMs = 60000 / bpm.coerceIn(40, 240)
+    val beatDurationMs = (60000f / bpm.coerceIn(40f, 240f)).toInt()
 
     val infiniteTransition = rememberInfiniteTransition(label = "beat_indicator")
     val dotScale by infiniteTransition.animateFloat(
