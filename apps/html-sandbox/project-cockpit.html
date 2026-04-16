@@ -661,7 +661,7 @@ PlaybackEngine 和 BPM 控制逻辑
         if (section === 'Current Focus') currentFocus = line;
         if (section === 'Completed' && line.startsWith('- [x]')) completed.push(line.replace('- [x]', '').trim());
         if (section === 'In Progress') inProgress = line;
-        if (section === 'Blockers') blockers = line;
+        if (section === 'Blockers') blockers = line.replace(/^[-•]\s*/, '').trim();
         if (section === 'Next Steps' && /^\d+\./.test(line)) nextSteps.push(line.replace(/^\d+\./, '').trim());
         if (section === 'Modified Files' && line.startsWith('- ')) modifiedFiles.push(line.replace('- ', '').trim());
         if (inModified && (line.startsWith('- ') || line.startsWith('  - ') || line.startsWith('    - '))) {
@@ -805,14 +805,36 @@ PlaybackEngine 和 BPM 控制逻辑
       el.innerHTML = html;
     }
 
+    function formatGitTime(isoStr) {
+      try {
+        const d = new Date(isoStr);
+        if (isNaN(d)) return isoStr;
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
     function renderGitLog() {
       const el = document.getElementById('gitLogPanel');
       if (!appState.gitLog.length) { el.innerHTML = '<div class="git-item" style="opacity:0.5">暂无提交记录</div>'; return; }
       el.innerHTML = appState.gitLog.slice(0, 5).map(msg => {
+        const parts = msg.split('|');
+        if (parts.length >= 3) {
+          const [hash, time, ...messageParts] = parts;
+          const message = messageParts.join('|');
+          const displayTime = formatGitTime(time);
+          return `<div class="git-item" title="${escapeHtml(msg)}"><span class="git-hash">${hash}</span><span class="git-time">${escapeHtml(displayTime)}</span><span class="git-msg">${escapeHtml(message)}</span></div>`;
+        }
         const hashMatch = msg.match(/^([a-f0-9]+)\s+/);
         const hash = hashMatch ? hashMatch[1] : '';
         const message = hash ? msg.replace(hash, '').trim() : msg;
-        return `<div class="git-item" title="${escapeHtml(msg)}"><span class="git-hash">${hash ? hash.substring(0, 7) : '•'}</span>${escapeHtml(message)}</div>`;
+        return `<div class="git-item" title="${escapeHtml(msg)}"><span class="git-hash">${hash ? hash.substring(0, 7) : '•'}</span><span class="git-msg">${escapeHtml(message)}</span></div>`;
       }).join('');
     }
 
