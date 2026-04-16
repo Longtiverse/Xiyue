@@ -54,7 +54,7 @@ internal class PlaybackRunner(
                 )
                 val highlightSnapshot = resumeSnapshot.copy(resumeHighlight = true)
                 snapshotPublisher(highlightSnapshot, false)
-                kotlinx.coroutines.delay(1000)
+                kotlinx.coroutines.delay(300)
             }
 
             var switchApplied = false

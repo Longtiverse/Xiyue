@@ -258,7 +258,6 @@ class PracticeSessionFactory(
             selection.chordArpeggioEnabled && selection.chordBlockEnabled -> {
                 addAll(createChordArpeggioSteps(item, selection))
                 addAll(createChordBlockSteps(item, selection))
-                addAll(createChordBlockSteps(item, selection))
             }
             selection.chordArpeggioEnabled -> addAll(createChordArpeggioSteps(item, selection))
             else -> addAll(createChordBlockSteps(item, selection))

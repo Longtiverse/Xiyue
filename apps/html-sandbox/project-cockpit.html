@@ -185,6 +185,11 @@
     .git-item:hover { background: rgba(255,255,255,0.03); }
     .git-hash { color: var(--text-tertiary); font-size: 0.78rem; margin-right: 8px; font-family: monospace; }
 
+    .issue-list { display: flex; flex-direction: column; gap: 6px; }
+    .issue-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px; font-size: 0.92rem; color: #fecaca; line-height: 1.5; }
+    .issue-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-red); flex-shrink: 0; margin-top: 5px; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+    .issue-text { flex: 1; }
+
     .section-title-sm { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
     .section-title-sm::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-blue); }
 
@@ -425,7 +430,7 @@
       <!-- Todos -->
       <div class="panel panel-green">
         <div class="panel-header">
-          <div class="panel-title"><div class="panel-icon">☑️</div>待办进度</div>
+          <div class="panel-title"><div class="panel-icon">☑️</div>待办与问题</div>
         </div>
         <div class="panel-body" id="todosPanel">
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -742,20 +747,55 @@ PlaybackEngine 和 BPM 控制逻辑
       toggleOverlay('detailOverlay');
     }
 
+    function extractBlockers() {
+      if (!appState.progress) return [];
+      const lines = appState.progress.split('\n');
+      let section = '', blockers = [];
+      for (const line of lines) {
+        if (line.startsWith('## ')) { section = line.replace('## ', '').trim(); continue; }
+        if (section === 'Blockers' && line.trim() && !line.startsWith('##')) {
+          const cleaned = line.replace(/^[-•]\s*/, '').trim();
+          if (cleaned && cleaned !== '暂无' && cleaned !== '...') blockers.push(cleaned);
+        }
+      }
+      return blockers;
+    }
+
     function renderTodos() {
       const el = document.getElementById('todosPanel');
-      if (!appState.todos || !appState.todos.items) { el.innerHTML = '<div class="empty-state" style="padding:24px"><div class="empty-state-icon">📂</div>暂无待办数据</div>'; return; }
-      const done = appState.todos.items.filter(i => i.status === 'done').length;
-      const total = appState.todos.items.length;
-      const pct = Math.round((done / total) * 100);
-      let html = `<div class="todo-summary"><div class="todo-summary-text">完成度 ${done}/${total}</div><div style="font-size:0.85rem;font-weight:600;color:${pct===100?'var(--accent-cyan)':'var(--text-secondary)'}">${pct}%</div></div>`;
-      html += `<div class="progress-bar" style="margin-bottom:14px"><div class="progress-fill progress-gradient-green" style="width:${pct}%"></div></div>`;
-      html += `<div class="todo-list">`;
-      appState.todos.items.slice(0, 6).forEach(item => {
-        const isDone = item.status === 'done';
-        html += `<div class="todo-item"><div class="todo-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div><div class="todo-text ${isDone ? 'done' : ''}">${escapeHtml(item.title)}</div></div>`;
-      });
-      html += '</div>';
+      const blockers = extractBlockers();
+      const hasTodos = appState.todos && appState.todos.items && appState.todos.items.length;
+
+      if (!hasTodos && !blockers.length) {
+        el.innerHTML = '<div class="empty-state" style="padding:24px"><div class="empty-state-icon">📂</div>暂无待办与问题数据</div>';
+        return;
+      }
+
+      let html = '';
+
+      if (blockers.length) {
+        html += `<div class="section-title-sm" style="color:#fca5a5;margin-bottom:8px">⚠ 当前问题</div>`;
+        html += `<div class="issue-list" style="margin-bottom:16px">`;
+        blockers.slice(0, 3).forEach(b => {
+          html += `<div class="issue-item"><span class="issue-dot"></span><span class="issue-text">${escapeHtml(b)}</span></div>`;
+        });
+        html += '</div>';
+      }
+
+      if (hasTodos) {
+        const done = appState.todos.items.filter(i => i.status === 'done').length;
+        const total = appState.todos.items.length;
+        const pct = Math.round((done / total) * 100);
+        html += `<div class="todo-summary"><div class="todo-summary-text">完成度 ${done}/${total}</div><div style="font-size:0.85rem;font-weight:600;color:${pct===100?'var(--accent-cyan)':'var(--text-secondary)'}">${pct}%</div></div>`;
+        html += `<div class="progress-bar" style="margin-bottom:14px"><div class="progress-fill progress-gradient-green" style="width:${pct}%"></div></div>`;
+        html += `<div class="todo-list">`;
+        appState.todos.items.slice(0, 6).forEach(item => {
+          const isDone = item.status === 'done';
+          html += `<div class="todo-item"><div class="todo-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div><div class="todo-text ${isDone ? 'done' : ''}">${escapeHtml(item.title)}</div></div>`;
+        });
+        html += '</div>';
+      }
+
       el.innerHTML = html;
     }
 
