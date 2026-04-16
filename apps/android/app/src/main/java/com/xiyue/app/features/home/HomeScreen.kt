@@ -30,10 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import com.xiyue.app.ui.components.EmptyState
 import com.xiyue.app.ui.components.LibraryItemDetailsDialog
 import com.xiyue.app.ui.components.LibraryItemWithContextMenu
-import com.xiyue.app.ui.components.MetronomeEdgeGlow
 import com.xiyue.app.ui.components.MockupSectionSurface
 import com.xiyue.app.ui.components.SwipeableRootNoteSelector
 import com.xiyue.app.ui.theme.DesignTokens
@@ -49,17 +50,10 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        MetronomeEdgeGlow(
-            isPlaying = state.isPlaying,
-            bpm = state.bpm,
-            modifier = Modifier.fillMaxSize(),
-            color = XiyueGold,
-            intensity = 0.45f,
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = DesignTokens.Spacing.md, vertical = DesignTokens.Spacing.md),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {

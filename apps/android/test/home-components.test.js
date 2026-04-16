@@ -78,8 +78,9 @@ test('android home screen delegates to spec-shaped section composables', () => {
   assert.match(keyboardSection, /Live/);
   assert.match(keyboardSection, /current|active|scale/i);
   assert.match(keyboardSection, /BlackKey/);
-  assert.match(keyboardSection, /boundaryCentersPx/);
+  assert.match(keyboardSection, /LocalDensity/);
   assert.match(keyboardSection, /whiteKeyWidthPx/);
+  assert.match(keyboardSection, /blackKeyWidthPx/);
   assert.match(keyboardSection, /offset\(x = /);
   assert.match(keyboardSection, /KeyboardLegend/);
   assert.match(keyboardSection, /Brush\.verticalGradient/);

@@ -19,6 +19,7 @@ internal class PlaybackRunner(
         activeNoteLabels: List<String>,
         queuedItemId: String?,
         queuedTitle: String?,
+        amplitude: Float,
     ) -> PlaybackSnapshot,
 ) {
     suspend fun run(
@@ -51,6 +52,7 @@ internal class PlaybackRunner(
                     resumeStep.activeNoteLabels,
                     null,
                     null,
+                    0.05f,
                 )
                 val highlightSnapshot = resumeSnapshot.copy(resumeHighlight = true)
                 snapshotPublisher(highlightSnapshot, false)
@@ -75,6 +77,12 @@ internal class PlaybackRunner(
                     " - ${remainingSec}s left"
                 } else ""
 
+                val amplitude = if (step.midiNotes.isEmpty()) {
+                    0.05f
+                } else {
+                    (step.midiNotes.size.toFloat() / 4f).coerceIn(0.25f, 1.0f)
+                }
+
                 val snapshot = createSnapshot(
                     activeRequest,
                     activePlan,
@@ -86,6 +94,7 @@ internal class PlaybackRunner(
                     step.activeNoteLabels,
                     null,
                     null,
+                    amplitude,
                 )
                 snapshotPublisher(snapshot, false)
 
