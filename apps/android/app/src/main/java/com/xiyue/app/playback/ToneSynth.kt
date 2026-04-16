@@ -19,7 +19,8 @@ class ToneSynth {
     private var activeTrack: AudioTrack? = null
     private val playingTracks = linkedSetOf<AudioTrack>()
     private val solfegeMidiBase = 60 // C4
-    private val synthesisEngine = ToneSynthesisEngine(SAMPLE_RATE)
+    private val karplusEngine = KarplusStrongEngine(SAMPLE_RATE)
+    private val vocalEngine = VocalSynthesisEngine(SAMPLE_RATE)
     private var aaudioPlayer: AaudioPlayer? = null
     private var aaudioReleaseJob: Job? = null
 
@@ -36,10 +37,8 @@ class ToneSynth {
         }
 
         val isVocal = soundMode == PlaybackSoundMode.SOLFEGE
-        val profile = if (isVocal) ToneProfile.vocal() else TonePresets.warmPractice()
-        val tailDurationMs = profile.releaseTailMs
-        val renderDurationMs = step.durationMs + tailDurationMs
-        
+        val renderDurationMs = step.durationMs + 300L
+
         val actualMidiNotes = if (isVocal) {
             step.midiNotes.map { midi ->
                 val semitone = ((midi % 12) + 12) % 12
@@ -49,24 +48,25 @@ class ToneSynth {
         } else {
             step.midiNotes
         }
-        
+
+        val safeVelocity = volumeFactor.coerceIn(0.12f, 1f)
         val pcm = if (isVocal) {
-            synthesisEngine.createVocalSamples(
+            val solfeges = step.activeNoteLabels.map { it.uppercase() }
+            vocalEngine.synthesizeVocalChord(
                 midiNotes = actualMidiNotes,
-                stepDurationMs = step.durationMs,
-                renderDurationMs = renderDurationMs,
-                volumeFactor = volumeFactor,
+                solfeges = solfeges,
+                durationMs = renderDurationMs,
+                velocity = safeVelocity,
             )
         } else {
-            synthesisEngine.createInstrumentalSamples(
+            karplusEngine.synthesizeChord(
                 midiNotes = actualMidiNotes,
-                stepDurationMs = step.durationMs,
-                renderDurationMs = renderDurationMs,
+                durationMs = renderDurationMs,
+                velocity = safeVelocity,
                 tonePreset = tonePreset,
-                volumeFactor = volumeFactor,
             )
         }
-        
+
         // Try AAudio low-latency path first
         if (tryAaudioPath(pcm, step.durationMs, renderDurationMs)) {
             delay(step.durationMs)
@@ -76,10 +76,8 @@ class ToneSynth {
         val audioTrack = createAudioTrack(pcm.size * BYTES_PER_SAMPLE)
             ?: throw PlaybackException("AudioTrack initialization failed")
 
-
         withContext(Dispatchers.IO) {
             synchronized(lock) {
-                // 并发保护：限制同时存在的 track 数量，避免 OOM
                 while (playingTracks.size >= MAX_CONCURRENT_TRACKS) {
                     playingTracks.firstOrNull()?.let { oldest ->
                         playingTracks.remove(oldest)
@@ -132,7 +130,6 @@ class ToneSynth {
                 .setPerformanceMode(AudioTrack.PERFORMANCE_MODE_LOW_LATENCY)
                 .build()
         } catch (e: Exception) {
-            // 降级：MODE_STREAM 对 buffer size 要求更宽松
             try {
                 AudioTrack.Builder()
                     .setAudioAttributes(
@@ -181,17 +178,12 @@ class ToneSynth {
         return true
     }
 
-    /**
-     * Play a single tone with given frequency and duration
-     * Used for countdown beep and reference tones
-     */
     suspend fun playTone(frequency: Double, durationMs: Int) {
-        val profile = TonePresets.warmPractice()
-        val pcm = synthesisEngine.createToneSamples(
+        val pcm = karplusEngine.synthesizeNote(
             frequency = frequency,
-            durationMs = durationMs,
-            profile = profile,
-            volumeFactor = 1.0f,
+            durationMs = durationMs.toLong(),
+            velocity = 1.0f,
+            tonePreset = TonePreset.PIANO,
         )
 
         val audioTrack = try {

@@ -28,7 +28,7 @@ class HomeStateFactory(
         selectedPlaybackMode: PlaybackMode? = null,
         chordBlockEnabled: Boolean = false,
         chordArpeggioEnabled: Boolean = true,
-        selectedTonePreset: TonePreset = TonePreset.SOFT_PIANO,
+        selectedTonePreset: TonePreset = TonePreset.PIANO,
         soundMode: PlaybackSoundMode = PlaybackSoundMode.PITCH,
         loopEnabled: Boolean = true,
         loopDurationMs: Long = 0L,

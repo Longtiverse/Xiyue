@@ -16,7 +16,7 @@ class PracticeSessionFactory(
                     bpm = selection.bpm,
                     loopEnabled = selection.loopEnabled,
                     playbackMode = selection.playbackMode,
-                    tonePreset = TonePreset.WARM_PRACTICE,
+                    tonePreset = TonePreset.PIANO,
                     soundMode = PlaybackSoundMode.PITCH,
                 )
             }
@@ -27,7 +27,7 @@ class PracticeSessionFactory(
                     root = selection.root,
                     bpm = selection.bpm,
                     loopEnabled = selection.loopEnabled,
-                    tonePreset = TonePreset.WARM_PRACTICE,
+                    tonePreset = TonePreset.PIANO,
                     soundMode = PlaybackSoundMode.PITCH,
                     chordBlockEnabled = selection.chordBlockEnabled,
                     chordArpeggioEnabled = selection.chordArpeggioEnabled,

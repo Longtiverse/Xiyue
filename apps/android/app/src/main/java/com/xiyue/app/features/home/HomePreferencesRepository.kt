@@ -13,7 +13,7 @@ data class HomePreferencesState(
     val recentLibraryItemIds: List<String> = emptyList(),
     val selectedRoot: PitchClass = PitchClass.C,
     val selectedPlaybackMode: PlaybackMode? = null,
-    val selectedTonePreset: TonePreset = TonePreset.WARM_PRACTICE,
+    val selectedTonePreset: TonePreset = TonePreset.PIANO,
     val soundMode: PlaybackSoundMode = PlaybackSoundMode.PITCH,
     val bpm: Float = 96f,
     val loopEnabled: Boolean = true,
@@ -61,7 +61,7 @@ class HomePreferencesRepository(
                 ?.let { runCatching { PlaybackMode.valueOf(it) }.getOrNull() },
             selectedTonePreset = selectedTonePresetName
                 ?.let { runCatching { TonePreset.valueOf(it) }.getOrNull() }
-                ?: TonePreset.WARM_PRACTICE,
+                ?: TonePreset.PIANO,
             soundMode = soundModeName
                 ?.let { runCatching { PlaybackSoundMode.valueOf(it) }.getOrNull() }
                 ?: PlaybackSoundMode.PITCH,

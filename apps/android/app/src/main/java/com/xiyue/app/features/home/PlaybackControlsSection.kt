@@ -1,19 +1,6 @@
 package com.xiyue.app.features.home
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,11 +16,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -99,114 +96,84 @@ fun PlaybackControlsSection(
                 ),
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
             ) {
-                OptionLabel("方向")
-                state.modeOptions.forEach { option ->
-                    if (isPlaying) {
-                        if (option.selected) StatusPill(label = option.label)
-                    } else {
-                        OptionPill(
-                            label = option.label,
-                            selected = option.selected,
-                            onClick = { onAction(HomeAction.UpdatePlaybackMode(option.mode)) },
-                        )
-                    }
-                }
-
-                OptionLabel("循环")
+                // 循环
                 if (isPlaying) {
-                    StatusPill(label = if (state.loopEnabled) "开" else "关")
+                    StatusPill(label = if (state.loopEnabled) "循环·开" else "循环·关")
                 } else {
                     OptionPill(
-                        label = if (state.loopEnabled) "开" else "关",
+                        label = if (state.loopEnabled) "循环·开" else "循环·关",
                         selected = state.loopEnabled,
                         onClick = { onAction(HomeAction.ToggleLoop) },
                     )
                 }
 
+                // 方向
+                CompactSelector(
+                    label = "方向",
+                    options = state.modeOptions.map { it.label },
+                    selectedIndex = state.modeOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                    readOnly = isPlaying,
+                    onSelect = { onAction(HomeAction.UpdatePlaybackMode(state.modeOptions[it].mode)) },
+                )
+
                 if (state.isChord) {
-                    OptionLabel("和弦")
-                    state.chordModeOptions.forEach { option ->
-                        if (isPlaying) {
-                            if (option.selected) StatusPill(label = option.label)
-                        } else {
-                            OptionPill(
-                                label = option.label,
-                                selected = option.selected,
-                                onClick = { onAction(HomeAction.UpdateChordPlaybackMode(option.mode)) },
-                            )
-                        }
-                    }
-                    if (state.inversionOptions.isNotEmpty()) {
-                        OptionLabel("转位")
-                        state.inversionOptions.forEach { option ->
-                            if (isPlaying) {
-                                if (option.selected) StatusPill(label = option.label)
-                            } else {
-                                OptionPill(
-                                    label = option.label,
-                                    selected = option.selected,
-                                    onClick = { onAction(HomeAction.UpdateInversion(option.inversion)) },
-                                )
-                            }
-                        }
-                    }
-                }
-
-                OptionLabel("八度")
-                state.octaveOptions.forEach { option ->
-                    if (isPlaying) {
-                        if (option.selected) StatusPill(label = option.label)
-                    } else {
-                        OptionPill(
-                            label = option.label,
-                            selected = option.selected,
-                            onClick = { onAction(HomeAction.UpdateOctave(option.octave)) },
-                        )
-                    }
-                }
-
-                OptionLabel("节奏")
-                state.rhythmOptions.forEach { option ->
-                    if (isPlaying) {
-                        if (option.selected) StatusPill(label = option.label)
-                    } else {
-                        OptionPill(
-                            label = option.label,
-                            selected = option.selected,
-                            onClick = { onAction(HomeAction.UpdateRhythmPattern(option.pattern)) },
-                        )
-                    }
-                }
-
-                OptionLabel("音色")
-                state.toneOptions.forEach { option ->
-                    if (isPlaying) {
-                        if (option.selected) StatusPill(label = option.shortLabel)
-                    } else {
-                        OptionPill(
-                            label = option.shortLabel,
-                            selected = option.selected,
-                            onClick = { onAction(HomeAction.UpdateTonePreset(option.preset)) },
-                        )
-                    }
-                }
-
-                if (isPlaying) {
-                    StatusPill(label = state.soundMode.label)
-                } else {
-                    OptionPill(
-                        label = state.soundMode.label,
-                        selected = state.soundMode == PlaybackSoundMode.SOLFEGE,
-                        onClick = {
-                            val nextMode = if (state.soundMode == PlaybackSoundMode.PITCH) {
-                                PlaybackSoundMode.SOLFEGE
-                            } else {
-                                PlaybackSoundMode.PITCH
-                            }
-                            onAction(HomeAction.UpdateSoundMode(nextMode))
-                        },
+                    // 和弦
+                    CompactSelector(
+                        label = "和弦",
+                        options = state.chordModeOptions.map { it.label },
+                        selectedIndex = state.chordModeOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                        readOnly = isPlaying,
+                        onSelect = { onAction(HomeAction.UpdateChordPlaybackMode(state.chordModeOptions[it].mode)) },
                     )
+
+                    // 转位
+                    if (state.inversionOptions.isNotEmpty()) {
+                        CompactSelector(
+                            label = "转位",
+                            options = state.inversionOptions.map { it.label },
+                            selectedIndex = state.inversionOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                            readOnly = isPlaying,
+                            onSelect = { onAction(HomeAction.UpdateInversion(state.inversionOptions[it].inversion)) },
+                        )
+                    }
                 }
+
+                // 八度
+                CompactSelector(
+                    label = "八度",
+                    options = state.octaveOptions.map { it.label },
+                    selectedIndex = state.octaveOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                    readOnly = isPlaying,
+                    onSelect = { onAction(HomeAction.UpdateOctave(state.octaveOptions[it].octave)) },
+                )
+
+                // 节奏
+                CompactSelector(
+                    label = "节奏",
+                    options = state.rhythmOptions.map { it.label },
+                    selectedIndex = state.rhythmOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                    readOnly = isPlaying,
+                    onSelect = { onAction(HomeAction.UpdateRhythmPattern(state.rhythmOptions[it].pattern)) },
+                )
+
+                // 音色
+                CompactSelector(
+                    label = "音色",
+                    options = state.toneOptions.map { it.shortLabel },
+                    selectedIndex = state.toneOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                    readOnly = isPlaying,
+                    onSelect = { onAction(HomeAction.UpdateTonePreset(state.toneOptions[it].preset)) },
+                )
+
+                // 发声模式
+                val soundModeIndex = PlaybackSoundMode.entries.indexOf(state.soundMode).coerceAtLeast(0)
+                CompactSelector(
+                    label = "发声",
+                    options = PlaybackSoundMode.entries.map { it.label },
+                    selectedIndex = soundModeIndex,
+                    readOnly = isPlaying,
+                    onSelect = { onAction(HomeAction.UpdateSoundMode(PlaybackSoundMode.entries[it])) },
+                )
             }
         }
 
@@ -223,6 +190,80 @@ fun PlaybackControlsSection(
                     selectedBpm = state.bpm,
                     presets = state.tempoPresets,
                     onBpmChange = { onAction(HomeAction.UpdateBpm(it)) },
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CompactSelector(
+    label: String,
+    options: List<String>,
+    selectedIndex: Int,
+    readOnly: Boolean,
+    onSelect: (Int) -> Unit,
+) {
+    if (options.isEmpty()) return
+    val currentLabel = options.getOrElse(selectedIndex) { options.first() }
+
+    if (readOnly) {
+        StatusPill(label = "$label·$currentLabel")
+        return
+    }
+
+    var expanded by remember { mutableStateOf(false) }
+    val shape = RoundedCornerShape(999.dp)
+
+    Box {
+        Surface(
+            shape = shape,
+            color = XiyueAccentSoft,
+            contentColor = XiyueAccentStrong,
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = XiyueAccent.copy(alpha = 0.25f),
+                    shape = shape,
+                )
+                .combinedClickable(
+                    onClick = {
+                        // 短按循环到下一个选项
+                        val next = (selectedIndex + 1) % options.size
+                        onSelect(next)
+                    },
+                    onLongClick = { expanded = true },
+                ),
+        ) {
+            Text(
+                text = "$label·$currentLabel",
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 4.dp,
+            shadowElevation = 6.dp,
+        ) {
+            options.forEachIndexed { index, option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = option,
+                            color = if (index == selectedIndex) XiyueAccentStrong else MaterialTheme.colorScheme.onSurface,
+                            fontWeight = if (index == selectedIndex) FontWeight.SemiBold else FontWeight.Normal,
+                        )
+                    },
+                    onClick = {
+                        onSelect(index)
+                        expanded = false
+                    },
                 )
             }
         }
@@ -278,17 +319,6 @@ private fun PlaybackGradientButton(
             fontWeight = FontWeight.Bold,
         )
     }
-}
-
-@Composable
-private fun OptionLabel(label: String) {
-    Text(
-        text = label.uppercase(),
-        modifier = Modifier.padding(horizontal = DesignTokens.Spacing.xs, vertical = DesignTokens.Spacing.xs),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        fontWeight = FontWeight.Bold,
-    )
 }
 
 @Composable

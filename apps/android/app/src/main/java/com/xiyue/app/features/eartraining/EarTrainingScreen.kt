@@ -93,7 +93,7 @@ fun EarTrainingScreen(
                     EarTrainingMode.SCALE -> PlaybackMode.SCALE_ASCENDING
                     EarTrainingMode.CHORD -> PlaybackMode.CHORD_BLOCK
                 },
-                tonePreset = TonePreset.WARM_PRACTICE,
+                tonePreset = TonePreset.PIANO,
                 chordBlockEnabled = true,
                 chordArpeggioEnabled = false,
                 soundMode = PlaybackSoundMode.PITCH,

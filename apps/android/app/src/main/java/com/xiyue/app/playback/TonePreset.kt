@@ -4,38 +4,10 @@ enum class TonePreset(
     val label: String,
     val shortLabel: String,
 ) {
-    WARM_PRACTICE(
-        label = "Warm Practice",
-        shortLabel = "Warm",
-    ),
-    SOFT_PIANO(
-        label = "Soft Piano",
-        shortLabel = "Piano",
-    ),
-    CLEAR_WOOD(
-        label = "Clear Wood",
-        shortLabel = "Wood",
-    ),
-    STRING_ENSEMBLE(
-        label = "Strings",
-        shortLabel = "Str",
-    ),
-    WOODWIND(
-        label = "Woodwind",
-        shortLabel = "Wind",
-    ),
-    BRASS(
-        label = "Brass",
-        shortLabel = "Brass",
-    ),
-    SYNTH_PAD(
-        label = "Synth Pad",
-        shortLabel = "Pad",
-    ),
-    PLUCKED(
-        label = "Plucked",
-        shortLabel = "Pluck",
-    ),
+    PIANO(label = "Piano", shortLabel = "Piano"),
+    PAD(label = "Pad", shortLabel = "Pad"),
+    PLUCK(label = "Pluck", shortLabel = "Pluck"),
+    VOCAL(label = "Vocal", shortLabel = "Vocal"),
 }
 
 enum class PlaybackSoundMode(

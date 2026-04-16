@@ -765,9 +765,13 @@ PlaybackEngine 和 BPM 控制逻辑
       const el = document.getElementById('todosPanel');
       const blockers = extractBlockers();
       const hasTodos = appState.todos && appState.todos.items && appState.todos.items.length;
+      const isAggregated = appState.todos && appState.todos._source === 'aggregated';
 
       if (!hasTodos && !blockers.length) {
-        el.innerHTML = '<div class="empty-state" style="padding:24px"><div class="empty-state-icon">📂</div>暂无待办与问题数据</div>';
+        const hint = isAggregated
+          ? '<div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:8px">已尝试从计划文件和进度文件中聚合</div>'
+          : '';
+        el.innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-state-icon">📂</div>未检测到待办项${hint}</div>`;
         return;
       }
 
@@ -794,6 +798,8 @@ PlaybackEngine 和 BPM 控制逻辑
           html += `<div class="todo-item"><div class="todo-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div><div class="todo-text ${isDone ? 'done' : ''}">${escapeHtml(item.title)}</div></div>`;
         });
         html += '</div>';
+      } else if (isAggregated && blockers.length) {
+        html += `<div style="font-size:0.85rem;color:var(--text-secondary);margin-top:4px">已从计划文件和进度文件中聚合待办</div>`;
       }
 
       el.innerHTML = html;

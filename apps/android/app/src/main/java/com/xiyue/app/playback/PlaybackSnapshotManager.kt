@@ -25,6 +25,7 @@ internal class PlaybackSnapshotManager(
             stepIndex = if (startStepIndex > 0) startStepIndex + 1 else 0,
             activePitchClasses = emptySet(),
             activeNoteLabels = emptyList(),
+            amplitude = 0.05f,
         )
         foregroundPromoter(snapshot)
     }
@@ -37,6 +38,7 @@ internal class PlaybackSnapshotManager(
         activeNoteLabels: List<String>,
         queuedItemId: String? = null,
         queuedTitle: String? = null,
+        amplitude: Float = 0.5f,
     ) {
         val snapshot = createSnapshot(
             request = request,
@@ -49,6 +51,7 @@ internal class PlaybackSnapshotManager(
             activeNoteLabels = activeNoteLabels,
             queuedItemId = queuedItemId,
             queuedTitle = queuedTitle,
+            amplitude = amplitude,
         )
         statePublisher(snapshot)
     }
@@ -62,6 +65,7 @@ internal class PlaybackSnapshotManager(
         activeNoteLabels: List<String>,
         queuedItemId: String? = null,
         queuedTitle: String? = null,
+        amplitude: Float = 0.05f,
     ) {
         val snapshot = createSnapshot(
             request = request,
@@ -74,6 +78,7 @@ internal class PlaybackSnapshotManager(
             activeNoteLabels = activeNoteLabels,
             queuedItemId = queuedItemId,
             queuedTitle = queuedTitle,
+            amplitude = amplitude,
         )
         statePublisher(snapshot)
     }
@@ -89,6 +94,7 @@ internal class PlaybackSnapshotManager(
         stepIndex: Int,
         activePitchClasses: Set<PitchClass>,
         activeNoteLabels: List<String>,
+        amplitude: Float = 0.05f,
     ) {
         val snapshot = createSnapshot(
             request = request,
@@ -100,6 +106,7 @@ internal class PlaybackSnapshotManager(
             activePitchClasses = activePitchClasses,
             activeNoteLabels = activeNoteLabels,
             resumeHighlight = true,
+            amplitude = amplitude,
         )
         statePublisher(snapshot)
     }
@@ -116,6 +123,7 @@ internal class PlaybackSnapshotManager(
         queuedItemId: String? = null,
         queuedTitle: String? = null,
         resumeHighlight: Boolean = false,
+        amplitude: Float = 0f,
     ): PlaybackSnapshot = PlaybackSnapshot(
         isPlaying = isPlaying,
         isPaused = isPaused,
@@ -130,5 +138,6 @@ internal class PlaybackSnapshotManager(
         activePitchClasses = activePitchClasses,
         activeNoteLabels = activeNoteLabels,
         resumeHighlight = resumeHighlight,
+        amplitude = amplitude,
     )
 }

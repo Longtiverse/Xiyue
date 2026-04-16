@@ -107,8 +107,50 @@ async function handleAPI(request, response, rootDir) {
     try {
       const content = await readFile(path.join(rootDir, 'todos-improvements.json'), 'utf-8');
       sendJSON(response, JSON.parse(content));
+      return;
     } catch {
-      sendJSON(response, { error: 'todos-improvements.json not found' }, 404);
+      // fallback: aggregate from session-progress.md and plan-*.md
+      try {
+        const items = [];
+        let id = 1;
+
+        try {
+          const progressContent = await readFile(path.join(rootDir, '.tmp', 'session-progress.md'), 'utf-8');
+          const nextStepsMatch = progressContent.match(/^## Next Steps\s*\n([\s\S]*?)(?=^## |\z)/m);
+          if (nextStepsMatch) {
+            for (const line of nextStepsMatch[1].split('\n')) {
+              const m = line.match(/^\d+\.\s*(.+)$/);
+              if (m) items.push({ id: id++, title: m[1].trim(), status: 'pending', priority: 'high' });
+            }
+          }
+          const blockersMatch = progressContent.match(/^## Blockers\s*\n([\s\S]*?)(?=^## |\z)/m);
+          if (blockersMatch) {
+            for (const line of blockersMatch[1].split('\n')) {
+              const cleaned = line.replace(/^[-•]\s*/, '').trim();
+              if (cleaned && cleaned !== '暂无' && cleaned !== '...') {
+                items.push({ id: id++, title: `【阻塞】${cleaned}`, status: 'pending', priority: 'high' });
+              }
+            }
+          }
+        } catch {}
+
+        try {
+          const tmpDir = path.join(rootDir, '.tmp');
+          const files = await readdir(tmpDir);
+          const planFiles = files.filter(f => f.startsWith('plan-') && f.endsWith('.md'));
+          for (const file of planFiles) {
+            const content = await readFile(path.join(tmpDir, file), 'utf-8');
+            for (const line of content.split('\n')) {
+              const m = line.match(/^-\s*\[\s\]\s*(.+)$/) || line.match(/^\d+\.\s*\[\s\]\s*(.+)$/);
+              if (m) items.push({ id: id++, title: m[1].trim(), status: 'pending', priority: 'medium' });
+            }
+          }
+        } catch {}
+
+        sendJSON(response, { items, _source: 'aggregated' });
+      } catch (err) {
+        sendJSON(response, { error: err.message }, 500);
+      }
     }
     return;
   }
@@ -116,7 +158,7 @@ async function handleAPI(request, response, rootDir) {
   // GET /api/git-log
   if (pathname === '/api/git-log') {
     try {
-      const { stdout } = await execAsync('git log --oneline -10', { cwd: rootDir, timeout: 5000 });
+      const { stdout } = await execAsync('git log --pretty=format:"%h|%ci|%s" -10', { cwd: rootDir, timeout: 5000 });
       const lines = stdout.trim().split('\n').filter(Boolean);
       sendJSON(response, lines);
     } catch (err) {

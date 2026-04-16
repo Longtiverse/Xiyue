@@ -63,7 +63,7 @@ class PracticePlaybackService : Service() {
                     notificationManager.updateNotification(snapshot)
                 }
             },
-            createSnapshot = { request, plan, isPlaying, isPaused, subtitle, stepIndex, activePitchClasses, activeNoteLabels, queuedItemId, queuedTitle ->
+            createSnapshot = { request, plan, isPlaying, isPaused, subtitle, stepIndex, activePitchClasses, activeNoteLabels, queuedItemId, queuedTitle, amplitude ->
                 snapshotManager.createSnapshot(
                     request = request,
                     plan = plan,
@@ -75,6 +75,7 @@ class PracticePlaybackService : Service() {
                     activeNoteLabels = activeNoteLabels,
                     queuedItemId = queuedItemId,
                     queuedTitle = queuedTitle,
+                    amplitude = amplitude,
                 )
             },
         )
@@ -315,7 +316,7 @@ class PracticePlaybackService : Service() {
                 ?: com.xiyue.app.domain.PlaybackMode.SCALE_ASCENDING,
             tonePreset = tonePreset
                 ?.let { runCatching { TonePreset.valueOf(it) }.getOrNull() }
-                ?: TonePreset.WARM_PRACTICE,
+                ?: TonePreset.PIANO,
             chordBlockEnabled = chordBlockEnabled,
             chordArpeggioEnabled = chordArpeggioEnabled,
             soundMode = soundModeName

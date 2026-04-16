@@ -387,6 +387,17 @@ $buildInfo = [ordered]@{
 $infoPath = Join-Path $latestDir 'build-info.json'
 $buildInfo | ConvertTo-Json -Depth 5 | Set-Content -Path $infoPath -Encoding UTF8
 
+# Also copy to root latest/ directory for quick access
+$rootLatestDir = Join-Path $repoRoot 'latest'
+New-Item -ItemType Directory -Path $rootLatestDir -Force | Out-Null
+$rootLatestPath = Join-Path $rootLatestDir $latestFilename
+Copy-Item -Path $archivePath -Destination $rootLatestPath -Force
+Get-ChildItem -Path $rootLatestDir -Filter '*.apk' -File -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -Skip 5 |
+    Remove-Item -Force
+
 Write-Host "Archived APK to $archivePath"
 Write-Host "Latest APK copied to $latestPath"
+Write-Host "Root latest APK copied to $rootLatestPath"
 Write-Host "Build metadata written to $infoPath"

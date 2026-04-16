@@ -269,7 +269,7 @@ private fun createComboPlaybackRequest(
                 bpm = 92f,
                 loopEnabled = true,
                 playbackMode = PlaybackMode.SCALE_ASCENDING,
-                tonePreset = TonePreset.SOFT_PIANO,
+                tonePreset = TonePreset.PIANO,
                 soundMode = PlaybackSoundMode.PITCH,
             )
         }
@@ -281,7 +281,7 @@ private fun createComboPlaybackRequest(
                 bpm = 92f,
                 loopEnabled = true,
                 playbackMode = PlaybackMode.CHORD_BLOCK,
-                tonePreset = TonePreset.SOFT_PIANO,
+                tonePreset = TonePreset.PIANO,
                 soundMode = PlaybackSoundMode.PITCH,
                 chordBlockEnabled = true,
                 chordArpeggioEnabled = true,
