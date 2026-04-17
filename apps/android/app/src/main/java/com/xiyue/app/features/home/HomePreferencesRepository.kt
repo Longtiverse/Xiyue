@@ -25,6 +25,7 @@ data class HomePreferencesState(
     val selectedOctave: Int = 4,
     val selectedDifficultyLabel: String? = null,
     val selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+    val durationMultiplier: Float = 1.0f,
     val practiceProgressItemId: String? = null,
     val practiceProgressRoot: PitchClass? = null,
     val practiceProgressStepIndex: Int = 0,
@@ -79,6 +80,7 @@ class HomePreferencesRepository(
             selectedRhythmPattern = rhythmPatternName
                 ?.let { runCatching { RhythmPattern.valueOf(it) }.getOrNull() }
                 ?: RhythmPattern.STRAIGHT,
+            durationMultiplier = preferences.getFloat(KEY_DURATION_MULTIPLIER, 1.0f),
             practiceProgressItemId = preferences.getString(KEY_PRACTICE_PROGRESS_ITEM_ID, null),
             practiceProgressRoot = preferences.getString(KEY_PRACTICE_PROGRESS_ROOT, null)
                 ?.let { runCatching { PitchClass.valueOf(it) }.getOrNull() },
@@ -106,6 +108,7 @@ class HomePreferencesRepository(
             .putInt(KEY_SELECTED_OCTAVE, state.selectedOctave)
             .putString(KEY_SELECTED_DIFFICULTY, state.selectedDifficultyLabel)
             .putString(KEY_RHYTHM_PATTERN, state.selectedRhythmPattern.name)
+            .putFloat(KEY_DURATION_MULTIPLIER, state.durationMultiplier)
             .putString(KEY_PRACTICE_PROGRESS_ITEM_ID, state.practiceProgressItemId)
             .putString(KEY_PRACTICE_PROGRESS_ROOT, state.practiceProgressRoot?.name)
             .putInt(KEY_PRACTICE_PROGRESS_STEP_INDEX, state.practiceProgressStepIndex)
@@ -132,6 +135,7 @@ class HomePreferencesRepository(
         const val KEY_SELECTED_OCTAVE = "selected_octave"
         const val KEY_SELECTED_DIFFICULTY = "selected_difficulty"
         const val KEY_RHYTHM_PATTERN = "rhythm_pattern"
+        const val KEY_DURATION_MULTIPLIER = "duration_multiplier"
         const val KEY_PRACTICE_PROGRESS_ITEM_ID = "practice_progress_item_id"
         const val KEY_PRACTICE_PROGRESS_ROOT = "practice_progress_root"
         const val KEY_PRACTICE_PROGRESS_STEP_INDEX = "practice_progress_step_index"

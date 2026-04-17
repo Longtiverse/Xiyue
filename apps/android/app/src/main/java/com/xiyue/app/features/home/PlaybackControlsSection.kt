@@ -97,22 +97,18 @@ fun PlaybackControlsSection(
                 verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
             ) {
                 // 循环
-                if (isPlaying) {
-                    StatusPill(label = if (state.loopEnabled) "循环·开" else "循环·关")
-                } else {
-                    OptionPill(
-                        label = if (state.loopEnabled) "循环·开" else "循环·关",
-                        selected = state.loopEnabled,
-                        onClick = { onAction(HomeAction.ToggleLoop) },
-                    )
-                }
+                OptionPill(
+                    label = if (state.loopEnabled) "循环·开" else "循环·关",
+                    selected = state.loopEnabled,
+                    onClick = { onAction(HomeAction.ToggleLoop) },
+                )
 
                 // 方向
                 CompactSelector(
                     label = "方向",
                     options = state.modeOptions.map { it.label },
                     selectedIndex = state.modeOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                    readOnly = isPlaying,
+                    readOnly = false,
                     onSelect = { onAction(HomeAction.UpdatePlaybackMode(state.modeOptions[it].mode)) },
                 )
 
@@ -122,7 +118,7 @@ fun PlaybackControlsSection(
                         label = "和弦",
                         options = state.chordModeOptions.map { it.label },
                         selectedIndex = state.chordModeOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                        readOnly = isPlaying,
+                        readOnly = false,
                         onSelect = { onAction(HomeAction.UpdateChordPlaybackMode(state.chordModeOptions[it].mode)) },
                     )
 
@@ -132,7 +128,7 @@ fun PlaybackControlsSection(
                             label = "转位",
                             options = state.inversionOptions.map { it.label },
                             selectedIndex = state.inversionOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                            readOnly = isPlaying,
+                            readOnly = false,
                             onSelect = { onAction(HomeAction.UpdateInversion(state.inversionOptions[it].inversion)) },
                         )
                     }
@@ -143,7 +139,7 @@ fun PlaybackControlsSection(
                     label = "八度",
                     options = state.octaveOptions.map { it.label },
                     selectedIndex = state.octaveOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                    readOnly = isPlaying,
+                    readOnly = false,
                     onSelect = { onAction(HomeAction.UpdateOctave(state.octaveOptions[it].octave)) },
                 )
 
@@ -152,7 +148,7 @@ fun PlaybackControlsSection(
                     label = "节奏",
                     options = state.rhythmOptions.map { it.label },
                     selectedIndex = state.rhythmOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                    readOnly = isPlaying,
+                    readOnly = false,
                     onSelect = { onAction(HomeAction.UpdateRhythmPattern(state.rhythmOptions[it].pattern)) },
                 )
 
@@ -161,8 +157,17 @@ fun PlaybackControlsSection(
                     label = "音色",
                     options = state.toneOptions.map { it.shortLabel },
                     selectedIndex = state.toneOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
-                    readOnly = isPlaying,
+                    readOnly = false,
                     onSelect = { onAction(HomeAction.UpdateTonePreset(state.toneOptions[it].preset)) },
+                )
+
+                // 持续
+                CompactSelector(
+                    label = "持续",
+                    options = state.durationOptions.map { it.label },
+                    selectedIndex = state.durationOptions.indexOfFirst { it.selected }.coerceAtLeast(0),
+                    readOnly = false,
+                    onSelect = { onAction(HomeAction.UpdateDurationMultiplier(state.durationOptions[it].multiplier)) },
                 )
 
                 // 发声模式
@@ -171,27 +176,18 @@ fun PlaybackControlsSection(
                     label = "发声",
                     options = PlaybackSoundMode.entries.map { it.label },
                     selectedIndex = soundModeIndex,
-                    readOnly = isPlaying,
+                    readOnly = false,
                     onSelect = { onAction(HomeAction.UpdateSoundMode(PlaybackSoundMode.entries[it])) },
                 )
             }
         }
 
         MockupSectionSurface(shape = MaterialTheme.shapes.medium) {
-            if (isPlaying) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    StatusPill(label = "${state.bpm.toInt()} BPM")
-                }
-            } else {
-                SwipeableBpmSelector(
-                    selectedBpm = state.bpm,
-                    presets = state.tempoPresets,
-                    onBpmChange = { onAction(HomeAction.UpdateBpm(it)) },
-                )
-            }
+            SwipeableBpmSelector(
+                selectedBpm = state.bpm,
+                presets = state.tempoPresets,
+                onBpmChange = { onAction(HomeAction.UpdateBpm(it)) },
+            )
         }
     }
 }

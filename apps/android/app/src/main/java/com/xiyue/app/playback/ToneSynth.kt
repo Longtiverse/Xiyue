@@ -43,7 +43,10 @@ class ToneSynth {
             step.midiNotes.map { midi ->
                 val semitone = ((midi % 12) + 12) % 12
                 val relativeSemitone = ((semitone - rootSemitone) % 12 + 12) % 12
-                solfegeMidiBase + relativeSemitone
+                val originalOctave = midi / 12
+                val baseOctave = solfegeMidiBase / 12
+                val octaveDiff = originalOctave - baseOctave
+                solfegeMidiBase + relativeSemitone + octaveDiff * 12
             }
         } else {
             step.midiNotes
@@ -51,7 +54,10 @@ class ToneSynth {
 
         val safeVelocity = volumeFactor.coerceIn(0.12f, 1f)
         val pcm = if (isVocal) {
-            val solfeges = step.activeNoteLabels.map { it.uppercase() }
+            val solfeges = step.activeNoteLabels.map { label ->
+                val noteName = label.takeWhile { it.isLetter() || it == '#' || it == 'b' }
+                noteNameToSolfege(noteName)
+            }
             vocalEngine.synthesizeVocalChord(
                 midiNotes = actualMidiNotes,
                 solfeges = solfeges,
@@ -249,6 +255,24 @@ class ToneSynth {
                 }
             }
             audioTrack.releaseQuietly()
+        }
+    }
+
+    private fun noteNameToSolfege(noteName: String): String {
+        return when (noteName.uppercase()) {
+            "C" -> "DO"
+            "C#", "DB" -> "DI"
+            "D" -> "RE"
+            "D#", "EB" -> "RI"
+            "E" -> "MI"
+            "F" -> "FA"
+            "F#", "GB" -> "FI"
+            "G" -> "SOL"
+            "G#", "AB" -> "SI"
+            "A" -> "LA"
+            "A#", "BB" -> "LI"
+            "B" -> "TI"
+            else -> "DO"
         }
     }
 

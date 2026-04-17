@@ -28,6 +28,7 @@ class HomeReducer(
             selectedOctave: Int = state.selectedOctave,
             selectedDifficultyLabel: String? = state.selectedDifficultyLabel,
             selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = state.selectedRhythmPattern,
+            durationMultiplier: Float = state.durationMultiplier,
             playbackSnapshot: com.xiyue.app.playback.PlaybackSnapshot = com.xiyue.app.playback.PlaybackSnapshot(),
         ) = stateFactory.create(
             libraryFilter = libraryFilter,
@@ -52,6 +53,7 @@ class HomeReducer(
             selectedOctave = selectedOctave,
             selectedDifficultyLabel = selectedDifficultyLabel,
             selectedRhythmPattern = selectedRhythmPattern,
+            durationMultiplier = durationMultiplier,
             playbackSnapshot = playbackSnapshot,
         )
 
@@ -92,6 +94,7 @@ class HomeReducer(
                     isLibraryOverlayVisible = state.isLibraryOverlayVisible,
                     displayMode = state.displayMode,
                     showHints = state.showHints,
+                    durationMultiplier = state.durationMultiplier,
                 )
             }
 
@@ -149,6 +152,11 @@ class HomeReducer(
 
             is HomeAction.UpdateRhythmPattern -> nextState(
                 selectedRhythmPattern = action.pattern,
+                isPaused = state.isPaused,
+            )
+
+            is HomeAction.UpdateDurationMultiplier -> nextState(
+                durationMultiplier = action.multiplier,
                 isPaused = state.isPaused,
             )
 

@@ -19,6 +19,7 @@ data class PlaybackRequest(
     val soundMode: PlaybackSoundMode = PlaybackSoundMode.PITCH,
     val inversion: Int = 0,
     val rhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+    val durationMultiplier: Float = 1.0f,
 ) {
     fun toSelection(): PracticeSelection = PracticeSelection(
         libraryItemId = itemId,
@@ -31,6 +32,7 @@ data class PlaybackRequest(
         chordArpeggioEnabled = chordArpeggioEnabled,
         inversion = inversion,
         rhythmPattern = rhythmPattern,
+        durationMultiplier = durationMultiplier,
     )
 }
 

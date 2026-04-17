@@ -56,6 +56,7 @@ internal class HomeUiStateBuilder {
         selectedInversion: Int = 0,
         selectedOctave: Int = 4,
         selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+        durationMultiplier: Float = 1.0f,
     ): PlaybackControlUiState {
         val selectedChordPlaybackMode = chordPlaybackMode(
             chordBlockEnabled = chordBlockEnabled,
@@ -151,6 +152,13 @@ internal class HomeUiStateBuilder {
                 )
             },
             selectedRhythmPattern = selectedRhythmPattern,
+            durationMultiplier = durationMultiplier,
+            durationOptions = listOf(
+                DurationOptionUiItem(multiplier = 0.5f, label = "短", selected = durationMultiplier == 0.5f),
+                DurationOptionUiItem(multiplier = 1.0f, label = "中", selected = durationMultiplier == 1.0f),
+                DurationOptionUiItem(multiplier = 2.0f, label = "长", selected = durationMultiplier == 2.0f),
+                DurationOptionUiItem(multiplier = 4.0f, label = "极长", selected = durationMultiplier == 4.0f),
+            ),
         )
     }
 
@@ -159,10 +167,17 @@ internal class HomeUiStateBuilder {
         effectivePaused: Boolean,
         previewPitchClasses: Set<PitchClass>,
         currentActiveNote: String,
+        octave: Int = 4,
         keyDepths: Map<PitchClass, Int> = emptyMap(),
         fingeringMap: Map<PitchClass, Int> = emptyMap(),
     ): KeyboardPreviewUiState {
         val currentPitchClass = pitchClassFromActiveNote(currentActiveNote)
+        val currentOctave = currentActiveNote.filter { it.isDigit() }.toIntOrNull() ?: octave
+
+        // 显示以 octave 为基准的标准八度 C 到 C（13 个键：8 白 + 5 黑）
+        val baseOctave = octave
+        val startMidi = 12 * (baseOctave + 1)
+        val currentMidi = currentPitchClass?.let { 12 * (currentOctave + 1) + it.semitone } ?: -1
 
         return KeyboardPreviewUiState(
             title = "键盘预览",
@@ -177,15 +192,19 @@ internal class HomeUiStateBuilder {
                 "音阶内：${previewPitchClasses.joinToString(" · ") { it.label }}"
             },
             liveLabel = if (effectivePlaying) "实时" else "就绪",
-            keys = PitchClass.entries.map { note ->
+            keys = (0..12).map { interval ->
+                val midi = startMidi + interval
+                val pitchClass = PitchClass.entries.first { it.semitone == (interval % 12) }
+                val isCurrent = pitchClass == currentPitchClass && midi == currentMidi
                 KeyboardKeyUiState(
-                    label = note.label,
-                    active = note == currentPitchClass,
-                    sharp = note.semitone in BLACK_KEY_SEMITONES,
-                    inScale = note in previewPitchClasses,
-                    isCurrent = note == currentPitchClass,
-                    layerDepth = keyDepths[note] ?: 0,
-                    fingering = fingeringMap[note],
+                    label = pitchClass.label,
+                    active = isCurrent,
+                    sharp = pitchClass.semitone in BLACK_KEY_SEMITONES,
+                    inScale = pitchClass in previewPitchClasses,
+                    isCurrent = isCurrent,
+                    midiNumber = midi,
+                    layerDepth = keyDepths[pitchClass] ?: 0,
+                    fingering = fingeringMap[pitchClass],
                 )
             },
         )

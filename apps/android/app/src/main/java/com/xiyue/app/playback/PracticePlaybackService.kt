@@ -306,6 +306,7 @@ class PracticePlaybackService : Service() {
         val inversion = intent.getIntExtra(EXTRA_INVERSION, 0)
         val octave = intent.getIntExtra(EXTRA_OCTAVE, 4)
         val rhythmPatternName = intent.getStringExtra(EXTRA_RHYTHM_PATTERN)
+        val durationMultiplier = intent.getFloatExtra(EXTRA_DURATION_MULTIPLIER, 1.0f)
         return PlaybackRequest(
             itemId = itemId,
             root = runCatching { PitchClass.valueOf(root) }.getOrNull() ?: PitchClass.C,
@@ -327,6 +328,7 @@ class PracticePlaybackService : Service() {
             rhythmPattern = rhythmPatternName
                 ?.let { runCatching { com.xiyue.app.domain.RhythmPattern.valueOf(it) }.getOrNull() }
                 ?: com.xiyue.app.domain.RhythmPattern.STRAIGHT,
+            durationMultiplier = durationMultiplier,
         )
     }
 
@@ -347,6 +349,7 @@ class PracticePlaybackService : Service() {
         private const val EXTRA_INVERSION = "inversion"
         private const val EXTRA_OCTAVE = "octave"
         private const val EXTRA_RHYTHM_PATTERN = "rhythm_pattern"
+        private const val EXTRA_DURATION_MULTIPLIER = "duration_multiplier"
         private const val EXTRA_SEEK_STEP_INDEX = "seek_step_index"
         private val _state = MutableStateFlow(PlaybackSnapshot())
         val state: StateFlow<PlaybackSnapshot> = _state.asStateFlow()
@@ -367,6 +370,7 @@ class PracticePlaybackService : Service() {
                 putExtra(EXTRA_INVERSION, request.inversion)
                 putExtra(EXTRA_OCTAVE, request.octave)
                 putExtra(EXTRA_RHYTHM_PATTERN, request.rhythmPattern.name)
+                putExtra(EXTRA_DURATION_MULTIPLIER, request.durationMultiplier)
             }
             ContextCompat.startForegroundService(context, intent)
         }
@@ -387,6 +391,7 @@ class PracticePlaybackService : Service() {
                 putExtra(EXTRA_INVERSION, request.inversion)
                 putExtra(EXTRA_OCTAVE, request.octave)
                 putExtra(EXTRA_RHYTHM_PATTERN, request.rhythmPattern.name)
+                putExtra(EXTRA_DURATION_MULTIPLIER, request.durationMultiplier)
             }
             context.startService(intent)
         }

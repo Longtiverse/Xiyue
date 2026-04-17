@@ -58,6 +58,7 @@ data class HomeUiState(
     val selectedOctave: Int = 4,
     val selectedDifficultyLabel: String? = null,
     val selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+    val durationMultiplier: Float = 1.0f,
 )
 
 data class PracticePickerUiState(
@@ -148,6 +149,8 @@ data class PlaybackControlUiState(
     val selectedOctave: Int = 4,
     val rhythmOptions: List<RhythmOptionUiItem> = emptyList(),
     val selectedRhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+    val durationMultiplier: Float = 1.0f,
+    val durationOptions: List<DurationOptionUiItem> = emptyList(),
 )
 
 data class RhythmOptionUiItem(
@@ -170,6 +173,12 @@ data class OctaveOptionUiItem(
 
 data class TempoPresetUiItem(
     val bpm: Float,
+    val label: String,
+    val selected: Boolean,
+)
+
+data class DurationOptionUiItem(
+    val multiplier: Float,
     val label: String,
     val selected: Boolean,
 )

@@ -50,20 +50,20 @@ fun KeyboardPreviewSection(
         )
 
         val whiteKeys = state.keys.filterNot { it.sharp }
-        val blackKeys = state.keys.filter { it.sharp }.take(5)
+        val blackKeys = state.keys.filter { it.sharp }
 
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(86.dp),
+                .height(96.dp),
         ) {
             val density = LocalDensity.current
             val totalWidthPx = constraints.maxWidth
             val totalHeightPx = constraints.maxHeight
             val gapPx = with(density) { 2.dp.roundToPx() }
             val whiteKeyWidthPx = (totalWidthPx - (whiteKeys.size - 1) * gapPx) / whiteKeys.size.coerceAtLeast(1)
-            val blackKeyWidthPx = (whiteKeyWidthPx * 0.55f).toInt().coerceIn(18, 34)
-            val blackKeyHeightPx = (totalHeightPx * 0.62f).toInt().coerceIn(42, 58)
+            val blackKeyWidthPx = (whiteKeyWidthPx * 0.68f).toInt()
+            val blackKeyHeightPx = (totalHeightPx * 0.68f).toInt()
 
             // 白键：用精确像素偏移放置，避免 Row + weight 与手动计算错位
             whiteKeys.forEachIndexed { index, key ->

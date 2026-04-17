@@ -18,6 +18,7 @@ class PracticeSessionFactory(
                     playbackMode = selection.playbackMode,
                     tonePreset = TonePreset.PIANO,
                     soundMode = PlaybackSoundMode.PITCH,
+                    durationMultiplier = selection.durationMultiplier,
                 )
             }
             selection.libraryItemId.startsWith("combo:chords:") -> {
@@ -31,6 +32,7 @@ class PracticeSessionFactory(
                     soundMode = PlaybackSoundMode.PITCH,
                     chordBlockEnabled = selection.chordBlockEnabled,
                     chordArpeggioEnabled = selection.chordArpeggioEnabled,
+                    durationMultiplier = selection.durationMultiplier,
                 )
             }
             else -> {
@@ -86,6 +88,7 @@ class PracticeSessionFactory(
         playbackMode: PlaybackMode,
         tonePreset: TonePreset,
         soundMode: PlaybackSoundMode,
+        durationMultiplier: Float,
     ): PracticePlaybackPlan {
         val midiNotes = notes.map { note ->
             val pitchClass = PitchClass.fromLabel(note)
@@ -105,7 +108,7 @@ class PracticeSessionFactory(
                 midiNotes = listOf(midi),
                 activePitchClasses = listOf(pitchClass),
                 activeNoteLabels = listOf(noteLabel),
-                durationMs = beatDurationMs(bpm),
+                durationMs = (beatDurationMs(bpm) * durationMultiplier).toLong(),
             )
         }
 
@@ -142,6 +145,7 @@ class PracticeSessionFactory(
         soundMode: PlaybackSoundMode,
         chordBlockEnabled: Boolean = true,
         chordArpeggioEnabled: Boolean = false,
+        durationMultiplier: Float,
     ): PracticePlaybackPlan {
         val steps = chordLabels.flatMap { label ->
             val parsed = parseChordLabel(label)
@@ -163,6 +167,7 @@ class PracticeSessionFactory(
                 playbackMode = PlaybackMode.CHORD_ARPEGGIO_UP,
                 chordBlockEnabled = chordBlockEnabled,
                 chordArpeggioEnabled = chordArpeggioEnabled,
+                durationMultiplier = durationMultiplier,
             )
             createChordSteps(item, selection)
         }
@@ -206,7 +211,6 @@ class PracticeSessionFactory(
         bpm: Float,
     ): List<PlaybackStep> {
         if (steps.isEmpty()) return steps
-        val baseBeat = beatDurationMs(bpm).toFloat()
         return steps.mapIndexed { index, step ->
             val multiplier = when (rhythmPattern) {
                 com.xiyue.app.domain.RhythmPattern.STRAIGHT -> 1.0f
@@ -214,7 +218,8 @@ class PracticeSessionFactory(
                 com.xiyue.app.domain.RhythmPattern.TRIPLET -> 0.33333334f
                 com.xiyue.app.domain.RhythmPattern.SWING -> if (index % 2 == 0) 0.6666667f else 0.33333334f
             }
-            val newDuration = (baseBeat * multiplier).toLong().coerceAtLeast(50)
+            val baseDuration = step.durationMs.toFloat()
+            val newDuration = (baseDuration * multiplier).toLong().coerceAtLeast(50)
             step.copy(durationMs = newDuration)
         }
     }
@@ -225,15 +230,40 @@ class PracticeSessionFactory(
     }
 
     private fun chordIntervals(type: String): List<Int> = when (type) {
-        "maj" -> listOf(0, 4, 7)
-        "min" -> listOf(0, 3, 7)
-        "7" -> listOf(0, 4, 7, 10)
-        "maj7" -> listOf(0, 4, 7, 11)
-        "min7" -> listOf(0, 3, 7, 10)
-        "dim" -> listOf(0, 3, 6)
-        "aug" -> listOf(0, 4, 8)
-        "sus2" -> listOf(0, 2, 7)
-        "sus4" -> listOf(0, 5, 7)
+        // Triads
+        "maj", "MajorTriad" -> listOf(0, 4, 7)
+        "min", "MinorTriad" -> listOf(0, 3, 7)
+        "dim", "DiminishedTriad" -> listOf(0, 3, 6)
+        "aug", "AugmentedTriad" -> listOf(0, 4, 8)
+        // Suspended
+        "sus2", "Sus2" -> listOf(0, 2, 7)
+        "sus4", "Sus4" -> listOf(0, 5, 7)
+        "Sus2Add9" -> listOf(0, 2, 7, 14)
+        "Sus4Add9" -> listOf(0, 5, 7, 14)
+        // Seventh
+        "maj7", "Maj7" -> listOf(0, 4, 7, 11)
+        "min7", "Min7" -> listOf(0, 3, 7, 10)
+        "7", "Dom7" -> listOf(0, 4, 7, 10)
+        "MinMaj7" -> listOf(0, 3, 7, 11)
+        "Min7b5" -> listOf(0, 3, 6, 10)
+        "Dim7" -> listOf(0, 3, 6, 9)
+        "Aug7" -> listOf(0, 4, 8, 10)
+        "Maj6" -> listOf(0, 4, 7, 9)
+        "Min6" -> listOf(0, 3, 7, 9)
+        // Extended
+        "Add9" -> listOf(0, 4, 7, 14)
+        "Maj9" -> listOf(0, 4, 7, 11, 14)
+        "Min9" -> listOf(0, 3, 7, 10, 14)
+        "Dom9" -> listOf(0, 4, 7, 10, 14)
+        "Maj11" -> listOf(0, 4, 7, 11, 14, 17)
+        "Min11" -> listOf(0, 3, 7, 10, 14, 17)
+        "Dom11" -> listOf(0, 4, 7, 10, 14, 17)
+        "Maj13" -> listOf(0, 4, 7, 11, 14, 17, 21)
+        "Min13" -> listOf(0, 3, 7, 10, 14, 17, 21)
+        "Dom13" -> listOf(0, 4, 7, 10, 14, 17, 21)
+        // Altered
+        "Dom7b9" -> listOf(0, 4, 7, 10, 13)
+        "Dom7s9", "Dom7#9" -> listOf(0, 4, 7, 10, 15)
         else -> listOf(0, 4, 7)
     }
 
@@ -313,7 +343,7 @@ class PracticeSessionFactory(
                 midiNotes = midiNotes,
                 activePitchClasses = pitchClasses,
                 activeNoteLabels = noteLabels,
-                durationMs = beatDurationMs * 2,
+                durationMs = (beatDurationMs * 2 * selection.durationMultiplier).toLong(),
             ),
         )
     }
@@ -359,7 +389,7 @@ class PracticeSessionFactory(
             midiNotes = listOf(midiNote),
             activePitchClasses = listOf(pitchClass),
             activeNoteLabels = listOf(noteLabel),
-            durationMs = beatDurationMs(selection.bpm),
+            durationMs = (beatDurationMs(selection.bpm) * selection.durationMultiplier).toLong(),
         )
     }
 

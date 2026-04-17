@@ -36,6 +36,7 @@ internal class HomeSelectionResolver(
         octave: Int = 4,
         selectedDifficultyLabel: String? = null,
         selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = com.xiyue.app.domain.RhythmPattern.STRAIGHT,
+        durationMultiplier: Float = 1.0f,
     ): HomeSelectionResolution {
         val filterKind = when (libraryFilter) {
             LibraryFilter.ALL, LibraryFilter.FAVORITES -> null
@@ -74,6 +75,7 @@ internal class HomeSelectionResolver(
                     chordArpeggioEnabled = chordArpeggioEnabled,
                     inversion = inversion,
                     rhythmPattern = selectedRhythmPattern,
+                    durationMultiplier = durationMultiplier,
                 ),
             )
         }

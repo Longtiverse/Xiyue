@@ -23,6 +23,7 @@ sealed interface HomeAction {
     data class SeekToStep(val stepIndex: Int) : HomeAction
     data class SelectDifficulty(val difficultyLabel: String?) : HomeAction
     data class UpdateRhythmPattern(val pattern: RhythmPattern) : HomeAction
+    data class UpdateDurationMultiplier(val multiplier: Float) : HomeAction
     data class UpdateHintsVisibility(val showHints: Boolean) : HomeAction
     data object ToggleLoop : HomeAction
     data object ToggleLibraryOverlay : HomeAction

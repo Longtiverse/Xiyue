@@ -126,14 +126,22 @@ test('android playback stack threads tone presets through request snapshot servi
   );
   const synth = read('apps/android/app/src/main/java/com/xiyue/app/playback/ToneSynth.kt');
   const tonePreset = read('apps/android/app/src/main/java/com/xiyue/app/playback/TonePreset.kt');
-  const synthesisEngine = read(
-    'apps/android/app/src/main/java/com/xiyue/app/playback/ToneSynthesisEngine.kt'
+  const karplusEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/KarplusStrongEngine.kt'
+  );
+  const vocalEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/VocalSynthesisEngine.kt'
   );
 
   assert.match(tonePreset, /enum class TonePreset/);
-  assert.match(tonePreset, /WARM_PRACTICE/);
-  assert.match(tonePreset, /SOFT_PIANO/);
-  assert.match(tonePreset, /CLEAR_WOOD/);
+  assert.match(tonePreset, /PIANO/);
+  assert.match(tonePreset, /PAD/);
+  assert.match(tonePreset, /PLUCK/);
+  assert.match(tonePreset, /VOCAL/);
+  assert.match(tonePreset, /enum class PlaybackSoundMode/);
+  assert.match(tonePreset, /PITCH/);
+  assert.match(tonePreset, /SOLFEGE/);
+  assert.doesNotMatch(tonePreset, /WARM_PRACTICE|SOFT_PIANO|CLEAR_WOOD/);
   assert.match(snapshot, /data class PlaybackRequest[\s\S]*val tonePreset: TonePreset/);
   assert.match(snapshot, /data class PlaybackSnapshot[\s\S]*val tonePreset: TonePreset/);
   assert.match(service, /EXTRA_TONE_PRESET = "tone_preset"/);
@@ -148,11 +156,211 @@ test('android playback stack threads tone presets through request snapshot servi
   assert.match(service, /switchRequestProvider\s*=\s*\{\s*pendingSwitchRequest\s*\}/);
   assert.doesNotMatch(service, /private fun queuePlaybackSwitch[\s\S]{0,240}stopPlayback\(/);
   assert.match(synth, /playStep\([^)]*tonePreset: TonePreset/);
-  assert.match(synth, /createInstrumentalSamples[\s\S]*tonePreset\s*=\s*tonePreset/);
+  assert.match(synth, /private val karplusEngine = KarplusStrongEngine/);
+  assert.match(synth, /private val vocalEngine = VocalSynthesisEngine/);
+  assert.match(synth, /val isVocal = soundMode == PlaybackSoundMode\.SOLFEGE/);
+  assert.match(synth, /karplusEngine\.synthesizeChord/);
+  assert.match(synth, /vocalEngine\.synthesizeVocalChord/);
+  assert.match(synth, /noteNameToSolfege/);
   assert.doesNotMatch(synth, /delay\(step\.durationMs\)\s*stop\(\)/);
-  assert.match(synthesisEngine, /profileFor\(tonePreset\)/);
-  assert.match(synthesisEngine, /warmthContour|chorusBloom|bassReinforcement/);
-  assert.match(synthesisEngine, /hammerTransient|feltNoise|bodyResonance/);
-  assert.match(synthesisEngine, /TonePreset\.SOFT_PIANO|softAttackBlend|feltNoise/);
-  assert.match(synthesisEngine, /TonePreset\.CLEAR_WOOD|woodPulse|airyOvertone/);
+  assert.match(karplusEngine, /class KarplusStrongEngine/);
+  assert.match(karplusEngine, /TonePreset\.PIANO/);
+  assert.match(karplusEngine, /TonePreset\.PAD/);
+  assert.match(karplusEngine, /TonePreset\.PLUCK/);
+  assert.match(karplusEngine, /TonePreset\.VOCAL/);
+  assert.match(karplusEngine, /adsrEnvelope/);
+  assert.match(vocalEngine, /class VocalSynthesisEngine/);
+  assert.match(vocalEngine, /solfegeToVowel/);
+  assert.match(vocalEngine, /VowelPresets/);
+  assert.match(vocalEngine, /KlattResonator/);
+});
+
+test('android playback service preserves duration multiplier through play and paused intents', () => {
+  const service = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/PracticePlaybackService.kt'
+  );
+
+  assert.match(service, /private const val EXTRA_DURATION_MULTIPLIER = "duration_multiplier"/);
+  assert.match(service, /putExtra\(EXTRA_DURATION_MULTIPLIER, request\.durationMultiplier\)/);
+  assert.match(service, /val durationMultiplier = intent\.getFloatExtra\(EXTRA_DURATION_MULTIPLIER, 1\.0f\)/);
+  assert.match(
+    service,
+    /PlaybackRequest\([\s\S]*durationMultiplier = durationMultiplier[\s\S]*\)/
+  );
+});
+
+test('android piano preset exposes soft-practice shaping hooks in the karplus engine', () => {
+  const karplusEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/KarplusStrongEngine.kt'
+  );
+
+  assert.match(karplusEngine, /getHfDampCoeff/);
+  assert.match(karplusEngine, /getExciterNoiseMix/);
+  assert.match(karplusEngine, /getExciterSawMix/);
+  assert.match(karplusEngine, /getBodyResonanceGain/);
+  assert.match(karplusEngine, /getAttackMs/);
+  assert.match(karplusEngine, /TonePreset\.PIANO/);
+
+  const pianoAttack = karplusEngine.match(
+    /private fun getAttackMs\([^)]*\): Double = when \(preset\) \{[\s\S]*?TonePreset\.PIANO\s*->\s*([0-9.]+)/
+  );
+  assert.notEqual(pianoAttack, null, 'Piano attack must be explicit');
+  assert.ok(
+    Number.parseFloat(pianoAttack[1]) > 5.0,
+    'Piano attack should be longer than the old 5ms baseline for a rounder start'
+  );
+
+  const pianoCutoff = karplusEngine.match(
+    /getHfDampCoeff[\s\S]*?val cutoff = when \(preset\) \{[\s\S]*?TonePreset\.PIANO\s*->\s*([0-9.]+)/
+  );
+  assert.notEqual(pianoCutoff, null, 'Piano HF cutoff must be explicit');
+  assert.ok(
+    Number.parseFloat(pianoCutoff[1]) <= 5000,
+    'Piano HF cutoff should be lower for a rounder long-session tone'
+  );
+
+  const pianoExciterGain = karplusEngine.match(
+    /private fun getExciterGain\([^)]*\): Double = when \(preset\) \{[\s\S]*?TonePreset\.PIANO\s*->\s*([0-9.]+)/
+  );
+  assert.notEqual(pianoExciterGain, null, 'Piano exciter gain must be explicit');
+  assert.ok(
+    Number.parseFloat(pianoExciterGain[1]) <= 0.30,
+    'Piano exciter gain should be reduced to avoid a sharp attack'
+  );
+
+  const pianoSawMix = karplusEngine.match(
+    /private fun getExciterSawMix[\s\S]*?when \(preset\) \{[\s\S]*?TonePreset\.PIANO\s*->\s*([0-9.]+)/
+  );
+  assert.notEqual(pianoSawMix, null, 'Piano saw mix must be explicit');
+  assert.ok(
+    Number.parseFloat(pianoSawMix[1]) <= 0.12,
+    'Piano saw mix should stay low so the tone feels rounded rather than plucky'
+  );
+});
+
+test('android piano chord path applies chord-aware detune, gain staging, and bus limiting', () => {
+  const karplusEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/KarplusStrongEngine.kt'
+  );
+
+  assert.match(karplusEngine, /buildDetunedVoices/);
+  assert.match(karplusEngine, /getChordVoiceGain/);
+  assert.match(karplusEngine, /getStereoSpread/);
+  assert.match(karplusEngine, /getLimiterDrive/);
+  assert.match(karplusEngine, /getBusSmoothingCoeff/);
+  assert.match(karplusEngine, /applySoftLimiter/);
+  assert.match(karplusEngine, /frequencies\.size/);
+  assert.match(karplusEngine, /val noteCount = frequencies\.size/);
+  assert.match(
+    karplusEngine,
+    /TonePreset\.PIANO\s*->\s*when\s*\{[\s\S]*noteCount >= 4[\s\S]*listOf\(freq\)[\s\S]*noteCount >= 3/
+  );
+  assert.match(
+    karplusEngine,
+    /val chordVoiceGain = getChordVoiceGain\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val stereoSpread = getStereoSpread\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val limiterDrive = getLimiterDrive\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val limitedLeft = applySoftLimiter\(left \* scale, limiterDrive\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val limitedRight = applySoftLimiter\(right \* scale, limiterDrive\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val smoothedLeft = previousLeft \* busSmoothingCoeff \+ limitedLeft \* \(1\.0 - busSmoothingCoeff\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val smoothedRight = previousRight \* busSmoothingCoeff \+ limitedRight \* \(1\.0 - busSmoothingCoeff\)/
+  );
+  assert.match(
+    karplusEngine,
+    /output\[i \* 2\] = \(applySoftLimiter\(smoothedLeft, 1\.0\) \* 32767\)/
+  );
+  assert.match(
+    karplusEngine,
+    /output\[i \* 2 \+ 1\] = \(applySoftLimiter\(smoothedRight, 1\.0\) \* 32767\)/
+  );
+});
+
+test('android piano dense chords trim transients and use slight onset staggering', () => {
+  const karplusEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/KarplusStrongEngine.kt'
+  );
+
+  assert.match(karplusEngine, /getChordExciterTrim/);
+  assert.match(karplusEngine, /getChordBodyTrim/);
+  assert.match(karplusEngine, /getChordAttackScale/);
+  assert.match(karplusEngine, /getChordOnsetSpreadMs/);
+  assert.match(
+    karplusEngine,
+    /val chordExciterTrim = getChordExciterTrim\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val chordBodyTrim = getChordBodyTrim\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val chordAttackScale = getChordAttackScale\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /val onsetSpreadMs = getChordOnsetSpreadMs\(tonePreset, noteCount\)/
+  );
+  assert.match(
+    karplusEngine,
+    /startDelayFrames = msToFrames\(staggerOffsetMs\)/
+  );
+  assert.match(
+    karplusEngine,
+    /if \(delayedFrame < 0\) return@forEach/
+  );
+  assert.match(
+    karplusEngine,
+    /getExciterGain\(tonePreset\) \* exciterGainScale/
+  );
+  assert.match(
+    karplusEngine,
+    /getBodyResonanceGain\(tonePreset\) \* bodyResonanceScale/
+  );
+  assert.match(
+    karplusEngine,
+    /sampleRate \* getAttackMs\(tonePreset\) \* attackScale/
+  );
+  assert.match(
+    karplusEngine,
+    /TonePreset\.PIANO -> when \{[\s\S]*noteCount >= 4[\s\S]*noteCount >= 3/
+  );
+});
+
+test('android solfege vocal path exposes clarity controls for a gentle humming voice', () => {
+  const vocalEngine = read(
+    'apps/android/app/src/main/java/com/xiyue/app/playback/VocalSynthesisEngine.kt'
+  );
+  const synth = read('apps/android/app/src/main/java/com/xiyue/app/playback/ToneSynth.kt');
+
+  assert.match(vocalEngine, /getVibratoDepth/);
+  assert.match(vocalEngine, /getBreathinessGain/);
+  assert.match(vocalEngine, /getEnvelopeAttackMs/);
+  assert.match(vocalEngine, /getEnvelopeReleaseMs/);
+  assert.match(vocalEngine, /getFormantPresenceGain/);
+  assert.match(vocalEngine, /getVowelClarityGain/);
+  assert.match(vocalEngine, /solfegeToVowel/);
+  assert.match(vocalEngine, /VowelPresets/);
+  assert.match(vocalEngine, /DO[\s\S]*VowelPresets\.O/);
+  assert.match(vocalEngine, /RE[\s\S]*VowelPresets\.E/);
+  assert.match(vocalEngine, /MI[\s\S]*VowelPresets\.I/);
+  assert.match(vocalEngine, /FA[\s\S]*VowelPresets\.A/);
+  assert.match(synth, /noteNameToSolfege/);
 });

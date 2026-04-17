@@ -42,6 +42,7 @@ class HomeStateFactory(
         selectedOctave: Int = 4,
         selectedDifficultyLabel: String? = null,
         selectedRhythmPattern: com.xiyue.app.domain.RhythmPattern = com.xiyue.app.domain.RhythmPattern.STRAIGHT,
+        durationMultiplier: Float = 1.0f,
         playbackSnapshot: PlaybackSnapshot = PlaybackSnapshot(),
     ): HomeUiState {
         val resolution = selectionResolver.resolve(
@@ -57,6 +58,7 @@ class HomeStateFactory(
             octave = selectedOctave,
             selectedDifficultyLabel = selectedDifficultyLabel,
             selectedRhythmPattern = selectedRhythmPattern,
+            durationMultiplier = durationMultiplier,
         )
         val filterKind = resolution.filterKind
         val resolvedSelectedItem = resolution.resolvedSelectedItem
@@ -238,12 +240,14 @@ class HomeStateFactory(
                 showHints = showHints,
                 selectedInversion = selectedInversion,
                 selectedRhythmPattern = selectedRhythmPattern,
+                durationMultiplier = durationMultiplier,
             ),
             keyboardPreview = uiStateBuilder.buildKeyboardPreview(
                 effectivePlaying = effectivePlaying,
                 effectivePaused = effectivePaused,
                 previewPitchClasses = previewPitchClasses,
                 currentActiveNote = currentActiveNote,
+                octave = selectedOctave,
                 keyDepths = keyDepths,
                 fingeringMap = fingeringMap,
             ),
@@ -251,6 +255,7 @@ class HomeStateFactory(
             selectedOctave = selectedOctave,
             selectedDifficultyLabel = selectedDifficultyLabel,
             selectedRhythmPattern = selectedRhythmPattern,
+            durationMultiplier = durationMultiplier,
         )
     }
 }

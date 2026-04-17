@@ -81,6 +81,11 @@ test('android home state is aligned with the design spec selectors and playback 
   assert.match(factory, /buildKeyboardPreview/);
   assert.match(factory, /showHints/);
   assert.match(factory, /selectedTonePreset/);
+  assert.match(factory, /durationMultiplier/);
+  assert.match(
+    factory,
+    /keyboardPreview = uiStateBuilder\.buildKeyboardPreview[\s\S]*selectedRhythmPattern = selectedRhythmPattern,\s*durationMultiplier = durationMultiplier,/
+  );
   assert.doesNotMatch(factory, /searchQuery/);
   assert.doesNotMatch(factory, /isBpmInputVisible/);
 
@@ -116,6 +121,11 @@ test('android home actions expose playback, hints, and filter updates without te
   assert.match(reducer, /UpdateLibraryFilter/);
   assert.match(reducer, /ToggleLoop/);
   assert.match(reducer, /SyncPlaybackSnapshot/);
+  assert.match(reducer, /UpdateDurationMultiplier/);
+  assert.match(
+    reducer,
+    /stateFactory\.create\([\s\S]*selectedRhythmPattern = selectedRhythmPattern,\s*durationMultiplier = durationMultiplier,\s*playbackSnapshot = playbackSnapshot/
+  );
   assert.doesNotMatch(reducer, /searchQuery/);
   assert.doesNotMatch(reducer, /isBpmInputVisible/);
 });

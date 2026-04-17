@@ -116,14 +116,14 @@ async function handleAPI(request, response, rootDir) {
 
         try {
           const progressContent = await readFile(path.join(rootDir, '.tmp', 'session-progress.md'), 'utf-8');
-          const nextStepsMatch = progressContent.match(/^## Next Steps\s*\n([\s\S]*?)(?=^## |\z)/m);
+          const nextStepsMatch = progressContent.match(/^## Next Steps\s*\n([\s\S]*?)(?=^## |(?![\s\S]))/m);
           if (nextStepsMatch) {
             for (const line of nextStepsMatch[1].split('\n')) {
               const m = line.match(/^\d+\.\s*(.+)$/);
               if (m) items.push({ id: id++, title: m[1].trim(), status: 'pending', priority: 'high' });
             }
           }
-          const blockersMatch = progressContent.match(/^## Blockers\s*\n([\s\S]*?)(?=^## |\z)/m);
+          const blockersMatch = progressContent.match(/^## Blockers\s*\n([\s\S]*?)(?=^## |(?![\s\S]))/m);
           if (blockersMatch) {
             for (const line of blockersMatch[1].split('\n')) {
               const cleaned = line.replace(/^[-•]\s*/, '').trim();
@@ -132,7 +132,9 @@ async function handleAPI(request, response, rootDir) {
               }
             }
           }
-        } catch {}
+        } catch {
+          // Ignore missing or malformed session-progress content.
+        }
 
         try {
           const tmpDir = path.join(rootDir, '.tmp');
@@ -145,7 +147,9 @@ async function handleAPI(request, response, rootDir) {
               if (m) items.push({ id: id++, title: m[1].trim(), status: 'pending', priority: 'medium' });
             }
           }
-        } catch {}
+        } catch {
+          // Ignore missing or malformed plan files.
+        }
 
         sendJSON(response, { items, _source: 'aggregated' });
       } catch (err) {

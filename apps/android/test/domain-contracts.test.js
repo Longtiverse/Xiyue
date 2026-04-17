@@ -45,3 +45,30 @@ test('android includes practice domain placeholders for future shared-core integ
   assert.match(sessionFactory, /Loop/);
   assert.doesNotMatch(sessionFactory, /路/);
 });
+
+test('android practice session factory preserves duration multiplier across rhythm shaping and combo plans', () => {
+  const sessionFactory = readFileSync(
+    'apps/android/app/src/main/java/com/xiyue/app/domain/PracticeSessionFactory.kt',
+    'utf8'
+  );
+
+  assert.match(
+    sessionFactory,
+    /createComboNotePlan\([\s\S]*durationMultiplier: Float[\s\S]*PlaybackStep\([\s\S]*durationMs = \(beatDurationMs\(bpm\) \* durationMultiplier\)\.toLong\(\)/
+  );
+  assert.match(
+    sessionFactory,
+    /createComboChordPlan\([\s\S]*durationMultiplier: Float[\s\S]*selection\.durationMultiplier/
+  );
+  assert.match(
+    sessionFactory,
+    /createComboNotePlan\([\s\S]*durationMultiplier = selection\.durationMultiplier/
+  );
+  assert.match(
+    sessionFactory,
+    /createComboChordPlan\([\s\S]*durationMultiplier = selection\.durationMultiplier/
+  );
+  assert.match(sessionFactory, /val baseDuration = step\.durationMs\.toFloat\(\)/);
+  assert.match(sessionFactory, /val newDuration = \(baseDuration \* multiplier\)\.toLong\(\)\.coerceAtLeast\(50\)/);
+  assert.doesNotMatch(sessionFactory, /val baseBeat = beatDurationMs\(bpm\)\.toFloat\(\)/);
+});

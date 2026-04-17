@@ -211,6 +211,7 @@ data class PracticeSelection(
     val chordArpeggioEnabled: Boolean = false,
     val inversion: Int = 0,
     val rhythmPattern: RhythmPattern = RhythmPattern.STRAIGHT,
+    val durationMultiplier: Float = 1.0f,
 )
 
 data class PlaybackStep(

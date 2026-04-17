@@ -99,6 +99,7 @@ fun XiyueApp() {
                 selectedInversion = initialPreferences.selectedInversion,
                 selectedOctave = initialPreferences.selectedOctave,
                 selectedRhythmPattern = initialPreferences.selectedRhythmPattern,
+                durationMultiplier = initialPreferences.durationMultiplier,
                 showHints = showHints,
             ),
         )
@@ -151,6 +152,7 @@ fun XiyueApp() {
                 selectedOctave = state.selectedOctave,
                 selectedDifficultyLabel = state.selectedDifficultyLabel,
                 selectedRhythmPattern = state.selectedRhythmPattern,
+                durationMultiplier = state.durationMultiplier,
                 practiceProgressItemId = playbackSnapshot.currentItemId ?: state.selectedLibraryItemId,
                 practiceProgressRoot = state.selectedRoot,
                 practiceProgressStepIndex = playbackSnapshot.stepIndex,
@@ -176,6 +178,7 @@ fun XiyueApp() {
         state.selectedOctave,
         state.selectedDifficultyLabel,
         state.selectedRhythmPattern,
+        state.durationMultiplier,
         state.recentLibraryItems,
     ) {
         savePreferences()
@@ -392,6 +395,7 @@ private fun createPlaybackRequest(state: HomeUiState): PlaybackRequest? =
             inversion = state.selectedInversion,
             octave = state.selectedOctave,
             rhythmPattern = state.selectedRhythmPattern,
+            durationMultiplier = state.durationMultiplier,
         )
     }
 
@@ -415,6 +419,7 @@ private fun shouldRefreshPlayback(
         is HomeAction.UpdateOctave,
         is HomeAction.SelectDifficulty,
         is HomeAction.UpdateRhythmPattern,
+        is HomeAction.UpdateDurationMultiplier,
         HomeAction.ToggleLoop,
         -> playbackConfigChanged(previousState, nextState)
 
@@ -442,6 +447,7 @@ private fun shouldPreparePausedPlayback(
         is HomeAction.UpdateOctave,
         is HomeAction.SelectDifficulty,
         is HomeAction.UpdateRhythmPattern,
+        is HomeAction.UpdateDurationMultiplier,
         HomeAction.ToggleLoop,
         -> playbackConfigChanged(previousState, nextState)
 
@@ -465,7 +471,8 @@ private fun playbackConfigChanged(
     previousState.selectedInversion != nextState.selectedInversion ||
     previousState.selectedOctave != nextState.selectedOctave ||
     previousState.selectedDifficultyLabel != nextState.selectedDifficultyLabel ||
-    previousState.selectedRhythmPattern != nextState.selectedRhythmPattern
+    previousState.selectedRhythmPattern != nextState.selectedRhythmPattern ||
+    previousState.durationMultiplier != nextState.durationMultiplier
 
 private fun refreshPlayback(
     context: android.content.Context,
